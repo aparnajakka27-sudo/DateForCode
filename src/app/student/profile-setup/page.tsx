@@ -1,64 +1,63 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Sparkles, Check, X, Rocket } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Check, X, Rocket, Terminal, Code, Cpu, Shield, Globe, Award } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
 
-const fadeUp = (d=0) => ({ initial:{opacity:0,y:30}, animate:{opacity:1,y:0}, transition:{duration:0.7,delay:d,ease:[0.16,1,0.3,1] as const} });
+const fadeUp = (d=0) => ({ 
+  initial: { opacity: 0, y: 15 }, 
+  animate: { opacity: 1, y: 0 }, 
+  transition: { duration: 0.5, delay: d, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } 
+});
 
 const AVATARS = [
-  { id:'ninja', img:'https://api.dicebear.com/7.x/bottts/svg?seed=ninja', ring:'#6C5CE7', label:'Ninja' },
-  { id:'astro', img:'https://api.dicebear.com/7.x/bottts/svg?seed=astro', ring:'#FF4D6D', label:'Astro' },
-  { id:'pixel', img:'https://api.dicebear.com/7.x/bottts/svg?seed=pixel', ring:'#4D79FF', label:'Pixel' },
-  { id:'cyber', img:'https://api.dicebear.com/7.x/bottts/svg?seed=cyber', ring:'#10B981', label:'Cyber' },
-  { id:'nova', img:'https://api.dicebear.com/7.x/bottts/svg?seed=nova', ring:'#F97316', label:'Nova' },
-  { id:'ghost', img:'https://api.dicebear.com/7.x/bottts/svg?seed=ghost', ring:'#6B7280', label:'Ghost' },
-  { id:'spark', img:'https://api.dicebear.com/7.x/bottts/svg?seed=spark', ring:'#EC4899', label:'Spark' },
-  { id:'zen', img:'https://api.dicebear.com/7.x/bottts/svg?seed=zen', ring:'#A855F7', label:'Zen' },
-  { id:'blade', img:'https://api.dicebear.com/7.x/bottts/svg?seed=blade', ring:'#EF4444', label:'Blade' },
-  { id:'storm', img:'https://api.dicebear.com/7.x/bottts/svg?seed=storm', ring:'#3B82F6', label:'Storm' },
-  { id:'luna', img:'https://api.dicebear.com/7.x/bottts/svg?seed=luna', ring:'#8B5CF6', label:'Luna' },
-  { id:'volt', img:'https://api.dicebear.com/7.x/bottts/svg?seed=volt', ring:'#F59E0B', label:'Volt' },
-  { id:'frost', img:'https://api.dicebear.com/7.x/bottts/svg?seed=frost', ring:'#06B6D4', label:'Frost' },
-  { id:'blaze', img:'https://api.dicebear.com/7.x/bottts/svg?seed=blaze', ring:'#DC2626', label:'Blaze' },
-  { id:'sage', img:'https://api.dicebear.com/7.x/bottts/svg?seed=sage', ring:'#059669', label:'Sage' },
-  { id:'echo', img:'https://api.dicebear.com/7.x/bottts/svg?seed=echo', ring:'#7C3AED', label:'Echo' },
+  { id: 'ninja', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=ninja', ring: '#FF3366', role: 'Kernel Hacker', colorClass: 'text-accent-pink border-accent-pink/30' },
+  { id: 'astro', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=astro', ring: '#3B82F6', role: 'Systems Architect', colorClass: 'text-accent-blue border-accent-blue/30' },
+  { id: 'pixel', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel', ring: '#10B981', role: 'Frontend Architect', colorClass: 'text-accent-green border-accent-green/30' },
+  { id: 'cyber', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=cyber', ring: '#F59E0B', role: 'AI Compiler Engineer', colorClass: 'text-accent-gold border-accent-gold/30' },
+  { id: 'nova', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova', ring: '#8B5CF6', role: 'Quantum Cryptographer', colorClass: 'text-accent-purple border-accent-purple/30' },
+  { id: 'ghost', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=ghost', ring: '#94A3B8', role: 'SecOps Penetration Tester', colorClass: 'text-gray-400 border-gray-400/30' },
 ];
 
 const SKILLS = [
-  { name:'JavaScript', color:'#D97706' }, { name:'TypeScript', color:'#3178C6' },
-  { name:'Python', color:'#3776AB' }, { name:'React', color:'#61DAFB' },
-  { name:'Next.js', color:'#000' }, { name:'Node.js', color:'#339933' },
-  { name:'Java', color:'#ED8B00' }, { name:'C++', color:'#00599C' },
-  { name:'HTML/CSS', color:'#E34F26' }, { name:'MongoDB', color:'#47A248' },
-  { name:'SQL', color:'#4479A1' }, { name:'Git', color:'#F05032' },
-  { name:'Docker', color:'#2496ED' }, { name:'AWS', color:'#FF9900' },
-  { name:'Flutter', color:'#02569B' }, { name:'Rust', color:'#CE422B' },
-  { name:'Go', color:'#00ADD8' }, { name:'Swift', color:'#FA7343' },
+  { name: 'JavaScript', color: '#D97706', popularity: '94%', demand: 'High' },
+  { name: 'TypeScript', color: '#3178C6', popularity: '98%', demand: 'Critical' },
+  { name: 'Python', color: '#3776AB', popularity: '90%', demand: 'High' },
+  { name: 'React', color: '#61DAFB', popularity: '95%', demand: 'Critical' },
+  { name: 'Next.js', color: '#FFFFFF', popularity: '97%', demand: 'Critical' },
+  { name: 'Node.js', color: '#339933', popularity: '88%', demand: 'High' },
+  { name: 'Rust', color: '#CE422B', popularity: '85%', demand: 'Trending' },
+  { name: 'Go', color: '#00ADD8', popularity: '82%', demand: 'High' },
+  { name: 'SQL', color: '#4479A1', popularity: '89%', demand: 'Stable' },
+  { name: 'Docker', color: '#2496ED', popularity: '87%', demand: 'Stable' },
+  { name: 'AWS', color: '#FF9900', popularity: '84%', demand: 'High' },
+  { name: 'C++', color: '#00599C', popularity: '78%', demand: 'Stable' },
 ];
-
-const CODE_CHARS = ['</>','{..}','( )','=> ','[ ]','/**/',';','::','&&','||','!=','++'];
 
 export default function ProfileSetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [username, setUsername] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState('ninja');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [bio, setBio] = useState('');
   const [showPreview, setShowPreview] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem('dateforcode_student_setup')) {
       router.push('/student/dashboard');
     }
   }, [router]);
 
   const toggleSkill = (skill: string) => {
-    setSelectedSkills(prev => prev.includes(skill) ? prev.filter(s=>s!==skill) : prev.length < 8 ? [...prev, skill] : prev);
+    setSelectedSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill) 
+        : prev.length < 8 ? [...prev, skill] : prev
+    );
   };
 
   const canProceed = () => {
@@ -75,294 +74,426 @@ export default function ProfileSetupPage() {
     setShowPreview(true);
   };
 
-  const avatarData = AVATARS.find(a=>a.id===selectedAvatar);
+  const avatarData = AVATARS.find(a => a.id === selectedAvatar) || AVATARS[0];
 
   const steps = [
-    { title: "What should we call you?", sub: "Choose a unique username for your coding journey" },
-    { title: "Pick your avatar", sub: "Express your coding personality — choose your bot" },
-    { title: "What's in your toolbox?", sub: "Select the technologies you know (max 8)" },
-    { title: "Tell us about yourself", sub: "A quick bio so your partner knows who they're coding with" },
+    { title: "Define Identity", sub: "Initialize your unique developer handle for match routing" },
+    { title: "Select Hacker Class", sub: "Choose your primary developer persona and visual card signature" },
+    { title: "Configure Technology Stack", sub: "Select the languages and systems in your primary toolbox (max 8)" },
+    { title: "Write Compiler Bio", sub: "A brief log statement to introduce your coding philosophy to partners" },
   ];
 
   return (
-    <main className="relative min-h-screen bg-[#FDFDFD] overflow-hidden selection:bg-[#FF4D6D]/20">
-      {/* Animated grid background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage:'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0)',
-          backgroundSize:'40px 40px'
-        }} />
-        {CODE_CHARS.map((c,i) => (
-          <div key={i} className="absolute text-black/[0.03] font-mono font-bold select-none" style={{
-            fontSize:`${16+i*4}px`, left:`${3+i*8}%`, top:`${5+((i*27)%80)}%`,
-            animation:`floatSlow ${6+i*1.2}s ease-in-out infinite ${i*0.5}s`
-          }}>{c}</div>
-        ))}
-        <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-[#FF4D6D]/[0.03] rounded-full blur-[150px]" style={{animation:'floatSlow 10s ease-in-out infinite'}} />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#4D79FF]/[0.03] rounded-full blur-[120px]" style={{animation:'floatSlow 12s ease-in-out infinite 3s'}} />
-        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-[#A855F7]/[0.03] rounded-full blur-[100px]" style={{animation:'floatSlow 8s ease-in-out infinite 5s'}} />
-        <div className="absolute bottom-1/3 left-0 w-[300px] h-[300px] bg-[#10B981]/[0.03] rounded-full blur-[80px]" style={{animation:'floatSlow 9s ease-in-out infinite 2s'}} />
-        {/* Animated rings */}
-        <div className="absolute top-1/4 right-1/4 w-60 h-60 rounded-full border border-black/[0.02]" style={{animation:'spin 60s linear infinite'}} />
-        <div className="absolute bottom-1/4 left-1/3 w-40 h-40 rounded-full border border-black/[0.02]" style={{animation:'spin 45s linear infinite reverse'}} />
-      </div>
-
-      {/* Nav */}
-      <nav className="relative z-20 py-5 px-8 md:px-12 flex items-center justify-between">
-        <div className="flex items-center gap-6">
+    <main className="grid grid-cols-1 lg:grid-cols-12 min-h-screen bg-[#08090C] text-[#F3F4F6] relative overflow-hidden font-sans select-none">
+      
+      {/* LEFT COLUMN: Setup Steps Form Flow */}
+      <section className="col-span-1 lg:col-span-7 flex flex-col justify-between p-6 md:p-12 min-h-screen relative z-10">
+        
+        {/* Navigation / Header */}
+        <div className="flex items-center justify-between">
           <Logo showText={true} className="scale-[0.8] origin-left" />
+          <button 
+            onClick={() => step > 0 ? setStep(step - 1) : router.back()} 
+            className="flex items-center gap-2 text-gray-500 text-xs font-mono tracking-wider hover:text-accent-pink transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            BACK
+          </button>
         </div>
-        <button onClick={()=> step > 0 ? setStep(step-1) : router.back()} className="flex items-center gap-2 text-black/30 text-xs font-bold uppercase tracking-wider hover:text-black transition-colors duration-300 group">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
-          Back
-        </button>
-      </nav>
 
-      {/* Progress bar */}
-      <div className="relative z-10 max-w-xl mx-auto px-6 mb-8">
-        <div className="flex items-center gap-2">
-          {[0,1,2,3].map(i => (
-            <div key={i} className="flex-1 h-1.5 rounded-full overflow-hidden bg-black/5">
-              <motion.div
-                initial={{width:0}}
-                animate={{width: i <= step ? '100%' : '0%'}}
-                transition={{duration:0.5,ease:[0.16,1,0.3,1]}}
-                className="h-full rounded-full"
-                style={{background: i <= step ? 'linear-gradient(90deg,#FF4D6D,#FF8FA3)' : 'transparent'}}
-              />
+        {/* Progress Grid */}
+        <div className="max-w-xl w-full mx-auto my-6">
+          <div className="flex items-center gap-1.5">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="flex-1 h-1 bg-[#15171F] border border-border-dark overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: i <= step ? '100%' : '0%' }}
+                  transition={{ duration: 0.3 }}
+                  className="h-full bg-accent-pink"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between items-center mt-2 font-mono text-[9px] text-gray-500 uppercase tracking-widest">
+            <span>STEP: {step + 1} OF 4</span>
+            <span>SYSTEM CONTEXT MATCHING READY</span>
+          </div>
+        </div>
+
+        {/* Form Area */}
+        <div className="my-auto mx-auto w-full max-w-xl">
+          <motion.div 
+            key={step} 
+            initial={{ opacity: 0, x: 20 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+          >
+            <div className="mb-8">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-accent-pink/10 border border-accent-pink/30 text-[9px] font-mono text-accent-pink tracking-widest uppercase mb-3">
+                <Terminal className="w-3.5 h-3.5" /> PROFILE CONFIGURATION MODULE
+              </span>
+              <h1 className="text-3xl font-bold font-mono tracking-tight text-white mb-2 uppercase">{steps[step].title}</h1>
+              <p className="text-gray-400 text-sm leading-relaxed">{steps[step].sub}</p>
             </div>
-          ))}
-        </div>
-        <p className="text-[10px] text-black/25 font-bold uppercase tracking-wider mt-2 text-right">Step {step+1} of 4</p>
-      </div>
 
-      {/* Content */}
-      <div className="relative z-10 max-w-xl mx-auto px-6 pb-20">
-        <motion.div key={step} initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} transition={{duration:0.5,ease:[0.16,1,0.3,1]}}>
-          {/* Header */}
-          <div className="text-center mb-10">
-            <motion.div {...fadeUp(0)} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FF4D6D]/8 text-[#FF4D6D] text-[10px] font-bold uppercase tracking-widest mb-4">
-              <Sparkles className="w-3 h-3" /> Profile Setup
-            </motion.div>
-            <motion.h1 {...fadeUp(0.05)} className="text-3xl md:text-4xl font-serif font-bold tracking-tight mb-3">{steps[step].title}</motion.h1>
-            <motion.p {...fadeUp(0.1)} className="text-black/35 text-sm">{steps[step].sub}</motion.p>
+            {/* Step 0: Username */}
+            {step === 0 && (
+              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark space-y-4">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Developer Handle (UID)</label>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-mono text-gray-600">@</span>
+                  <input
+                    type="text" 
+                    value={username} 
+                    onChange={e=>setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g,''))}
+                    placeholder="e.g. kernel_hacker" 
+                    maxLength={20} 
+                    autoFocus
+                    className="w-full pl-10 pr-4 py-3.5 bg-[#15171F] border border-border-dark rounded text-md text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-700"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-[10px] font-mono text-gray-500">
+                  <span>No spaces or capitals, numbers & underscores allowed</span>
+                  <span className={username.length >= 3 ? 'text-accent-green' : 'text-gray-600'}>{username.length}/20 chars</span>
+                </div>
+              </div>
+            )}
+
+            {/* Step 1: Avatar / Persona Class */}
+            {step === 1 && (
+              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {AVATARS.map((av) => (
+                    <button 
+                      key={av.id}
+                      onClick={() => setSelectedAvatar(av.id)}
+                      className={`p-3 rounded border text-left flex flex-col items-center justify-between gap-3 cursor-pointer transition-all duration-200 ${
+                        selectedAvatar === av.id 
+                          ? 'bg-[#15171F] border-accent-pink' 
+                          : 'bg-[#0E1015] border-border-dark hover:border-gray-700'
+                      }`}
+                    >
+                      <div className="relative w-16 h-16 rounded bg-[#1a1c23] border border-border-dark flex items-center justify-center">
+                        <img src={av.img} alt={av.role} className="w-14 h-14" />
+                        {selectedAvatar === av.id && (
+                          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent-pink rounded-full flex items-center justify-center">
+                            <Check className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center">
+                        <div className="text-[10px] font-mono font-bold text-white uppercase tracking-tight">{av.id}</div>
+                        <div className={`text-[8px] font-mono border px-1 py-0.5 rounded mt-1 bg-black/40 ${av.colorClass}`}>{av.role}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Technology Skills Stack */}
+            {step === 2 && (
+              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark space-y-4">
+                <div className="flex justify-between items-center text-[10px] font-mono text-gray-400">
+                  <span>SELECT SYSTEM CAPABILITIES</span>
+                  <span className="text-accent-pink font-bold">{selectedSkills.length}/8 SELECTED</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {SKILLS.map((skill) => {
+                    const active = selectedSkills.includes(skill.name);
+                    return (
+                      <button 
+                        key={skill.name}
+                        onClick={() => toggleSkill(skill.name)}
+                        className={`p-2.5 rounded border text-left flex flex-col justify-between font-mono cursor-pointer transition-colors duration-150 ${
+                          active 
+                            ? 'bg-[#15171F] border-accent-pink' 
+                            : 'bg-[#0E1015] border-border-dark hover:border-gray-700'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className="text-xs font-bold text-white">{skill.name}</span>
+                          <span className={`text-[8px] px-1 py-0.2 rounded ${
+                            skill.demand === 'Critical' ? 'bg-red-950/40 text-red-400 border border-red-900/50' :
+                            skill.demand === 'High' ? 'bg-amber-950/40 text-amber-400 border border-amber-900/50' : 'bg-zinc-950/40 text-zinc-400 border border-zinc-900/50'
+                          }`}>{skill.demand}</span>
+                        </div>
+                        <div className="flex justify-between items-center w-full mt-2 text-[8px] text-gray-500">
+                          <span>POPULARITY:</span>
+                          <span className="text-gray-300">{skill.popularity}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Bio */}
+            {step === 3 && (
+              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark space-y-4">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Compiler Bio Statement</label>
+                <div className="relative">
+                  <textarea
+                    value={bio} 
+                    onChange={e=>setBio(e.target.value)} 
+                    maxLength={160}
+                    placeholder="e.g. Linux systems programmer looking to build highly-optimized Rust microservices. Streaks active."
+                    rows={5}
+                    className="w-full p-4 bg-[#15171F] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-600 resize-none leading-relaxed"
+                  />
+                  <div className="absolute bottom-3 right-3 text-[9px] font-mono text-gray-500">
+                    {bio.length}/160
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step Navigation Controls */}
+            <div className="flex items-center justify-between mt-8">
+              <button 
+                onClick={() => step > 0 && setStep(step - 1)} 
+                className={`flex items-center gap-1.5 text-xs font-mono tracking-wider transition-colors cursor-pointer uppercase ${
+                  step === 0 ? 'opacity-0 pointer-events-none' : 'text-gray-500 hover:text-white'
+                }`}
+              >
+                <ArrowLeft className="w-4 h-4" /> PREV STEP
+              </button>
+
+              {step < 3 ? (
+                <button 
+                  onClick={() => canProceed() && setStep(step + 1)} 
+                  disabled={!canProceed()}
+                  className="btn-premium flex items-center gap-2 cursor-pointer text-xs disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  NEXT STATE
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button 
+                  onClick={handleFinish}
+                  className="btn-premium flex items-center gap-2 bg-[#10B981] hover:bg-emerald-600 cursor-pointer text-xs shadow-emerald-950/20"
+                >
+                  <Rocket className="w-4 h-4 animate-bounce" />
+                  LAUNCH ARENA CARD
+                </button>
+              )}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Small operational notice */}
+        <div className="text-[9px] font-mono text-gray-600 text-center tracking-wide uppercase">
+          Ecosystem ID generation encrypted under SHA-256 standard protocols.
+        </div>
+      </section>
+
+      {/* RIGHT COLUMN: Live Card Preview Render */}
+      <section className="hidden lg:flex lg:col-span-5 bg-[#0D0E12] border-l border-border-dark p-8 flex-col justify-center items-center relative noise-bg developer-grid">
+        
+        {/* Interactive glow effect in back */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-[160px] opacity-10 bg-accent-pink" style={{ background: avatarData.ring }} />
+
+        <div className="w-full max-w-sm space-y-6">
+          <div className="text-center">
+            <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Live Compiler Preview</span>
           </div>
 
-          {/* Step 0: Username */}
-          {step === 0 && (
-            <motion.div {...fadeUp(0.15)} className="bg-white/80 backdrop-blur-xl rounded-3xl border border-black/5 p-8 shadow-xl shadow-black/[0.04]">
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xl text-black/20 group-focus-within:text-[#FF4D6D] transition-colors">@</div>
-                <input
-                  type="text" value={username} onChange={e=>setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g,''))}
-                  placeholder="your_username" maxLength={20} autoFocus
-                  className="w-full pl-12 pr-4 py-5 rounded-2xl border-2 border-black/8 text-lg font-mono focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-4 focus:ring-[#FF4D6D]/10 transition-all duration-300 bg-transparent placeholder:text-black/15"
-                />
+          {/* Premium Developer Identity Card */}
+          <div className="ide-panel bg-[#15171F]/80 backdrop-blur border-border-dark relative overflow-hidden shadow-2xl">
+            
+            {/* Design header lines */}
+            <div className="ide-panel-header justify-between">
+              <div className="flex items-center gap-1.5">
+                <Code className="w-3.5 h-3.5 text-accent-pink" />
+                <span className="font-mono text-[9px] uppercase tracking-wider text-gray-400">SYS_CARD // COMPILING</span>
               </div>
-              <div className="flex items-center justify-between mt-4">
-                <p className="text-[10px] text-black/25 font-medium">Only lowercase, numbers, and underscores</p>
-                <p className="text-[10px] font-bold" style={{color: username.length >= 3 ? '#10B981' : '#999'}}>{username.length}/20</p>
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500/80" />
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500/80" />
               </div>
-              {username.length >= 3 && (
-                <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-[#FF4D6D]/5 to-[#4D79FF]/5 border border-[#FF4D6D]/10">
-                  <p className="text-sm text-black/50">Your profile will appear as <span className="font-bold text-[#FF4D6D]">@{username}</span></p>
-                </motion.div>
-              )}
-            </motion.div>
-          )}
+            </div>
 
-          {/* Step 1: Avatar */}
-          {step === 1 && (
-            <motion.div {...fadeUp(0.15)} className="bg-white/80 backdrop-blur-xl rounded-3xl border border-black/5 p-8 shadow-xl shadow-black/[0.04]">
-              <div className="grid grid-cols-4 gap-3 md:gap-4">
-                {AVATARS.map((av,idx) => (
-                  <motion.button key={av.id} initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{duration:0.3,delay:idx*0.03}}
-                    onClick={()=>setSelectedAvatar(av.id)}
-                    className="group relative flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all duration-300"
-                    style={{
-                      borderColor: selectedAvatar===av.id ? av.ring : 'rgba(0,0,0,0.04)',
-                      background: selectedAvatar===av.id ? `${av.ring}08` : 'transparent',
-                      transform: selectedAvatar===av.id ? 'scale(1.06)' : 'scale(1)',
-                    }}
-                  >
-                    {selectedAvatar===av.id && (
-                      <motion.div initial={{scale:0}} animate={{scale:1}} className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center shadow-lg z-10" style={{background:av.ring}}>
-                        <Check className="w-2.5 h-2.5 text-white" />
-                      </motion.div>
-                    )}
-                    <div className="relative">
-                      <div className="w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden group-hover:scale-110 transition-all duration-300" style={{border:`3px solid ${selectedAvatar===av.id ? av.ring : 'rgba(0,0,0,0.08)'}`, background:'#f8f8f8'}}>
-                        <img src={av.img} alt={av.label} className="w-full h-full" />
-                      </div>
-                      {selectedAvatar===av.id && <div className="absolute -inset-1 rounded-full blur-md opacity-30" style={{background:av.ring,animation:'pulseGlow 2s ease infinite'}} />}
-                    </div>
-                    <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider" style={{color: selectedAvatar===av.id ? av.ring : 'rgba(0,0,0,0.25)'}}>{av.label}</span>
-                  </motion.button>
-                ))}
+            {/* Profile Content */}
+            <div className="p-6 space-y-6 relative z-10">
+              
+              <div className="flex items-center gap-4">
+                {/* Avatar ring representation */}
+                <div className="relative shrink-0">
+                  <div className="w-20 h-20 rounded bg-[#0D0E12] border-2 flex items-center justify-center shadow-lg" style={{ borderColor: avatarData.ring }}>
+                    <img src={avatarData.img} alt="avatar" className="w-16 h-16" />
+                  </div>
+                  <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-accent-green border-2 border-[#15171F] rounded-full flex items-center justify-center" />
+                </div>
+
+                {/* Handle and Persona info */}
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold font-mono tracking-tight text-white truncate max-w-[180px]">
+                    @{username || 'handle_pending'}
+                  </h3>
+                  <div className={`text-[9px] font-mono border px-1.5 py-0.5 rounded inline-block bg-black/30 font-bold tracking-wider uppercase ${avatarData.colorClass}`}>
+                    {avatarData.role}
+                  </div>
+                </div>
               </div>
-            </motion.div>
-          )}
 
-          {/* Step 2: Skills */}
-          {step === 2 && (
-            <motion.div {...fadeUp(0.15)} className="bg-white/80 backdrop-blur-xl rounded-3xl border border-black/5 p-8 shadow-xl shadow-black/[0.04]">
-              <div className="flex items-center justify-between mb-6">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-black/30">Select your skills</p>
-                <p className="text-[10px] font-bold" style={{color: selectedSkills.length > 0 ? '#FF4D6D' : '#999'}}>{selectedSkills.length}/8 selected</p>
+              {/* Bio Block */}
+              <div className="space-y-1.5">
+                <div className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">Developer Statement</div>
+                <div className="p-3 bg-[#0D0E12] border border-border-dark rounded min-h-[72px] text-xs font-mono text-gray-300 leading-relaxed">
+                  {bio || "Waiting for compiler bio statement..."}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2.5">
-                {SKILLS.map((skill,idx) => {
-                  const active = selectedSkills.includes(skill.name);
-                  return (
-                    <motion.button key={skill.name} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.3,delay:idx*0.02}}
-                      onClick={()=>toggleSkill(skill.name)}
-                      className="relative px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border-2 overflow-hidden"
-                      style={{
-                        borderColor: active ? skill.color : 'rgba(0,0,0,0.06)',
-                        background: active ? `${skill.color}10` : 'white',
-                        color: active ? skill.color : 'rgba(0,0,0,0.35)',
-                        transform: active ? 'scale(1.05)' : 'scale(1)',
-                      }}
-                    >
-                      {active && (
-                        <motion.div initial={{width:0}} animate={{width:'100%'}} className="absolute bottom-0 left-0 h-0.5" style={{background:skill.color}} />
-                      )}
-                      {skill.name}
-                    </motion.button>
-                  );
-                })}
+
+              {/* Tech stack */}
+              <div className="space-y-2">
+                <div className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">Capabilities Stack</div>
+                <div className="flex flex-wrap gap-1.5 min-h-[30px]">
+                  {selectedSkills.length > 0 ? (
+                    selectedSkills.map(s => {
+                      const sk = SKILLS.find(x => x.name === s);
+                      return (
+                        <span 
+                          key={s} 
+                          className="px-2 py-0.5 rounded text-[9px] font-mono border"
+                          style={{ color: sk?.color || '#fff', borderColor: `${sk?.color}30` || '#222', backgroundColor: `${sk?.color}10` || '#111' }}
+                        >
+                          {s}
+                        </span>
+                      );
+                    })
+                  ) : (
+                    <span className="text-[10px] font-mono text-gray-600 uppercase">Stack empty. Select items...</span>
+                  )}
+                </div>
               </div>
-              {selectedSkills.length > 0 && (
-                <motion.div initial={{opacity:0}} animate={{opacity:1}} className="mt-6 flex flex-wrap gap-2">
-                  {selectedSkills.map(s => {
-                    const sk = SKILLS.find(x=>x.name===s);
-                    return <span key={s} className="px-3 py-1 rounded-lg text-[10px] font-bold text-white" style={{background:sk?.color||'#000'}}>{s}</span>;
-                  })}
-                </motion.div>
-              )}
-            </motion.div>
-          )}
 
-          {/* Step 3: Bio */}
-          {step === 3 && (
-            <motion.div {...fadeUp(0.15)} className="bg-white/80 backdrop-blur-xl rounded-3xl border border-black/5 p-8 shadow-xl shadow-black/[0.04]">
-              <div className="relative">
-                <textarea
-                  value={bio} onChange={e=>setBio(e.target.value)} maxLength={160}
-                  placeholder="I'm a passionate developer who loves building things that matter. Looking for a coding partner to grow with..."
-                  rows={5}
-                  className="w-full p-5 rounded-2xl border-2 border-black/8 text-sm leading-relaxed resize-none focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-4 focus:ring-[#FF4D6D]/10 transition-all duration-300 bg-transparent placeholder:text-black/15"
-                />
-                <p className="text-[10px] font-bold text-black/20 text-right mt-2">{bio.length}/160</p>
+              {/* Ecosystem Stats Preview block */}
+              <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-border-dark text-center font-mono">
+                <div className="bg-[#0D0E12] p-2 border border-border-dark rounded">
+                  <div className="text-[8px] text-gray-500 uppercase">SYNERGY</div>
+                  <div className="text-xs font-bold text-white">0%</div>
+                </div>
+                <div className="bg-[#0D0E12] p-2 border border-border-dark rounded">
+                  <div className="text-[8px] text-gray-500 uppercase">HP STREAK</div>
+                  <div className="text-xs font-bold text-accent-pink">1x</div>
+                </div>
+                <div className="bg-[#0D0E12] p-2 border border-border-dark rounded">
+                  <div className="text-[8px] text-gray-500 uppercase">ARENA XP</div>
+                  <div className="text-xs font-bold text-accent-gold">0 XP</div>
+                </div>
               </div>
-            </motion.div>
-          )}
 
-          {/* Navigation buttons */}
-          <motion.div {...fadeUp(0.25)} className="flex items-center justify-between mt-8">
-            <button onClick={()=> step > 0 && setStep(step-1)} className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 group ${step===0?'opacity-0 pointer-events-none':'text-black/30 hover:text-black'}`}>
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
-              Previous
-            </button>
+            </div>
 
-            {step < 3 ? (
-              <button onClick={()=>canProceed() && setStep(step+1)} disabled={!canProceed()}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#FF4D6D] to-[#FF8FA3] text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-[#FF4D6D]/20 hover:shadow-xl hover:shadow-[#FF4D6D]/30 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 disabled:opacity-30 disabled:hover:scale-100 disabled:hover:shadow-lg group">
-                Continue
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </button>
-            ) : (
-              <button onClick={handleFinish}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#10B981] to-[#059669] text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-[#10B981]/20 hover:shadow-xl hover:shadow-[#10B981]/30 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 group">
-                <Sparkles className="w-4 h-4" />
-                Launch Profile
-              </button>
-            )}
-          </motion.div>
-        </motion.div>
-      </div>
+          </div>
 
-      {/* ═══ Profile Preview Popup ═══ */}
+          <div className="flex gap-2 text-[10px] font-mono text-gray-500 justify-center">
+            <Cpu className="w-3.5 h-3.5 text-accent-pink" />
+            <span>Multiplayer Profile Synchronizer active</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ Profile Setup Launch Preview Popup ═══ */}
       <AnimatePresence>
         {showPreview && (
           <>
             {/* Backdrop */}
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={()=>setShowPreview(false)} />
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="fixed inset-0 bg-[#08090C]/80 backdrop-blur-md z-40" 
+              onClick={() => setShowPreview(false)} 
+            />
             
-            {/* Panel slides from right */}
+            {/* Modal Dialog */}
             <motion.div
-              initial={{x:'100%',opacity:0}} animate={{x:0,opacity:1}} exit={{x:'100%',opacity:0}}
-              transition={{type:'spring',damping:30,stiffness:300}}
-              className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl overflow-y-auto"
+              initial={{ scale: 0.95, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#0D0E12] border border-border-dark z-50 shadow-2xl p-8 rounded-lg overflow-y-auto"
             >
-              <div className="p-8">
-                {/* Close */}
-                <button onClick={()=>setShowPreview(false)} className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-black/5 flex items-center justify-center hover:bg-black/10 transition-colors">
-                  <X className="w-5 h-5 text-black/40" />
-                </button>
+              {/* Close */}
+              <button 
+                onClick={() => setShowPreview(false)} 
+                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-                <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#10B981] mb-2">🎉 Profile Created!</p>
-                  <h2 className="text-2xl font-serif font-bold mb-8">You&apos;re All Set</h2>
-                </motion.div>
+              <div className="text-center space-y-6">
+                <div>
+                  <span className="inline-flex items-center gap-1 text-[9px] font-mono text-accent-green uppercase tracking-widest border border-accent-green/30 px-2 py-0.5 rounded bg-accent-green/10 mb-2">
+                    <Award className="w-3 h-3" /> System Initialized Successfully
+                  </span>
+                  <h2 className="text-2xl font-bold font-mono text-white tracking-tight uppercase">Developer Registered</h2>
+                </div>
 
-                {/* Profile Card */}
-                <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.3}}
-                  className="rounded-3xl bg-gradient-to-br from-[#0a0a0a] to-[#1a1a2e] text-white p-8 relative overflow-hidden mb-8"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-[#FF4D6D]/10 rounded-full blur-[60px]" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#4D79FF]/10 rounded-full blur-[50px]" />
-                  <div className="absolute inset-0 noise-bg" />
-
-                  <div className="relative flex flex-col items-center text-center">
-                    {/* Avatar */}
-                    <div className="relative mb-5">
-                      <div className="w-24 h-24 rounded-full overflow-hidden shadow-2xl" style={{border:`4px solid ${avatarData?.ring || '#666'}`,boxShadow:`0 0 30px ${avatarData?.ring || '#666'}40`}}>
-                        <img src={avatarData?.img || ''} alt="avatar" className="w-full h-full" style={{background:'#1a1a2e'}} />
-                      </div>
-                      <div className="absolute -inset-2 rounded-full blur-lg opacity-20" style={{background:avatarData?.ring,animation:'pulseGlow 3s ease infinite'}} />
+                {/* Main Rendered Card */}
+                <div className="ide-panel bg-[#15171F] border-border-dark p-6 relative overflow-hidden text-left">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-accent-pink/10 rounded-full blur-[40px]" style={{ backgroundColor: avatarData.ring }} />
+                  <div className="relative flex items-center gap-4">
+                    <div className="w-16 h-16 rounded bg-[#0D0E12] border flex items-center justify-center shrink-0" style={{ borderColor: avatarData.ring }}>
+                      <img src={avatarData.img} alt="avatar" className="w-12 h-12" />
                     </div>
-
-                    {/* Username */}
-                    <h3 className="text-xl font-bold mb-1">@{username}</h3>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-4">{avatarData?.label || 'Coder'}</p>
-
-                    {/* Bio */}
-                    {bio && <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs">{bio}</p>}
-
-                    {/* Skills */}
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {selectedSkills.map(s => {
-                        const sk = SKILLS.find(x=>x.name===s);
-                        return (
-                          <span key={s} className="px-3 py-1 rounded-lg text-[10px] font-bold" style={{background:`${sk?.color||'#666'}20`,color:sk?.color||'#fff',border:`1px solid ${sk?.color||'#666'}30`}}>
-                            {s}
-                          </span>
-                        );
-                      })}
+                    <div>
+                      <h3 className="text-lg font-bold font-mono text-white">@{username}</h3>
+                      <div className={`text-[8px] font-mono border px-1.5 py-0.5 rounded inline-block bg-black/40 font-bold uppercase tracking-wider ${avatarData.colorClass}`}>
+                        {avatarData.role}
+                      </div>
                     </div>
                   </div>
-                </motion.div>
 
-                {/* Stats preview */}
-                <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} className="grid grid-cols-3 gap-3 mb-8">
-                  {[{label:'HP Score',val:'0',icon:'⚡'},{label:'Matches',val:'0',icon:'🤝'},{label:'Rank',val:'—',icon:'🏆'}].map((s,i)=>(
-                    <div key={i} className="bg-black/[0.02] rounded-2xl p-4 text-center">
-                      <p className="text-lg mb-1">{s.icon}</p>
-                      <p className="text-lg font-bold">{s.val}</p>
-                      <p className="text-[9px] font-bold uppercase tracking-wider text-black/30">{s.label}</p>
+                  {bio && (
+                    <div className="mt-4 p-3 bg-[#0D0E12] border border-border-dark rounded text-xs font-mono text-gray-300">
+                      {bio}
                     </div>
-                  ))}
-                </motion.div>
+                  )}
 
-                {/* CTA */}
-                <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}}
-                  onClick={()=>router.push('/student/dashboard')}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B8A] text-white text-sm font-bold uppercase tracking-wider shadow-lg shadow-[#FF4D6D]/20 hover:shadow-xl hover:shadow-[#FF4D6D]/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 group"
+                  <div className="flex flex-wrap gap-1.5 mt-4">
+                    {selectedSkills.map(s => {
+                      const sk = SKILLS.find(x => x.name === s);
+                      return (
+                        <span 
+                          key={s} 
+                          className="px-2 py-0.5 rounded text-[8px] font-mono border"
+                          style={{ color: sk?.color || '#fff', borderColor: `${sk?.color}30` || '#222', backgroundColor: `${sk?.color}10` || '#111' }}
+                        >
+                          {s}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2.5 text-center font-mono">
+                  <div className="bg-[#15171F] p-3 border border-border-dark rounded">
+                    <span className="text-[8px] text-gray-500 block uppercase">SYNERGY</span>
+                    <span className="text-sm font-bold text-white">99%</span>
+                  </div>
+                  <div className="bg-[#15171F] p-3 border border-border-dark rounded">
+                    <span className="text-[8px] text-gray-500 block uppercase">STREAK</span>
+                    <span className="text-sm font-bold text-accent-pink">1x</span>
+                  </div>
+                  <div className="bg-[#15171F] p-3 border border-border-dark rounded">
+                    <span className="text-[8px] text-gray-500 block uppercase">XP REWARD</span>
+                    <span className="text-sm font-bold text-accent-gold">+200</span>
+                  </div>
+                </div>
+
+                {/* Final Launch Button */}
+                <button 
+                  onClick={() => router.push('/student/dashboard')}
+                  className="btn-premium w-full py-4 text-xs tracking-wider flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Rocket className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-                  Go to Dashboard
-                </motion.button>
+                  <Rocket className="w-4 h-4" />
+                  ENTER MATCHING COMMAND CENTER
+                </button>
               </div>
             </motion.div>
           </>
@@ -371,3 +502,4 @@ export default function ProfileSetupPage() {
     </main>
   );
 }
+

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Terminal, Shield, Users, Trophy, Code } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
@@ -12,8 +12,19 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithP
 const GithubIcon = ({className="w-5 h-5"}:{className?:string}) => <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>;
 const GoogleIcon = () => <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>;
 
-const fadeUp = (d=0) => ({ initial:{opacity:0,y:30}, animate:{opacity:1,y:0}, transition:{duration:0.7,delay:d,ease:[0.16,1,0.3,1] as const} });
-const CODE_CHARS = ['{','}','<','>','/',';','(',')','=','+','#','*'];
+const fadeUp = (d=0) => ({ 
+  initial: { opacity: 0, y: 15 }, 
+  animate: { opacity: 1, y: 0 }, 
+  transition: { duration: 0.5, delay: d, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } 
+});
+
+const mockTerminalLogs = [
+  { id: 1, type: "SUCCESS", time: "14:58:02", text: "Match completed in Skill assessments: student 'k_rust' with 'wasm_dev' (Chemistry: 98%)" },
+  { id: 2, type: "MENTOR", time: "14:58:19", text: "Elite Mentor 'vbyte' resolved DP transition diagnostic bug in Coding Room #42" },
+  { id: 3, type: "STREAK", time: "14:58:35", text: "Student 'k_rust' achieved XP streak multiplier x1.5 (Level 12 Gold Rank)" },
+  { id: 4, type: "QUEUE", time: "14:58:50", text: "Ecosystem Queue: 68 students active in LeetCode-Hard matchmaking pipeline..." },
+  { id: 5, type: "MATCH", time: "14:59:12", text: "Connecting pairing partners [driver: 'dev_alex', navigator: 'coder_jen']" }
+];
 
 function LoginContent() {
   const router = useRouter();
@@ -29,8 +40,33 @@ function LoginContent() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [terminalFeed, setTerminalFeed] = useState(mockTerminalLogs);
 
-  React.useEffect(() => {
+  // Auto-scrolling simulated logs
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTerminalFeed(prev => {
+        const nextTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+        const randomLogs = [
+          { type: "SUCCESS", text: `Match established: Skill level aligned at Silver III (Compatibility: 94%)` },
+          { type: "MENTOR", text: `Mentor intervention request answered: stuck in sliding-window DP` },
+          { type: "STREAK", text: `User 'codewizard' level up: Bronze III -> Silver I (+120 XP)` },
+          { type: "QUEUE", text: `Real-time compilation pass: Code room #108 driver synchronized` }
+        ];
+        const selected = randomLogs[Math.floor(Math.random() * randomLogs.length)];
+        const nextLog = {
+          id: Date.now(),
+          type: selected.type,
+          time: nextTime,
+          text: selected.text
+        };
+        return [...prev.slice(1), nextLog];
+      });
+    }, 4500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     if (localStorage.getItem('dateforcode_student_setup')) {
       router.push('/student/dashboard');
     } else if (localStorage.getItem('dateforcode_mentor_profile')) {
@@ -70,154 +106,278 @@ function LoginContent() {
   const handleGithub = async () => { setError(''); setLoading(true); try { const result = await signInWithPopup(auth, githubProvider); const isNew = result.user.metadata.creationTime === result.user.metadata.lastSignInTime; router.push(isNew ? `/${role}/profile-setup` : `/${role}/dashboard`); } catch { setError('GitHub sign-in failed.'); } setLoading(false); };
 
   return (
-    <main className="relative min-h-screen bg-[#FDFDFD] overflow-hidden selection:bg-[#FF4D6D]/20">
-      {/* Animated floating code symbols */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {CODE_CHARS.map((c,i) => (
-          <div key={i} className="absolute text-black/[0.03] font-mono font-bold select-none" style={{
-            fontSize:`${18+i*5}px`, left:`${5+i*8}%`, top:`${10+((i*29)%75)}%`,
-            animation:`floatSlow ${7+i*1.5}s ease-in-out infinite ${i*0.5}s`
-          }}>{c}</div>
-        ))}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#FF4D6D]/4 rounded-full blur-[150px]" style={{animation:'floatSlow 10s ease-in-out infinite'}} />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#4D79FF]/4 rounded-full blur-[150px]" style={{animation:'floatSlow 12s ease-in-out infinite 3s'}} />
-      </div>
+    <main className="grid grid-cols-1 lg:grid-cols-12 min-h-screen bg-[#08090C] text-[#F3F4F6] relative overflow-hidden selection:bg-accent-pink/20 font-sans">
+      
+      {/* LEFT COLUMN: Premium Developer Social Proof & Live Metrics */}
+      <section className="hidden lg:flex lg:col-span-5 xl:col-span-5 bg-[#0D0E12] border-r border-border-dark p-8 flex-col justify-between relative noise-bg developer-grid">
+        
+        {/* Top Header */}
+        <div className="flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <Logo showText={true} className="scale-[0.85] origin-left" />
+          </Link>
+          <div className="flex items-center gap-2 border border-border-dark px-2.5 py-1 rounded bg-[#15171F] text-[10px] text-accent-pink font-mono tracking-wider uppercase">
+            <span className="w-1.5 h-1.5 bg-accent-green rounded-full animate-ping" />
+            Ecosystem Live
+          </div>
+        </div>
 
-      {/* Nav */}
-      <nav className="relative z-20 py-5 px-8 md:px-12 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3 group">
+        {/* Mid Stats and Terminal Preview */}
+        <div className="my-auto space-y-8 max-w-lg">
+          <div>
+            <h2 className="text-2xl font-bold font-mono tracking-tight text-white mb-2 uppercase">
+              Join the Arena.
+            </h2>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Find partners, pair program in high-stakes environments, test assessment skills, and level up with elite certified mentors.
+            </p>
+          </div>
+
+          {/* Quick Metrics Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-[#15171F] border border-border-dark p-3.5 rounded">
+              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-accent-pink" />
+                Pairing Rooms
+              </div>
+              <div className="text-xl font-bold font-mono text-white">1,482 Active</div>
+            </div>
+            
+            <div className="bg-[#15171F] border border-border-dark p-3.5 rounded">
+              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Trophy className="w-3.5 h-3.5 text-accent-gold" />
+                Global XP Velocity
+              </div>
+              <div className="text-xl font-bold font-mono text-white">+142k/hr</div>
+            </div>
+
+            <div className="bg-[#15171F] border border-border-dark p-3.5 rounded">
+              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Code className="w-3.5 h-3.5 text-accent-blue" />
+                Completed Tasks
+              </div>
+              <div className="text-xl font-bold font-mono text-white">52,490+</div>
+            </div>
+
+            <div className="bg-[#15171F] border border-border-dark p-3.5 rounded">
+              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-accent-purple" />
+                Mentor Support
+              </div>
+              <div className="text-xl font-bold font-mono text-white">100% SLA</div>
+            </div>
+          </div>
+
+          {/* Interactive Live Terminal Feed */}
+          <div className="ide-panel text-xs overflow-hidden">
+            <div className="ide-panel-header justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-accent-pink" />
+                <span className="font-mono font-bold tracking-wider uppercase text-[10px] text-gray-400">Matchmaker Terminal Logs</span>
+              </div>
+              <span className="text-[10px] text-gray-500 font-mono">bash v4.2</span>
+            </div>
+            <div className="p-4 space-y-2.5 font-mono min-h-[170px] flex flex-col justify-end text-gray-400">
+              {terminalFeed.map((log) => (
+                <motion.div
+                  key={log.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="leading-relaxed border-l-2 pl-2 border-border-dark flex items-start gap-1"
+                >
+                  <span className="text-accent-pink shrink-0">[{log.time}]</span>
+                  <span className="text-gray-300 break-all">{log.text}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-[10px] font-mono text-gray-600 flex justify-between">
+          <span>SECURE DEV-PORTAL v1.0.4</span>
+          <span>© DATEFORCODE 2026</span>
+        </div>
+      </section>
+
+      {/* RIGHT COLUMN: Interactive Login/Register Form */}
+      <section className="col-span-1 lg:col-span-7 xl:col-span-7 flex flex-col justify-between p-8 min-h-screen relative z-10">
+        
+        {/* Navigation back */}
+        <div className="flex items-center justify-between w-full">
+          <Link href="/" className="lg:hidden flex items-center gap-3">
             <Logo showText={true} className="scale-[0.8] origin-left" />
           </Link>
+          <div className="hidden lg:block" />
+          <Link href="/" className="flex items-center gap-2 text-gray-400 text-xs font-mono tracking-wider hover:text-accent-pink transition-colors group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            EXIT TO LANDING
+          </Link>
         </div>
-        <Link href="/" className="flex items-center gap-2 text-black/30 text-xs font-bold uppercase tracking-wider hover:text-black transition-colors duration-300 group">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
-          Back
-        </Link>
-      </nav>
 
-      {/* Card */}
-      <div className="relative z-10 flex items-center justify-center px-6 pt-2 pb-20">
-        <motion.div {...fadeUp(0.1)} className="w-full max-w-md">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-black/5 p-10 relative overflow-hidden shadow-2xl shadow-black/[0.06]">
-            {/* Animated top accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FF4D6D] via-[#4D79FF] to-[#FF4D6D]" style={{backgroundSize:'200% 100%',animation:'gradientShift 4s ease infinite'}} />
-            {/* Corner glow */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#FF4D6D]/8 rounded-full blur-[60px]" style={{animation:'floatSlow 6s ease-in-out infinite'}} />
+        {/* Form Container */}
+        <div className="my-auto mx-auto w-full max-w-md py-12">
+          <motion.div {...fadeUp(0.1)} className="ide-panel p-8 bg-[#0D0E12] shadow-2xl border-border-dark relative">
+            
+            {/* Top Accent Strip */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-pink to-accent-blue" />
+            
+            <h2 className="text-2xl font-bold font-mono tracking-tight text-white mb-1 uppercase">
+              {isRegister ? 'INITIALIZE USER' : 'AUTHENTICATE USER'}
+            </h2>
+            <p className="text-gray-400 text-xs font-mono mb-6 uppercase tracking-widest text-accent-pink">
+              ROLE: {role}
+            </p>
 
-            {/* Icon with pulse */}
-            <motion.div {...fadeUp(0.2)} className="flex justify-center mb-6">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF4D6D] to-[#FF8FA3] flex items-center justify-center shadow-lg" style={{boxShadow:'0 8px 30px rgba(255,77,109,0.3)'}}>
-                  {isRegister ? <User className="w-8 h-8 text-white" /> : <Lock className="w-8 h-8 text-white" />}
-                </div>
-                <div className="absolute -inset-2 rounded-2xl bg-[#FF4D6D]/10 blur-xl" style={{animation:'pulseGlow 3s ease infinite'}} />
-              </div>
-            </motion.div>
-
-            <motion.h2 {...fadeUp(0.25)} className="text-2xl font-serif font-bold text-center mb-2">
-              {isRegister ? 'Create Account' : 'Welcome'}
-            </motion.h2>
-            <motion.p {...fadeUp(0.3)} className="text-center text-black/35 text-sm mb-8">
-              {isRegister
-                ? `Join DateForCode as a ${role === 'mentor' ? 'Mentor' : 'Student'}`
-                : 'Where great code gets written together.'}
-            </motion.p>
-
-            {/* Error */}
+            {/* Error Notification */}
             {error && (
-              <motion.div initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}} className="mb-6 p-3 rounded-xl bg-red-50 border border-red-100 text-red-500 text-xs text-center font-medium">
-                {error}
+              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-3 rounded bg-red-950/40 border border-red-800 text-red-400 text-xs text-center font-mono">
+                [ERROR] {error}
               </motion.div>
             )}
 
-            {/* Form */}
-            <form onSubmit={handleEmailAuth}>
-              <div className="space-y-4 mb-6">
-                {isRegister && (
-                  <motion.div {...fadeUp(0.35)}>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black/35 mb-2 block">Full Name</label>
-                    <div className="relative group">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/15 group-focus-within:text-[#FF4D6D] transition-colors duration-300" />
-                      <input type="text" value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="Your full name" required className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-black/8 text-sm focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-2 focus:ring-[#FF4D6D]/10 transition-all duration-300 bg-white/50 placeholder:text-black/20" />
-                    </div>
-                  </motion.div>
-                )}
-
-                <motion.div {...fadeUp(isRegister ? 0.4 : 0.35)}>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-black/35 mb-2 block">Email Address</label>
+            {/* Main authentication Form */}
+            <form onSubmit={handleEmailAuth} className="space-y-4">
+              {isRegister && (
+                <motion.div {...fadeUp(0.15)}>
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Full Name</label>
                   <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/15 group-focus-within:text-[#FF4D6D] transition-colors duration-300" />
-                    <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" required className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-black/8 text-sm focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-2 focus:ring-[#FF4D6D]/10 transition-all duration-300 bg-white/50 placeholder:text-black/20" />
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-accent-pink transition-colors" />
+                    <input 
+                      type="text" 
+                      value={fullName} 
+                      onChange={e=>setFullName(e.target.value)} 
+                      placeholder="e.g. John Doe" 
+                      required 
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#15171F] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-600" 
+                    />
                   </div>
                 </motion.div>
+              )}
 
-                <motion.div {...fadeUp(isRegister ? 0.45 : 0.4)}>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black/35">Password</label>
-                    {!isRegister && <button type="button" className="text-[10px] font-bold text-[#FF4D6D] hover:text-[#FF4D6D]/70 transition-colors">Forgot password?</button>}
-                  </div>
+              <motion.div {...fadeUp(0.2)}>
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Email Address</label>
+                <div className="relative group">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-accent-pink transition-colors" />
+                  <input 
+                    type="email" 
+                    value={email} 
+                    onChange={e=>setEmail(e.target.value)} 
+                    placeholder="developer@dateforcode.com" 
+                    required 
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#15171F] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-600" 
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div {...fadeUp(0.25)}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">Password</label>
+                  {!isRegister && (
+                    <button type="button" className="text-[10px] font-mono text-accent-pink hover:text-accent-pink-hover transition-colors">
+                      FORGOT?
+                    </button>
+                  )}
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-accent-pink transition-colors" />
+                  <input 
+                    type={showPassword ? 'text' : 'password'} 
+                    value={password} 
+                    onChange={e=>setPassword(e.target.value)} 
+                    placeholder="••••••••" 
+                    required 
+                    className="w-full pl-10 pr-10 py-2.5 bg-[#15171F] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-600" 
+                  />
+                  <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </motion.div>
+
+              {isRegister && (
+                <motion.div {...fadeUp(0.3)}>
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Confirm Password</label>
                   <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/15 group-focus-within:text-[#FF4D6D] transition-colors duration-300" />
-                    <input type={showPassword?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" required className="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-black/8 text-sm focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-2 focus:ring-[#FF4D6D]/10 transition-all duration-300 bg-white/50 placeholder:text-black/20" />
-                    <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-black/15 hover:text-black/40 transition-colors">
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-accent-pink transition-colors" />
+                    <input 
+                      type={showConfirmPassword ? 'text' : 'password'} 
+                      value={confirmPassword} 
+                      onChange={e=>setConfirmPassword(e.target.value)} 
+                      placeholder="••••••••" 
+                      required 
+                      className="w-full pl-10 pr-10 py-2.5 bg-[#15171F] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-600" 
+                    />
+                    <button type="button" onClick={()=>setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </motion.div>
+              )}
 
-                {isRegister && (
-                  <motion.div {...fadeUp(0.5)}>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black/35 mb-2 block">Confirm Password</label>
-                    <div className="relative group">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/15 group-focus-within:text-[#FF4D6D] transition-colors duration-300" />
-                      <input type={showConfirmPassword?'text':'password'} value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} placeholder="••••••••" required className="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-black/8 text-sm focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-2 focus:ring-[#FF4D6D]/10 transition-all duration-300 bg-white/50 placeholder:text-black/20" />
-                      <button type="button" onClick={()=>setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-black/15 hover:text-black/40 transition-colors">
-                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </motion.div>
+              {/* Submit Button */}
+              <motion.button 
+                {...fadeUp(0.35)} 
+                type="submit" 
+                disabled={loading} 
+                className="btn-premium w-full py-3.5 mt-2 text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    COMPILING CERTIFICATE...
+                  </>
+                ) : (
+                  isRegister ? 'INITIALIZE SYSTEM ACCOUNT' : 'DECRYPT SYSTEM ACCESS'
                 )}
-              </div>
-
-              {/* Submit button */}
-              <motion.button {...fadeUp(isRegister ? 0.55 : 0.45)} type="submit" disabled={loading} className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B8A] text-white text-sm font-bold uppercase tracking-wider shadow-lg shadow-[#FF4D6D]/20 hover:shadow-xl hover:shadow-[#FF4D6D]/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 relative overflow-hidden group">
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  {loading ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Please wait...</> : isRegister ? 'Create Account' : 'Sign In'}
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#FF6B8A] to-[#FF4D6D] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.button>
             </form>
 
             {/* Divider */}
-            <motion.div {...fadeUp(isRegister ? 0.6 : 0.5)} className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent to-black/8" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-black/20">or continue with</span>
-              <div className="flex-1 h-[1px] bg-gradient-to-l from-transparent to-black/8" />
+            <motion.div {...fadeUp(0.4)} className="flex items-center gap-4 my-6">
+              <div className="flex-1 h-[1px] bg-border-dark" />
+              <span className="text-[9px] font-mono text-gray-500 tracking-widest uppercase">AUTH PROVIDERS</span>
+              <div className="flex-1 h-[1px] bg-border-dark" />
             </motion.div>
 
-            {/* Social buttons */}
-            <motion.div {...fadeUp(isRegister ? 0.65 : 0.55)} className="grid grid-cols-2 gap-3">
-              <button onClick={handleGoogle} disabled={loading} className="flex items-center justify-center gap-2.5 py-3.5 rounded-2xl border border-black/8 text-sm font-medium hover:bg-black/[0.02] hover:border-black/15 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 group">
+            {/* OAuth Integrations */}
+            <motion.div {...fadeUp(0.45)} className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={handleGoogle} 
+                disabled={loading} 
+                className="btn-secondary-dev py-3 text-xs flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
+              >
                 <GoogleIcon />
-                <span className="text-black/60 group-hover:text-black transition-colors">Google</span>
+                <span>Google</span>
               </button>
-              <button onClick={handleGithub} disabled={loading} className="flex items-center justify-center gap-2.5 py-3.5 rounded-2xl border border-black/8 text-sm font-medium hover:bg-black/[0.02] hover:border-black/15 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 group">
-                <GithubIcon className="w-5 h-5 text-black/60 group-hover:text-black transition-colors" />
-                <span className="text-black/60 group-hover:text-black transition-colors">GitHub</span>
+              <button 
+                onClick={handleGithub} 
+                disabled={loading} 
+                className="btn-secondary-dev py-3 text-xs flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
+              >
+                <GithubIcon className="w-5 h-5 text-gray-300" />
+                <span>GitHub</span>
               </button>
             </motion.div>
 
             {/* Toggle */}
-            <motion.p {...fadeUp(isRegister ? 0.7 : 0.6)} className="text-center text-sm text-black/35 mt-8">
-              {isRegister ? 'Already have an account? ' : 'First time here? '}
-              <button onClick={()=>{setIsRegister(!isRegister);setError('');}} className="text-[#FF4D6D] font-bold hover:text-[#FF4D6D]/70 transition-colors underline underline-offset-2 decoration-[#FF4D6D]/30 hover:decoration-[#FF4D6D]">
-                {isRegister ? 'Sign In' : 'Register your account'}
+            <motion.p {...fadeUp(0.5)} className="text-center text-xs text-gray-400 mt-6 font-mono">
+              {isRegister ? 'ALREADY ACTIVE IN ECOSYSTEM? ' : 'FIRST TIME IN THE ARENA? '}
+              <button 
+                onClick={()=>{setIsRegister(!isRegister); setError('');}} 
+                className="text-accent-pink font-bold hover:underline underline-offset-4 decoration-accent-pink/30 hover:decoration-accent-pink"
+              >
+                {isRegister ? 'SIGN IN' : 'REGISTER'}
               </button>
             </motion.p>
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+
+        {/* Small legal details */}
+        <div className="text-[9px] font-mono text-gray-600 text-center tracking-wide uppercase">
+          Ecosystem traffic encrypted by AES-256 GCM. Unauthorized access logged under SecOp protocol 42.
+        </div>
+      </section>
     </main>
   );
 }
@@ -225,11 +385,15 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <React.Suspense fallback={
-      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#FF4D6D]/20 border-t-[#FF4D6D] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#08090C] flex items-center justify-center font-mono">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-accent-pink/20 border-t-accent-pink rounded-full animate-spin" />
+          <div className="text-[10px] text-gray-500 uppercase tracking-widest">Warming engine core...</div>
+        </div>
       </div>
     }>
       <LoginContent />
     </React.Suspense>
   );
 }
+

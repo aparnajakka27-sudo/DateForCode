@@ -8,15 +8,20 @@ import Logo from '@/components/Logo';
 
 const fadeUp = (d=0) => ({ initial:{opacity:0,y:25}, animate:{opacity:1,y:0}, transition:{duration:0.6,delay:d,ease:[0.16,1,0.3,1] as const} });
 
-// Base mentors list
-const MOCK_MENTORS = [
-  { id:'m1', name:'Dr. Priya K.', avatar:'PK', role:'Senior Architect', company:'Google', skills:['System Design','React','Node.js'], rating:4.9, sessions:342, online:true, waitTime:'2 min' },
-  { id:'m2', name:'Rahul M.', avatar:'RM', role:'Staff Engineer', company:'Netflix', skills:['Algorithms','C++','Python'], rating:4.8, sessions:189, online:true, waitTime:'5 min' },
-  { id:'m3', name:'Sneha D.', avatar:'SD', role:'Lead Developer', company:'Amazon', skills:['AWS','TypeScript','Next.js'], rating:4.7, sessions:215, online:false, waitTime:'Offline' },
-  { id:'m4', name:'Amit B.', avatar:'AB', role:'Backend Specialist', company:'Meta', skills:['GraphQL','Python','SQL'], rating:4.9, sessions:410, online:true, waitTime:'Immediate' },
-  { id:'m5', name:'Kavya V.', avatar:'KV', role:'Frontend Expert', company:'Vercel', skills:['Next.js','Tailwind','React'], rating:5.0, sessions:520, online:true, waitTime:'1 min' },
-  { id:'m6', name:'Vikram S.', avatar:'VS', role:'DevOps Engineer', company:'Stripe', skills:['Docker','Kubernetes','Go'], rating:4.6, sessions:145, online:false, waitTime:'Offline' },
-];
+// Initialized empty array for upcoming Firestore integration
+interface Mentor {
+  id: string;
+  name: string;
+  avatar: string;
+  role: string;
+  company: string;
+  skills: string[];
+  rating: number;
+  sessions: number;
+  online: boolean;
+  waitTime: string;
+}
+const MOCK_MENTORS: Mentor[] = [];
 
 export default function MentorGuidancePage() {
   const router = useRouter();

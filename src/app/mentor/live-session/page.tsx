@@ -5,7 +5,7 @@ import { Mic, MicOff, Video, VideoOff, PhoneOff, Code2, MessageSquare, Maximize2
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 
-export default function MentorLiveSession() {
+function LiveSessionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reqId = searchParams.get('req');
@@ -93,5 +93,17 @@ export default function MentorLiveSession() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MentorLiveSession() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-[#08090C] flex flex-col items-center justify-center font-mono text-xs text-gray-500">
+        <p>ESTABLISHING ELITE VIDEO TELEMETRY SENSORS...</p>
+      </div>
+    }>
+      <LiveSessionContent />
+    </React.Suspense>
   );
 }

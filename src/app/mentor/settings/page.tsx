@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 
-const fadeUp = (d=0) => ({ initial:{opacity:0,y:25}, animate:{opacity:1,y:0}, transition:{duration:0.6,delay:d,ease:[0.16,1,0.3,1] as const} });
+const fadeUp = (d=0) => ({ initial:{opacity:0,y:15}, animate:{opacity:1,y:0}, transition:{duration:0.4,delay:d,ease:[0.16,1,0.3,1] as const} });
 
 const SIDEBAR_ITEMS = [
   { label:'Dashboard', icon:LayoutDashboard, href:'/mentor/dashboard' },
@@ -31,7 +31,7 @@ const SKILLS = [
   'React', 'Node.js', 'Python', 'TypeScript', 'Java', 'C++', 'System Design', 'Algorithms', 'Go', 'Rust', 'AWS', 'Docker'
 ];
 
-export default function MentorSettings() {
+function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'edit-profile');
@@ -99,35 +99,34 @@ export default function MentorSettings() {
   };
 
   return (
-    <main className="relative min-h-screen bg-[#FAFAFA]">
+    <main className="relative min-h-screen bg-bg-dark-950 developer-grid overflow-hidden noise-bg">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0" style={{backgroundImage:'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 0)',backgroundSize:'32px 32px'}} />
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#FF4D6D]/[0.02] rounded-full blur-[120px]" style={{animation:'floatSlow 12s ease-in-out infinite'}} />
-        <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-[#4D79FF]/[0.02] rounded-full blur-[100px]" style={{animation:'floatSlow 10s ease-in-out infinite 4s'}} />
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-accent-purple/[0.02] rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-accent-gold/[0.02] rounded-full blur-[100px]" />
       </div>
 
       {/* Top bar with search */}
-      <nav className="relative z-20 py-3 px-8 flex items-center border-b border-black/5 bg-white/60 backdrop-blur-xl gap-4">
-        <button onClick={()=>router.push('/mentor/dashboard')} className="flex items-center gap-2 text-black/30 text-xs font-bold uppercase tracking-wider hover:text-black transition-colors group">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />Back
+      <nav className="relative z-20 py-3 px-8 flex items-center border-b border-border-dark bg-bg-dark-900/60 backdrop-blur-xl gap-4">
+        <button onClick={()=>router.push('/mentor/dashboard')} className="flex items-center gap-2 text-gray-500 text-xs font-mono font-bold uppercase tracking-wider hover:text-white transition-colors group">
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />&gt;_ BACK
         </button>
-        <div className="w-px h-5 bg-black/8" />
+        <div className="w-px h-5 bg-border-dark" />
         <Link href="/" className="flex items-center gap-2">
-            <Logo showText={true} className="scale-[0.55] origin-left" />
+            <Logo showText={true} className="scale-[0.55] origin-left text-white" />
         </Link>
         <div className="flex-1 max-w-lg mx-auto">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black/20" />
-            <input value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} placeholder="Search mentor settings..." className="w-full pl-10 pr-12 py-2.5 rounded-xl bg-black/[0.03] border border-transparent text-sm focus:outline-none focus:border-[#FF4D6D]/30 focus:bg-white transition-all placeholder:text-black/20" />
-            <button onClick={startVoice} className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${isListening?'bg-[#FF4D6D] text-white scale-110':'text-black/20 hover:text-black/50 hover:bg-black/5'}`}><Mic className="w-3.5 h-3.5" /></button>
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+            <input value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} placeholder="Search mentor credentials..." className="w-full pl-10 pr-12 py-2.5 rounded-lg bg-bg-dark-950 border border-border-dark text-sm text-white focus:outline-none focus:border-accent-purple/50 focus:bg-bg-dark-950 transition-all placeholder:text-gray-600 font-mono" />
+            <button onClick={startVoice} className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${isListening?'bg-accent-purple text-white scale-110':'text-gray-500 hover:text-white hover:bg-border-dark'}`}><Mic className="w-3.5 h-3.5" /></button>
             {/* Search results dropdown */}
             <AnimatePresence>
               {filteredResults.length > 0 && (
-                <motion.div initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-5}} className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-black/8 shadow-xl shadow-black/10 overflow-hidden z-50 max-h-72 overflow-y-auto">
+                <motion.div initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-5}} className="absolute top-full left-0 right-0 mt-2 bg-bg-dark-900 rounded-lg border border-border-dark shadow-2xl overflow-hidden z-50 max-h-72 overflow-y-auto font-mono">
                   {filteredResults.map((item,i) => (
-                    <button key={i} onClick={()=>{setActiveTab(item.tab);setSearchQuery('');}} className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-[#FF4D6D]/5 transition-colors border-b border-black/[0.03] last:border-0">
-                      <Search className="w-3.5 h-3.5 text-black/15 mt-0.5 flex-shrink-0" />
-                      <div className="min-w-0"><p className="text-sm font-bold text-black/60 truncate">{item.label}</p><p className="text-[10px] text-black/25 truncate">{item.desc}</p></div>
+                    <button key={i} onClick={()=>{setActiveTab(item.tab);setSearchQuery('');}} className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-accent-purple/10 transition-colors border-b border-border-dark last:border-0">
+                      <Search className="w-3.5 h-3.5 text-gray-600 mt-0.5 flex-shrink-0" />
+                      <div className="min-w-0"><p className="text-sm font-bold text-gray-300 truncate">{item.label}</p><p className="text-[10px] text-gray-500 truncate">{item.desc}</p></div>
                     </button>
                   ))}
                 </motion.div>
@@ -138,28 +137,28 @@ export default function MentorSettings() {
       </nav>
 
       <div className="relative z-10 flex min-h-[calc(100vh-57px)]">
-        {/* Icon strip */}
-        <div className="w-14 flex-shrink-0 bg-white border-r border-black/5 flex flex-col items-center py-4 gap-1 relative z-30">
+        {/* Left Side Icon Strip */}
+        <div className="w-14 flex-shrink-0 bg-bg-dark-900 border-r border-border-dark flex flex-col items-center py-4 gap-1.5 relative z-30">
           {SIDEBAR_ITEMS.map((n)=>(
             <div key={n.label} className="relative group">
-              <button onClick={()=>router.push(n.href)} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${n.label==='Settings' ? 'bg-[#FF4D6D]/10 text-[#FF4D6D]' : 'text-black/20 hover:text-[#FF4D6D] hover:bg-[#FF4D6D]/5'}`}>
+              <button onClick={()=>router.push(n.href)} className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${n.label==='Settings' ? 'bg-accent-purple/10 text-accent-purple border border-accent-purple/20' : 'text-gray-500 hover:text-white hover:bg-border-dark'}`}>
                 <n.icon className="w-4 h-4" />
               </button>
-              <div className="fixed ml-[3.5rem] -mt-8 px-3 py-1.5 rounded-lg bg-[#111] text-white text-[11px] font-bold whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none transition-all duration-200 shadow-lg" style={{zIndex:9999}}>
+              <div className="fixed ml-[3.5rem] -mt-8 px-3 py-1.5 rounded bg-bg-dark-900 border border-border-dark text-white text-[11px] font-mono whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none transition-all duration-200 shadow-xl" style={{zIndex:9999}}>
                 {n.label}
-                <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#111] rotate-45" />
+                <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-bg-dark-900 border-l border-b border-border-dark rotate-45" />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Settings sidebar */}
-        <motion.div {...fadeUp(0.05)} className="w-48 flex-shrink-0 bg-white/30 backdrop-blur-md border-r border-black/5 p-4 relative z-10">
-          <h1 className="text-base font-serif font-bold mb-5 px-2">Settings</h1>
-          <div className="space-y-0.5">
+        {/* Tab Selector Sidebar */}
+        <motion.div {...fadeUp(0.05)} className="w-52 flex-shrink-0 bg-bg-dark-900/40 backdrop-blur-md border-r border-border-dark p-4 relative z-10 font-mono">
+          <h1 className="text-sm font-bold text-gray-400 mb-5 px-2 tracking-widest uppercase">&gt;_ Credentials</h1>
+          <div className="space-y-1">
             {TABS.map((tab,i)=>(
-              <motion.button key={tab.id} {...fadeUp(0.1+i*0.03)} onClick={()=>setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium text-left transition-all duration-300 leading-tight ${activeTab===tab.id?'bg-[#FF4D6D]/8 text-[#FF4D6D]':'text-black/35 hover:text-black hover:bg-black/[0.02]'}`}>
+              <motion.button key={tab.id} {...fadeUp(0.08+i*0.03)} onClick={()=>setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold text-left transition-all leading-tight ${activeTab===tab.id?'bg-accent-purple/10 text-accent-purple border border-accent-purple/20':'text-gray-500 hover:text-gray-300 hover:bg-border-dark/30 border border-transparent'}`}>
                 <tab.icon className="w-4 h-4 flex-shrink-0" />
                 <span className="break-words">{tab.label}</span>
               </motion.button>
@@ -167,32 +166,35 @@ export default function MentorSettings() {
           </div>
         </motion.div>
 
-        {/* Content */}
+        {/* Configuration Body Panel */}
         <div className="flex-1 p-10 overflow-y-auto">
           <AnimatePresence mode="wait">
             {activeTab==='edit-profile' && (
-              <motion.div key="ep" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} transition={{duration:0.4}}>
-                <h2 className="text-xl font-serif font-bold mb-2">Edit Profile</h2>
-                <p className="text-sm text-black/35 mb-8">Keep your mentor details updated. Information you add here is visible to students looking for guidance.</p>
-                <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-black/5 p-8 shadow-sm">
-                  {/* Avatar & Basic Info */}
+              <motion.div key="ep" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} transition={{duration:0.3}} className="max-w-4xl">
+                <h2 className="text-xl font-bold font-mono tracking-tight text-white mb-2"><span className="text-accent-gold mr-2">👑</span>Edit Prestigious Profile</h2>
+                <p className="text-sm text-gray-400 mb-8 font-mono">Configure custom titles, verified skill frameworks, and active guidance scopes.</p>
+                
+                <div className="bg-bg-dark-900 border border-border-dark rounded-xl p-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-accent-purple/[0.01] rounded-full blur-[80px]" />
+                  
+                  {/* Photo & Avatar Customizer */}
                   <div className="mb-8">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black/30 mb-3 block">Avatar & Name</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-3 block font-mono">MENTOR_IDENTIFIER_SYMBOL</label>
                     <div className="flex items-center gap-6">
                       <div className="relative group">
-                        <div className="w-20 h-20 rounded-2xl bg-white border border-black/5 shadow-md flex items-center justify-center text-4xl cursor-pointer hover:border-[#FF4D6D]/30 transition-colors">
+                        <div className="w-20 h-20 rounded-2xl bg-bg-dark-950 border border-border-dark shadow-2xl flex items-center justify-center text-4xl cursor-pointer hover:border-accent-purple/50 transition-colors">
                           {avatar}
                         </div>
                         <input type="text" value={avatar} onChange={e=>setAvatar(e.target.value)} maxLength={2} className="absolute inset-0 opacity-0 cursor-pointer" title="Click to change emoji" />
                       </div>
-                      <div className="flex-1 max-w-md space-y-4">
+                      <div className="flex-1 max-w-md space-y-4 font-mono">
                         <div>
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-black/30 mb-1 block">Full Name</label>
-                          <input type="text" value={name} onChange={e=>setName(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-black/8 text-sm font-bold focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-2 focus:ring-[#FF4D6D]/10 transition-all bg-white/50"/>
+                          <label className="text-[10px] text-gray-400 mb-1 block">FULL_NAME</label>
+                          <input type="text" value={name} onChange={e=>setName(e.target.value)} className="w-full px-4 py-3 rounded-lg border border-border-dark text-sm text-white focus:outline-none focus:border-accent-purple transition-all bg-bg-dark-950"/>
                         </div>
                         <div>
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-black/30 mb-1 block">Professional Title</label>
-                          <input type="text" value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Senior Architect @ Google" className="w-full px-4 py-3 rounded-xl border border-black/8 text-sm font-bold focus:outline-none focus:border-[#FF4D6D]/40 focus:ring-2 focus:ring-[#FF4D6D]/10 transition-all bg-white/50"/>
+                          <label className="text-[10px] text-gray-400 mb-1 block">VERIFIED_PROFESSIONAL_TITLE</label>
+                          <input type="text" value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Staff Engineer @ Netflix" className="w-full px-4 py-3 rounded-lg border border-border-dark text-sm text-white focus:outline-none focus:border-accent-purple transition-all bg-bg-dark-950"/>
                         </div>
                       </div>
                     </div>
@@ -200,40 +202,55 @@ export default function MentorSettings() {
                   
                   {/* Skills Known */}
                   <div className="mb-6">
-                    <div className="flex items-center justify-between mb-3"><label className="text-[10px] font-bold uppercase tracking-wider text-black/30">Skills You Know</label></div>
-                    <div className="flex flex-wrap gap-2 max-w-2xl">
+                    <div className="flex items-center justify-between mb-3"><label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 font-mono">KNOWN_SKILLSETS</label></div>
+                    <div className="flex flex-wrap gap-2 max-w-2xl font-mono">
                       {SKILLS.map(sk=>{const a=skillsKnown.includes(sk);return(
-                        <button key={sk} onClick={()=>toggleSkill(sk, 'known')} className="px-4 py-2 rounded-xl text-xs font-bold transition-all border" style={{borderColor:a?'#4D79FF':'rgba(0,0,0,0.06)',background:a?'#4D79FF10':'white',color:a?'#4D79FF':'rgba(0,0,0,0.3)'}}>{sk}</button>
+                        <button key={sk} onClick={()=>toggleSkill(sk, 'known')} className="px-3.5 py-1.5 rounded text-[10px] font-bold uppercase transition-all border" style={{borderColor:a?'#8B5CF6':'rgba(255,255,255,0.06)',background:a?'rgba(139,92,246,0.12)':'#0D0E12',color:a?'#a78bfa':'rgba(255,255,255,0.3)'}}>{sk}</button>
                       );})}
                     </div>
                   </div>
 
                   {/* Skills Guide */}
                   <div className="mb-8">
-                    <div className="flex items-center justify-between mb-3"><label className="text-[10px] font-bold uppercase tracking-wider text-black/30">Skills You Will Mentor In</label></div>
-                    <div className="flex flex-wrap gap-2 max-w-2xl">
+                    <div className="flex items-center justify-between mb-3"><label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 font-mono">MENTORING_SCOPE_GUIDES</label></div>
+                    <div className="flex flex-wrap gap-2 max-w-2xl font-mono">
                       {SKILLS.map(sk=>{const a=skillsGuide.includes(sk);return(
-                        <button key={sk} onClick={()=>toggleSkill(sk, 'guide')} className="px-4 py-2 rounded-xl text-xs font-bold transition-all border" style={{borderColor:a?'#FF4D6D':'rgba(0,0,0,0.06)',background:a?'#FF4D6D10':'white',color:a?'#FF4D6D':'rgba(0,0,0,0.3)'}}>{sk}</button>
+                        <button key={sk} onClick={()=>toggleSkill(sk, 'guide')} className="px-3.5 py-1.5 rounded text-[10px] font-bold uppercase transition-all border" style={{borderColor:a?'#F59E0B':'rgba(255,255,255,0.06)',background:a?'rgba(245,158,11,0.12)':'#0D0E12',color:a?'#fbbf24':'rgba(255,255,255,0.3)'}}>{sk}</button>
                       );})}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 pt-4 border-t border-black/5">
-                    <button onClick={handleReset} className="flex items-center gap-2 px-6 py-3 rounded-xl border border-black/8 text-xs font-bold uppercase tracking-wider text-black/40 hover:text-black transition-all"><RotateCcw className="w-3.5 h-3.5"/>Reset</button>
-                    <button onClick={handleSave} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#FF4D6D] text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-[#FF4D6D]/15 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"><Save className="w-3.5 h-3.5"/>{saved?'Saved ✓':'Save Changes'}</button>
+                  {/* Control Nodes */}
+                  <div className="flex items-center gap-3 pt-6 border-t border-border-dark font-mono">
+                    <button onClick={handleReset} className="btn-secondary-dev flex items-center gap-1.5 hover:border-accent-purple hover:text-white"><RotateCcw className="w-3.5 h-3.5"/>Reset</button>
+                    <button onClick={handleSave} className="btn-premium bg-accent-purple hover:bg-accent-purple/80 shadow-accent-purple/10 flex items-center gap-1.5"><Save className="w-3.5 h-3.5"/>{saved?'Wrote changes ✓':'Save Changes'}</button>
                   </div>
                 </div>
               </motion.div>
             )}
 
             {activeTab !== 'edit-profile' && (
-               <motion.div key="other" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} className="flex items-center justify-center h-full text-black/30 text-sm">
-                 This section is currently under construction.
+               <motion.div key="other" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} className="flex flex-col items-center justify-center h-64 text-gray-500 font-mono text-xs border border-dashed border-border-dark rounded-xl bg-bg-dark-900/20">
+                 <p>&gt;_ INTERFACE SECTION UNDER DEVELOPMENT</p>
+                 <p className="text-[10px] text-gray-600 mt-2">Certified database registries locked.</p>
                </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
     </main>
+  );
+}
+
+export default function MentorSettings() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-bg-dark-950 flex flex-col items-center justify-center font-mono text-xs text-gray-500 tracking-widest">
+        <div className="w-6 h-6 border-2 border-accent-purple/20 border-t-accent-purple rounded-full animate-spin mb-3"/>
+        PARSING ELITE MENTOR TELEMETRY...
+      </div>
+    }>
+      <SettingsContent />
+    </React.Suspense>
   );
 }
