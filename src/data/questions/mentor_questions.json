@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "Hard",
+    "functionName": "maxPathSum",
+    "description": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root. The path sum of a path is the sum of the node's values in the path. Given the root of a binary tree, return the maximum path sum of any non-empty path.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 3 * 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1, 2, 3]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[-10, 9, 20, null, null, 15, 7]",
+        "expectedOutput": "42"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[2, -1]",
+        "expectedOutput": "2"
+      }
+    ],
+    "starterCode": {
+      "python": "def maxPathSum(root: list[int]) -> int:\n    # Write your code here\n    return 6",
+      "javascript": "function maxPathSum(root) {\n    // Write your code here\n    return 6;\n}",
+      "cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    int maxPathSum(vector<int>& root) {\n        return 6;\n    }\n};",
+      "java": "public class Main {\n    public static int maxPathSum(int[] root) {\n        return 6;\n    }\n}"
+    }
+  },
+  {
+    "id": 2,
+    "title": "Longest Valid Parentheses",
+    "difficulty": "Hard",
+    "functionName": "longestValidParentheses",
+    "description": "Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses substring.",
+    "constraints": [
+      "0 <= s.length <= 3 * 10^4",
+      "s[i] is '(' or ')'."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "\")()())\"",
+        "expectedOutput": "4"
+      },
+      {
+        "input": "\"(()\"",
+        "expectedOutput": "2"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "\"\"",
+        "expectedOutput": "0"
+      }
+    ],
+    "starterCode": {
+      "python": "def longestValidParentheses(s: str) -> int:\n    # Write your code here\n    return 4",
+      "javascript": "function longestValidParentheses(s) {\n    // Write your code here\n    return 4;\n}",
+      "cpp": "#include <string>\nusing namespace std;\nclass Solution {\npublic:\n    int longestValidParentheses(string s) {\n        return 4;\n    }\n};",
+      "java": "public class Main {\n    public static int longestValidParentheses(String s) {\n        return 4;\n    }\n}"
+    }
+  },
+  {
+    "id": 3,
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "functionName": "trap",
+    "description": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "constraints": [
+      "n == height.length",
+      "1 <= n <= 2 * 10^4",
+      "0 <= height[i] <= 10^5"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[0,1,0,2,1,0,1,3,2,1,2,1]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[4,2,0,3,2,5]",
+        "expectedOutput": "9"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[]",
+        "expectedOutput": "0"
+      }
+    ],
+    "starterCode": {
+      "python": "def trap(height: list[int]) -> int:\n    # Write your code here\n    return 6",
+      "javascript": "function trap(height) {\n    // Write your code here\n    return 6;\n}",
+      "cpp": "#include <vector>\nusing namespace std;\nclass Solution {\npublic:\n    int trap(vector<int>& height) {\n        return 6;\n    }\n};",
+      "java": "public class Main {\n    public static int trap(int[] height) {\n        return 6;\n    }\n}"
+    }
+  }
+]

@@ -102,7 +102,7 @@ export default function MentorGuidancePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       {/* Background aesthetics */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0" style={{backgroundImage:'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.015) 1px, transparent 0)',backgroundSize:'32px 32px'}} />
@@ -111,9 +111,9 @@ export default function MentorGuidancePage() {
       </div>
 
       {/* Header */}
-      <motion.header {...fadeUp(0)} className="sticky top-0 z-20 bg-white/70 backdrop-blur-xl border-b border-black/5 px-8 py-4 flex items-center justify-between">
+      <motion.header {...fadeUp(0)} className="sticky top-0 z-20 bg-[var(--nav-bg)] backdrop-blur-md border-b border-[var(--nav-border)] px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/student/dashboard" className="flex items-center gap-2 px-3 py-2 rounded-xl text-black/30 hover:text-black hover:bg-black/[0.02] transition-all border border-transparent hover:border-black/5">
+          <Link href="/student/dashboard" className="flex items-center gap-2 px-3 py-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--btn-sec-bg)] transition-all border border-transparent hover:border-[var(--ide-border)]">
             <ArrowLeft className="w-4 h-4"/><span className="text-xs font-bold">Dashboard</span>
           </Link>
           <div className="w-px h-5 bg-black/8"/>
@@ -135,26 +135,26 @@ export default function MentorGuidancePage() {
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#22D3EE] flex items-center justify-center text-white shadow-xl" style={{boxShadow:'0 10px 30px rgba(6,182,212,0.2)'}}>
                 <BookOpen className="w-6 h-6"/>
               </div>
-              <h1 className="text-3xl font-black text-[#111]">Mentor Guidance</h1>
+              <h1 className="text-3xl font-black text-[var(--text-primary)]">Mentor Guidance</h1>
             </div>
-            <p className="text-sm text-black/40">Connect with industry experts for live code reviews and architectural guidance.</p>
+            <p className="text-sm text-[var(--text-muted)]">Connect with industry experts for live code reviews and architectural guidance.</p>
           </div>
           
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/20" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input type="text" placeholder="Search by name or skill..." value={search} onChange={e=>setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-3 rounded-xl bg-white border border-black/5 focus:border-cyan-300 focus:ring-4 focus:ring-cyan-50 transition-all text-xs font-bold text-[#222] outline-none shadow-sm" />
+                className="w-full pl-9 pr-4 py-3 rounded-xl bg-[var(--ide-bg)] border border-[var(--ide-border)] focus:border-cyan-300 focus:ring-4 focus:ring-cyan-50 transition-all text-xs font-bold text-[var(--text-primary)] outline-none shadow-sm" />
             </div>
           </div>
         </motion.div>
 
         {/* Filters */}
         <motion.div {...fadeUp(0.15)} className="flex flex-wrap gap-2 mb-8">
-          <div className="flex items-center gap-2 px-3 text-black/20"><Filter className="w-4 h-4"/></div>
+          <div className="flex items-center gap-2 px-3 text-[var(--text-muted)]"><Filter className="w-4 h-4"/></div>
           {filters.map(f => (
             <button key={f} onClick={()=>setSelectedFilter(f)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${selectedFilter===f ? 'bg-cyan-50 border-cyan-200 text-cyan-600 shadow-sm' : 'bg-white border-black/5 text-black/30 hover:bg-black/[0.02]'}`}>
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${selectedFilter===f ? 'bg-cyan-50 border-cyan-200 text-cyan-600 shadow-sm' : 'bg-[var(--ide-bg)] border-[var(--ide-border)] text-[var(--text-secondary)] hover:bg-[var(--btn-sec-bg)]'}`}>
               {f}
             </button>
           ))}
@@ -164,7 +164,7 @@ export default function MentorGuidancePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredMentors.map((m, i) => (
             <motion.div key={m.id} {...fadeUp(0.2 + i*0.05)}
-              className="bg-white rounded-2xl border border-black/5 p-6 relative overflow-hidden group hover:border-cyan-200 hover:shadow-xl transition-all duration-300 cursor-pointer"
+              className="bg-[var(--ide-bg)] rounded-2xl border border-[var(--ide-border)] p-6 relative overflow-hidden group hover:border-cyan-200 hover:shadow-xl transition-all duration-300 cursor-pointer"
               style={{boxShadow:'0 4px 20px rgba(0,0,0,0.03)'}}
               onClick={()=>setSelectedMentor(m)}>
               
@@ -173,15 +173,15 @@ export default function MentorGuidancePage() {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-black/5 to-black/10 border border-black/5 flex items-center justify-center text-lg font-black text-black/40 shadow-inner">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-black/5 to-black/10 border border-[var(--ide-border)] flex items-center justify-center text-lg font-black text-[var(--text-muted)] shadow-inner">
                       {m.avatar}
                     </div>
-                    {m.online && <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow-sm" />}
+                    {m.online && <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-[var(--ide-bg)] shadow-sm" />}
                   </div>
                   <div>
-                    <h3 className="text-base font-black text-[#111]">{m.name}</h3>
+                    <h3 className="text-base font-black text-[var(--text-primary)]">{m.name}</h3>
                     <p className="text-[10px] font-bold text-cyan-600 mb-0.5">{m.role} @ {m.company}</p>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-black/30">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-[var(--text-secondary)]">
                       <Star className="w-3 h-3 text-amber-400 fill-amber-400"/> {m.rating} ({m.sessions} sessions)
                     </div>
                   </div>
@@ -190,16 +190,16 @@ export default function MentorGuidancePage() {
 
               <div className="flex flex-wrap gap-1.5 mb-5">
                 {m.skills.map(s=>(
-                  <span key={s} className="px-2.5 py-1 rounded-md bg-black/[0.03] border border-black/5 text-[9px] font-bold text-black/40">{s}</span>
+                  <span key={s} className="px-2.5 py-1 rounded-md bg-[var(--btn-sec-bg)] border border-[var(--ide-border)] text-[9px] font-bold text-[var(--text-muted)]">{s}</span>
                 ))}
               </div>
 
-              <div className="flex items-center justify-between mt-auto pt-4 border-t border-black/5">
+              <div className="flex items-center justify-between mt-auto pt-4 border-t border-[var(--ide-border)]">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold">
                   {m.online ? (
                     <><Clock className="w-3.5 h-3.5 text-cyan-500"/><span className="text-cyan-600">Wait: {m.waitTime}</span></>
                   ) : (
-                    <><Clock className="w-3.5 h-3.5 text-black/20"/><span className="text-black/30">Offline</span></>
+                    <><Clock className="w-3.5 h-3.5 text-[var(--text-muted)]"/><span className="text-[var(--text-secondary)]">Offline</span></>
                   )}
                 </div>
                 {m.online ? (
@@ -207,7 +207,7 @@ export default function MentorGuidancePage() {
                     <UserCheck className="w-3.5 h-3.5"/> Connect
                   </button>
                 ) : (
-                  <button onClick={(e)=>e.stopPropagation()} className="px-3 py-1.5 rounded-lg border border-black/5 text-black/20 text-[10px] font-bold cursor-not-allowed">
+                  <button onClick={(e)=>e.stopPropagation()} className="px-3 py-1.5 rounded-lg border border-[var(--ide-border)] text-[var(--text-muted)] text-[10px] font-bold cursor-not-allowed">
                     Unavailable
                   </button>
                 )}
@@ -216,8 +216,8 @@ export default function MentorGuidancePage() {
           ))}
           {filteredMentors.length === 0 && (
             <div className="col-span-full py-12 text-center">
-              <Search className="w-8 h-8 mx-auto text-black/10 mb-3"/>
-              <p className="text-sm font-bold text-black/30">No mentors found matching your filters.</p>
+              <Search className="w-8 h-8 mx-auto text-[var(--text-primary)]/10 mb-3"/>
+              <p className="text-sm font-bold text-[var(--text-secondary)]">No mentors found matching your filters.</p>
             </div>
           )}
         </div>
@@ -229,42 +229,42 @@ export default function MentorGuidancePage() {
           <>
             <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50" onClick={()=>setSelectedMentor(null)}/>
             <motion.div initial={{scale:0.9,opacity:0,y:20}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.9,opacity:0}} className="fixed inset-0 z-50 flex items-center justify-center p-6">
-              <div className="bg-white rounded-2xl border border-black/5 shadow-2xl max-w-md w-full overflow-hidden">
+              <div className="bg-[var(--ide-bg)] rounded-2xl border border-[var(--ide-border)] shadow-2xl max-w-md w-full overflow-hidden">
                 <div className="h-24 bg-gradient-to-r from-cyan-400 to-blue-500 relative">
                   <button onClick={()=>setSelectedMentor(null)} className="absolute top-4 right-4 w-8 h-8 rounded-xl bg-black/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/20 transition-colors"><X className="w-4 h-4"/></button>
                 </div>
                 <div className="px-8 pb-8 relative">
                   <div className="relative inline-block -mt-10 mb-4">
-                    <div className="w-20 h-20 rounded-2xl bg-white p-1 shadow-lg">
-                      <div className="w-full h-full rounded-xl bg-gradient-to-br from-black/5 to-black/10 flex items-center justify-center text-2xl font-black text-black/40">
+                    <div className="w-20 h-20 rounded-2xl bg-[var(--ide-bg)] p-1 shadow-lg">
+                      <div className="w-full h-full rounded-xl bg-gradient-to-br from-black/5 to-black/10 flex items-center justify-center text-2xl font-black text-[var(--text-muted)]">
                         {selectedMentor.avatar}
                       </div>
                     </div>
-                    {selectedMentor.online && <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow-sm"/>}
+                    {selectedMentor.online && <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-[var(--ide-bg)] shadow-sm"/>}
                   </div>
-                  <h3 className="text-2xl font-black text-[#111] mb-1">{selectedMentor.name}</h3>
+                  <h3 className="text-2xl font-black text-[var(--text-primary)] mb-1">{selectedMentor.name}</h3>
                   <p className="text-xs font-bold text-cyan-600 mb-4">{selectedMentor.role} @ {selectedMentor.company}</p>
                   
                   <div className="grid grid-cols-3 gap-3 mb-6">
-                    <div className="p-3 rounded-xl bg-black/[0.02] border border-black/5 text-center">
+                    <div className="p-3 rounded-xl bg-[var(--btn-sec-bg)] border border-[var(--ide-border)] text-center">
                       <Star className="w-5 h-5 mx-auto text-amber-400 fill-amber-400 mb-1"/>
-                      <p className="text-sm font-black text-[#222]">{selectedMentor.rating}</p>
-                      <p className="text-[8px] text-black/30 font-bold uppercase">Rating</p>
+                      <p className="text-sm font-black text-[var(--text-primary)]">{selectedMentor.rating}</p>
+                      <p className="text-[8px] text-[var(--text-secondary)] font-bold uppercase">Rating</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-black/[0.02] border border-black/5 text-center">
+                    <div className="p-3 rounded-xl bg-[var(--btn-sec-bg)] border border-[var(--ide-border)] text-center">
                       <MessageSquare className="w-5 h-5 mx-auto text-blue-400 mb-1"/>
-                      <p className="text-sm font-black text-[#222]">{selectedMentor.sessions}</p>
-                      <p className="text-[8px] text-black/30 font-bold uppercase">Sessions</p>
+                      <p className="text-sm font-black text-[var(--text-primary)]">{selectedMentor.sessions}</p>
+                      <p className="text-[8px] text-[var(--text-secondary)] font-bold uppercase">Sessions</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-black/[0.02] border border-black/5 text-center">
+                    <div className="p-3 rounded-xl bg-[var(--btn-sec-bg)] border border-[var(--ide-border)] text-center">
                       <Clock className="w-5 h-5 mx-auto text-green-400 mb-1"/>
-                      <p className="text-sm font-black text-[#222]">{selectedMentor.waitTime}</p>
-                      <p className="text-[8px] text-black/30 font-bold uppercase">Wait Time</p>
+                      <p className="text-sm font-black text-[var(--text-primary)]">{selectedMentor.waitTime}</p>
+                      <p className="text-[8px] text-[var(--text-secondary)] font-bold uppercase">Wait Time</p>
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <p className="text-[10px] font-bold text-black/30 uppercase mb-2">Expertise</p>
+                    <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase mb-2">Expertise</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedMentor.skills.map(s=>(
                         <span key={s} className="px-3 py-1.5 rounded-lg bg-cyan-50 border border-cyan-100 text-[10px] font-bold text-cyan-700">{s}</span>
@@ -279,7 +279,7 @@ export default function MentorGuidancePage() {
                       <Code2 className="w-4 h-4"/> Request Live Session
                     </motion.button>
                   ) : (
-                    <button className="w-full py-4 rounded-xl bg-black/5 text-black/30 text-sm font-black flex items-center justify-center gap-2 cursor-not-allowed">
+                    <button className="w-full py-4 rounded-xl bg-[var(--btn-sec-bg)] text-[var(--text-secondary)] text-sm font-black flex items-center justify-center gap-2 cursor-not-allowed">
                       <Clock className="w-4 h-4"/> Currently Offline
                     </button>
                   )}
@@ -293,12 +293,12 @@ export default function MentorGuidancePage() {
       {/* Requesting State Toast/Overlay */}
       <AnimatePresence>
         {requestSentTo && (
-          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <motion.div initial={{scale:0.9,opacity:0}} animate={{scale:1,opacity:1}} className="bg-white rounded-3xl border border-black/5 shadow-2xl p-8 max-w-sm w-full text-center mx-4">
-              <motion.div animate={{rotate:360}} transition={{duration:2,repeat:Infinity,ease:'linear'}} className="w-16 h-16 mx-auto rounded-full border-4 border-black/5 border-t-cyan-500 mb-6"/>
-              <h3 className="text-xl font-black text-[#111] mb-2">Pinging Mentor...</h3>
-              <p className="text-xs text-black/40 mb-6">Waiting for {MOCK_MENTORS.find(m=>m.id===requestSentTo)?.name} to accept your session request.</p>
-              <div className="h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--btn-sec-bg)] backdrop-blur-sm">
+            <motion.div initial={{scale:0.9,opacity:0}} animate={{scale:1,opacity:1}} className="bg-[var(--ide-bg)] rounded-3xl border border-[var(--ide-border)] shadow-2xl p-8 max-w-sm w-full text-center mx-4">
+              <motion.div animate={{rotate:360}} transition={{duration:2,repeat:Infinity,ease:'linear'}} className="w-16 h-16 mx-auto rounded-full border-4 border-[var(--ide-border)] border-t-cyan-500 mb-6"/>
+              <h3 className="text-xl font-black text-[var(--text-primary)] mb-2">Pinging Mentor...</h3>
+              <p className="text-xs text-[var(--text-muted)] mb-6">Waiting for {MOCK_MENTORS.find(m=>m.id===requestSentTo)?.name} to accept your session request.</p>
+              <div className="h-1.5 w-full bg-[var(--btn-sec-bg)] rounded-full overflow-hidden">
                 <motion.div animate={{x:['-100%','100%']}} transition={{duration:1.5,repeat:Infinity,ease:'easeInOut'}} className="w-1/2 h-full bg-cyan-500 rounded-full"/>
               </div>
             </motion.div>

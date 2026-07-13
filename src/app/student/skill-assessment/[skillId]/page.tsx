@@ -112,27 +112,27 @@ export default function TestPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-[#08090C] flex flex-col items-center justify-center font-mono">
-        <div className="w-8 h-8 border-2 border-accent-pink/20 border-t-accent-pink rounded-full animate-spin mb-4"/>
-        <p className="text-gray-500 text-xs uppercase tracking-widest animate-pulse">Allocating thread compilers...</p>
+      <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center font-mono">
+        <div className="w-8 h-8 border-2 border-[#FF3366]/20 border-t-[#FF3366] rounded-full animate-spin mb-4"/>
+        <p className="text-[var(--text-muted)] text-[10px] uppercase tracking-widest font-bold animate-pulse">Allocating thread compilers...</p>
       </div>
     );
   }
 
   return (
-    <main className="fixed inset-0 bg-[#08090C] text-[#F3F4F6] z-[9999] flex flex-col overflow-hidden font-sans developer-grid noise-bg">
+    <main className="fixed inset-0 bg-[var(--background)] text-[var(--foreground)] z-[9999] flex flex-col overflow-hidden font-sans developer-grid noise-bg">
       
-      {/* ═══ TOP TELEMETRY BAR ═══ */}
+      {/* TOP TELEMETRY BAR */}
       {!isFinished && (
         <>
-          <div className="relative z-20 bg-[#0D0E12] border-b border-[#2A2E3D]/50 px-6 py-3.5 flex items-center justify-between flex-shrink-0 font-mono text-xs select-none">
+          <div className="relative z-20 bg-[var(--ide-header-bg)] border-b border-[var(--ide-border)] px-6 py-3.5 flex items-center justify-between flex-shrink-0 font-mono text-xs select-none">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded border border-[#2A2E3D] bg-[#15171F] flex items-center justify-center text-lg font-bold" style={{ color: meta.color }}>
+              <div className="w-9 h-9 rounded border border-[var(--ide-border)] bg-[var(--ide-bg)] flex items-center justify-center text-lg font-bold" style={{ color: meta.color }}>
                 {meta.icon}
               </div>
               <div>
-                <p className="text-white font-bold uppercase tracking-wider">{meta.name} telemetry scan</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                <p className="text-[var(--text-primary)] font-bold uppercase tracking-wider">{meta.name} telemetry scan</p>
+                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-bold">
                   PORT: 0{currentQ + 1} OF 10 // TARGET: {PASS_MARK}/10 SUCCESS
                 </p>
               </div>
@@ -142,26 +142,26 @@ export default function TestPage() {
               <div className={`flex items-center gap-2 px-4 py-2 border font-bold uppercase font-mono text-xs rounded ${
                 timeLeft < 60 
                   ? 'bg-red-950/20 border-red-500/50 text-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.15)]' 
-                  : 'bg-[#15171F] border-[#2A2E3D] text-white'
+                  : 'bg-[var(--ide-bg)] border-[var(--ide-border)] text-[var(--text-primary)]'
               }`}>
                 <Clock className="w-4 h-4 text-accent-pink" />
                 {mins.toString().padStart(2,'0')}:{secs.toString().padStart(2,'0')}
               </div>
               
-              <div className="px-4 py-2 border border-[#2A2E3D] bg-[#15171F] text-xs font-bold text-gray-400 uppercase rounded">
+              <div className="px-4 py-2 border border-[var(--ide-border)] bg-[var(--ide-bg)] text-xs font-bold text-[var(--text-secondary)] uppercase rounded font-mono">
                 PORTS: {attempted}/{TOTAL_QUESTIONS}
               </div>
 
               <button 
                 onClick={() => setShowEndConfirm(true)} 
-                className="px-4 py-2 border border-red-900/30 hover:border-red-500 bg-red-950/10 text-red-400 hover:text-red-500 rounded text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5"
+                className="px-4 py-2 border border-red-900/30 hover:border-red-500 bg-red-950/10 text-red-400 hover:text-red-500 rounded text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-1.5"
               >
                 <X className="w-3.5 h-3.5"/>TERMINATE SCAN
               </button>
             </div>
           </div>
 
-          <div className="h-[2px] bg-[#08090C] w-full flex-shrink-0 relative overflow-hidden">
+          <div className="h-[2px] bg-[var(--background)] w-full flex-shrink-0 relative overflow-hidden">
             <motion.div 
               className="h-full" 
               style={{ background: meta.color }} 
@@ -172,12 +172,12 @@ export default function TestPage() {
         </>
       )}
 
-      {/* ═══ MAIN CORE CONTENT ═══ */}
+      {/* MAIN CORE CONTENT */}
       {!isFinished ? (
         <div className="flex-1 flex overflow-hidden">
           
-          {/* Question / Compiler Editor Panel */}
-          <div className="flex-1 overflow-y-auto p-8 relative">
+          {/* Question Editor Panel */}
+          <div className="flex-1 overflow-y-auto p-8 relative bg-[var(--background)]/40">
             <AnimatePresence mode="wait">
               <motion.div 
                 key={currentQ} 
@@ -189,22 +189,22 @@ export default function TestPage() {
               >
                 
                 {/* IDE styled question pane */}
-                <div className="ide-panel bg-[#15171F] border-[#2A2E3D] overflow-hidden">
-                  <div className="ide-panel-header py-2.5 justify-between select-none">
+                <div className="ide-panel bg-[var(--ide-bg)] border-[var(--ide-border)] overflow-hidden">
+                  <div className="ide-panel-header py-2.5 justify-between select-none border-b border-[var(--ide-border)]/40 bg-[var(--ide-header-bg)]/50">
                     <div className="flex items-center gap-1.5">
                       <span className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
                       <span className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
                       <span className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
-                      <span className="text-[10px] font-mono text-gray-500 uppercase ml-2">question_thread_node.cpp</span>
+                      <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase ml-2">question_thread_node.cpp</span>
                     </div>
                     <span className="text-[9px] font-mono text-accent-pink uppercase font-bold tracking-widest">// SECURE_CORE</span>
                   </div>
 
                   <div className="p-8 space-y-4">
-                    <span className="px-2 py-0.5 border border-accent-pink/30 bg-accent-pink/5 text-accent-pink text-[9px] font-mono font-bold uppercase rounded">
+                    <span className="px-2 py-0.5 border border-[#FF3366]/20 bg-[#FF3366]/5 text-accent-pink text-[9px] font-mono font-bold uppercase rounded">
                       THREAD INDEX: {currentQ + 1}
                     </span>
-                    <h2 className="text-lg md:text-xl font-mono font-bold text-white leading-relaxed pt-2">
+                    <h2 className="text-lg md:text-xl font-mono font-bold text-[var(--text-primary)] leading-relaxed pt-2">
                       {questions[currentQ].q}
                     </h2>
                   </div>
@@ -221,19 +221,19 @@ export default function TestPage() {
                         className={`w-full text-left p-4.5 rounded border transition-all duration-200 flex items-center gap-4 ${
                           isSel 
                             ? 'border-accent-pink bg-accent-pink/5 shadow-[0_0_15px_rgba(255,51,102,0.1)]' 
-                            : 'border-[#2A2E3D] bg-[#15171F] hover:border-gray-600'
+                            : 'border-[var(--ide-border)] bg-[var(--ide-bg)] hover:border-gray-500'
                         }`}
                       >
                         <div 
                           className={`w-8 h-8 rounded border font-mono font-bold text-xs flex items-center justify-center shrink-0 transition-colors ${
                             isSel 
                               ? 'bg-[#FF3366] border-[#FF3366] text-white' 
-                              : 'bg-[#0D0E12] border-[#2A2E3D] text-gray-400 group-hover:text-white'
+                              : 'bg-[var(--background)] border-[var(--ide-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                           }`}
                         >
                           {String.fromCharCode(65 + oi)}
                         </div>
-                        <span className={`text-xs font-mono font-bold ${isSel ? 'text-white' : 'text-gray-300'}`}>
+                        <span className={`text-xs font-mono font-bold ${isSel ? 'text-accent-pink' : 'text-[var(--text-secondary)]'}`}>
                           {opt}
                         </span>
                       </button>
@@ -246,7 +246,7 @@ export default function TestPage() {
                   <button 
                     onClick={goToPrev} 
                     disabled={currentQ === 0} 
-                    className="flex items-center gap-1.5 px-5 py-3 border border-[#2A2E3D] rounded text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-20 disabled:pointer-events-none transition-all uppercase font-bold"
+                    className="flex items-center gap-1.5 px-5 py-3 border border-[var(--ide-border)] rounded text-[var(--text-secondary)] hover:text-accent-pink hover:border-accent-pink disabled:opacity-20 disabled:pointer-events-none transition-all uppercase font-bold"
                   >
                     <ChevronLeft className="w-4 h-4"/>Prev Thread
                   </button>
@@ -275,8 +275,8 @@ export default function TestPage() {
           </div>
 
           {/* Right Sidebar: Telemetry Grid Ports */}
-          <div className="w-64 bg-[#0D0E12] border-l border-[#2A2E3D]/50 p-5 flex flex-col flex-shrink-0 overflow-y-auto font-mono select-none">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-1.5">
+          <div className="w-64 bg-[var(--ide-header-bg)] border-l border-[var(--ide-border)] p-5 flex flex-col flex-shrink-0 overflow-y-auto font-mono select-none">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4 flex items-center gap-1.5">
               <TerminalIcon className="w-3.5 h-3.5 text-accent-pink" />
               PROCESS THREADS
             </p>
@@ -286,7 +286,7 @@ export default function TestPage() {
                 const isCur = i === currentQ;
                 const isAns = answers[i] !== null;
                 
-                let borderClass = "border-[#2A2E3D] text-gray-500 bg-transparent";
+                let borderClass = "border-[var(--ide-border)] text-[var(--text-muted)] bg-transparent";
                 if (isCur) borderClass = "border-accent-pink text-[#FF3366] bg-accent-pink/5 font-bold shadow-[0_0_8px_rgba(255,51,102,0.1)]";
                 else if (isAns) borderClass = "border-accent-blue text-[#3B82F6] bg-accent-blue/5 font-bold";
 
@@ -305,7 +305,7 @@ export default function TestPage() {
               })}
             </div>
 
-            <div className="space-y-2 mt-auto text-[9px] font-bold text-gray-500 uppercase border-t border-[#2A2E3D]/30 pt-4">
+            <div className="space-y-2 mt-auto text-[9px] font-bold text-[var(--text-muted)] uppercase border-t border-[var(--ide-border)]/30 pt-4">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-sm border border-accent-pink bg-accent-pink/10"/> ACTIVE NODE
               </div>
@@ -313,14 +313,14 @@ export default function TestPage() {
                 <div className="w-2.5 h-2.5 rounded-sm border border-accent-blue bg-accent-blue/10"/> COMPILATION CACHED
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-sm border border-[#2A2E3D] bg-transparent"/> PENDING QUEUE
+                <div className="w-2.5 h-2.5 rounded-sm border border-[var(--ide-border)] bg-transparent"/> PENDING QUEUE
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-[#2A2E3D]/30">
+            <div className="mt-6 pt-4 border-t border-[var(--ide-border)]/30">
               <button 
                 onClick={handleSubmit}
-                className="w-full py-3 bg-[#10B981] hover:bg-green-600 text-white rounded text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#10B981] hover:bg-green-600 text-white rounded text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 font-mono"
               >
                 <ShieldCheck className="w-4 h-4"/>EXECUTE COMPILE
               </button>
@@ -330,7 +330,7 @@ export default function TestPage() {
         </div>
       ) : (
         
-        /* ═══ RESULTS COMPILATION AUDIT ═══ */
+        /* RESULTS COMPILATION AUDIT */
         <div className="flex-1 overflow-y-auto relative p-8">
           
           {/* CONFETTI / ERROR PARTICLES FLOATING */}
@@ -355,13 +355,13 @@ export default function TestPage() {
           <div className="max-w-2xl mx-auto space-y-8 relative z-20 pt-8 pb-16">
             
             {/* Audit log window */}
-            <div className="ide-panel bg-[#15171F] border-[#2A2E3D] overflow-hidden">
-              <div className="ide-panel-header py-2.5 justify-between select-none">
+            <div className="ide-panel bg-[var(--ide-bg)] border-[var(--ide-border)] overflow-hidden">
+              <div className="ide-panel-header py-2.5 justify-between select-none border-b border-[var(--ide-border)] bg-[var(--ide-header-bg)]">
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
                   <span className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
                   <span className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase ml-2">compilation_audit_logs.txt</span>
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase ml-2">compilation_audit_logs.txt</span>
                 </div>
                 <span className={`text-[9px] font-mono uppercase font-bold tracking-widest ${passed ? 'text-[#10B981]' : 'text-red-500'}`}>
                   {passed ? '// SUCCESS' : '// ERROR_OVERFLOW'}
@@ -370,8 +370,8 @@ export default function TestPage() {
 
               <div className="p-8 text-center space-y-4">
                 <div className="relative w-20 h-20 mx-auto">
-                  <div className={`absolute inset-0 rounded blur-lg opacity-30 ${passed ? 'bg-accent-green' : 'bg-red-500'}`} />
-                  <div className="relative w-full h-full border border-[#2A2E3D] bg-[#0D0E12] rounded flex items-center justify-center text-4xl">
+                  <div className={`absolute inset-0 rounded blur-lg opacity-30 ${passed ? 'bg-[#10B981]' : 'bg-red-500'}`} />
+                  <div className="relative w-full h-full border border-[var(--ide-border)] bg-[var(--ide-header-bg)] rounded flex items-center justify-center text-3xl">
                     {passed ? '🏆' : '💪'}
                   </div>
                 </div>
@@ -380,7 +380,7 @@ export default function TestPage() {
                   <h2 className={`text-2xl font-mono font-bold uppercase tracking-wider ${passed ? 'text-[#10B981]' : 'text-red-500'}`}>
                     {passed ? 'COMPILATION OK // CLEARED' : 'THREAD GRIDLOCKED // REATTEMPT'}
                   </h2>
-                  <p className="text-gray-400 text-xs font-mono max-w-sm mx-auto leading-relaxed">
+                  <p className="text-[var(--text-secondary)] text-xs font-sans max-w-sm mx-auto leading-relaxed">
                     {passed 
                       ? `Successfully mapped ${score}/10 core logic ports in ${meta.name}. Synergy matrix verified ok.` 
                       : `Mapped ${score}/10 correct ports in ${meta.name}. Systems require 70%+ correct vectors to compile access.`
@@ -391,192 +391,144 @@ export default function TestPage() {
             </div>
 
             {/* Score Ring + Stats Matrix */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border border-[#2A2E3D] rounded bg-[#0D0E12] p-8">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border border-[var(--ide-border)] rounded-lg bg-[var(--ide-bg)] p-8">
               
               {/* Radial score ring */}
               <div className="md:col-span-5 flex justify-center">
                 <div className="relative w-36 h-36">
                   <div className={`absolute inset-2 rounded-full blur-xl opacity-20 ${passed ? 'bg-[#10B981]' : 'bg-red-500'}`} />
                   <svg className="w-full h-full -rotate-90 relative z-10" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="52" fill="none" stroke="#2A2E3D" strokeWidth="6"/>
-                    <motion.circle cx="60" cy="60" r="52" fill="none" strokeWidth="6" strokeLinecap="round"
-                      stroke={passed ? '#10B981' : '#EF4444'} strokeDasharray={`${2*Math.PI*52}`}
-                      initial={{ strokeDashoffset: 2*Math.PI*52 }} 
-                      animate={{ strokeDashoffset: 2*Math.PI*52-(score/TOTAL_QUESTIONS)*2*Math.PI*52 }}
-                      transition={{ delay: 0.2, duration: 1 }} 
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1E2333" strokeWidth="8" />
+                    <motion.circle 
+                      cx="60" 
+                      cy="60" 
+                      r="50" 
+                      fill="none" 
+                      stroke={passed ? "#10B981" : "#EF4444"} 
+                      strokeWidth="8" 
+                      strokeDasharray={314}
+                      initial={{ strokeDashoffset: 314 }}
+                      animate={{ strokeDashoffset: 314 - (314 * score) / 10 }}
+                      transition={{ duration: 1.2, ease: "easeOut" }}
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-20 font-mono">
-                    <span className={`text-4xl font-bold leading-none ${passed ? 'text-[#10B981]' : 'text-red-500'}`}>
-                      {score}
-                    </span>
-                    <span className="text-[9px] text-gray-500 uppercase tracking-widest mt-0.5">OF 10 PORT</span>
-                    <span className={`text-[8px] font-bold px-2 py-0.5 rounded mt-1.5 ${passed ? 'bg-accent-green/10 text-accent-green' : 'bg-red-950/20 text-red-500'}`}>
-                      {Math.round((score/TOTAL_QUESTIONS)*100)}% OK
-                    </span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center font-mono">
+                    <span className="text-3xl font-black text-[var(--text-primary)]">{score * 10}%</span>
+                    <span className="text-[8px] text-[var(--text-muted)] font-bold uppercase tracking-widest">SYNERGY</span>
                   </div>
                 </div>
               </div>
 
-              {/* Stats telemetry */}
-              <div className="md:col-span-7 grid grid-cols-2 gap-4 text-left font-mono">
-                {[
-                  { val: attempted, label: 'COMPILATIONS', color: '#3B82F6', icon: CheckCircle2 },
-                  { val: score, label: 'VALID PORTS', color: '#10B981', icon: Target },
-                  { val: wrong, label: 'CRITICAL ERR', color: '#EF4444', icon: XCircle },
-                  { val: `+${score*5} HP`, label: 'PRESTIGE XP', color: '#F59E0B', icon: Trophy }
-                ].map((s) => (
-                  <div key={s.label} className="p-3 rounded border border-[#2A2E3D] bg-[#15171F]/50 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded border flex items-center justify-center shrink-0" style={{ color: s.color, borderColor: `${s.color}25` }}>
-                      <s.icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-md font-bold text-white leading-none">{s.val}</p>
-                      <p className="text-[8px] text-gray-500 uppercase font-bold tracking-widest mt-1">{s.label}</p>
-                    </div>
-                  </div>
-                ))}
+              {/* Detail list */}
+              <div className="md:col-span-7 font-mono text-xs space-y-3.5">
+                <div className="flex justify-between border-b border-[var(--ide-border)]/50 pb-2 text-[var(--text-muted)] uppercase tracking-widest font-bold">
+                  <span>TELEMETRY METRIC</span>
+                  <span>VALUE</span>
+                </div>
+                <div className="flex justify-between uppercase">
+                  <span className="text-[var(--text-secondary)]">Total Ports Assessed</span>
+                  <span className="text-[var(--text-primary)] font-bold">{TOTAL_QUESTIONS}</span>
+                </div>
+                <div className="flex justify-between uppercase">
+                  <span className="text-[var(--text-secondary)]">Compiled Correct</span>
+                  <span className="text-[#10B981] font-bold">+{score}</span>
+                </div>
+                <div className="flex justify-between uppercase">
+                  <span className="text-[var(--text-secondary)]">Syntactic Failures</span>
+                  <span className="text-red-500 font-bold">{wrong}</span>
+                </div>
+                <div className="flex justify-between border-t border-[var(--ide-border)]/50 pt-2 text-[var(--text-muted)] uppercase tracking-widest font-bold">
+                  <span>FINAL EVALUATION STATUS</span>
+                  <span className={passed ? 'text-[#10B981]' : 'text-red-500'}>
+                    {passed ? 'PASS' : 'FAIL'}
+                  </span>
+                </div>
               </div>
 
             </div>
 
             {/* Actions */}
-            <div className="bg-[#15171F] border border-[#2A2E3D] rounded p-5 flex items-center justify-between font-mono text-xs select-none">
-              <div className="flex items-center gap-3">
-                {passed ? (
-                  <>
-                    <button 
-                      onClick={() => router.push('/student/dashboard')} 
-                      className="px-5 py-3 border border-[#2A2E3D] hover:border-gray-500 text-gray-400 hover:text-white rounded uppercase font-bold transition-colors"
-                    >
-                      Dashboard
-                    </button>
-                    
-                    <button 
-                      onClick={() => {
-                        try {
-                          const p = JSON.parse(localStorage.getItem('dateforcode_progress') || '{}');
-                          p.skillDone = true;
-                          const today = new Date().toISOString().split('T')[0];
-                          if (p.lastDate !== today) {
-                            p.streak = (p.streak || 0) + 1;
-                            p.lastDate = today;
-                          }
-                          localStorage.setItem('dateforcode_progress', JSON.stringify(p));
-                        } catch(_) {}
-                        router.push(`/student/matching-room?skill=${skillId}`);
-                      }}
-                      className="px-6 py-3 bg-[#10B981] hover:bg-[#059669] text-white rounded font-bold uppercase transition-all shadow-lg shadow-green-950/20 flex items-center gap-1.5"
-                    >
-                      <Sparkles className="w-4 h-4"/>ENTER MATCHING ROOM
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button 
-                      onClick={() => router.push('/student/skill-assessment')} 
-                      className="px-5 py-3 border border-[#2A2E3D] hover:border-gray-500 text-gray-400 hover:text-white rounded uppercase font-bold transition-colors"
-                    >
-                      Exit Node
-                    </button>
-                    
-                    <button 
-                      onClick={() => window.location.reload()}
-                      className="px-6 py-3 bg-[#FF3366] hover:bg-accent-pink-hover text-white rounded font-bold uppercase transition-all shadow-lg shadow-red-950/20 flex items-center gap-1.5"
-                    >
-                      <RotateCcw className="w-4 h-4"/>RE-INIT PROTOCOL
-                    </button>
-                  </>
-                )}
-              </div>
-
+            <div className="flex items-center gap-4 font-mono text-xs pt-2">
               <button 
-                onClick={() => setShowReview(!showReview)} 
-                className="px-4 py-3 border border-[#2A2E3D] hover:border-gray-500 text-gray-400 hover:text-white rounded uppercase font-bold transition-colors flex items-center gap-2"
+                onClick={() => router.push('/student/skill-assessment')}
+                className="flex-1 py-3.5 border border-[var(--ide-border)] hover:border-accent-pink text-[var(--text-secondary)] hover:text-accent-pink rounded uppercase font-bold transition-all flex items-center justify-center gap-1.5"
               >
-                {showReview ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
-                {showReview ? 'HIDE REVIEW' : 'REVIEW INTERNALS'}
+                <RotateCcw className="w-4 h-4" /> RE-RUN COMPILER
+              </button>
+              
+              {passed ? (
+                <button 
+                  onClick={() => router.push('/student/matching-room?skill=' + skillId)}
+                  className="btn-premium flex-1 py-3.5 flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-4 h-4" /> Matchmaking Arena
+                </button>
+              ) : (
+                <button 
+                  onClick={() => router.push('/student/dashboard')}
+                  className="flex-1 py-3.5 bg-red-950/20 border border-red-900/30 text-red-400 hover:text-red-500 hover:bg-red-950/40 rounded uppercase font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Home className="w-4 h-4" /> Dash Terminal
+                </button>
+              )}
+            </div>
+
+            {/* Assessment review trigger toggle */}
+            <div className="text-center font-mono">
+              <button 
+                onClick={() => setShowReview(!showReview)}
+                className="text-[10px] text-[var(--text-muted)] hover:text-accent-pink transition-colors font-bold uppercase tracking-widest"
+              >
+                {showReview ? '// HIDE DIAGNOSTIC REVIEW' : '// SHOW DIAGNOSTIC REVIEW'}
               </button>
             </div>
 
-            {/* Answer Review list */}
+            {/* Question Review Block */}
             <AnimatePresence>
               {showReview && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 15 }} 
-                  animate={{ opacity: 1, y: 0 }} 
-                  exit={{ opacity: 0, y: -10 }} 
-                  className="space-y-4 font-mono text-xs"
+                  initial={{ opacity: 0, height: 0 }} 
+                  animate={{ opacity: 1, height: 'auto' }} 
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-4 overflow-hidden pt-2"
                 >
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-accent-pink"/> 
-                    INTERNALS LOGS SUMMARY
-                  </p>
-                  
-                  {questions.map((q, i) => {
-                    const userAns = answers[i]; 
-                    const isCorrect = userAns === q.answer; 
-                    const notAttempted = userAns === null;
-                    const borderC = notAttempted ? 'border-[#2A2E3D]' : isCorrect ? 'border-accent-green/30 bg-accent-green/5' : 'border-red-950/30 bg-red-950/5';
-                    
-                    return (
-                      <div key={i} className={`rounded border p-5 space-y-4 ${borderC}`}>
-                        <div className="flex items-start gap-3">
-                          <div className={`w-8 h-8 rounded border flex items-center justify-center font-bold text-xs shrink-0 ${
-                            notAttempted 
-                              ? 'border-[#2A2E3D] text-gray-500 bg-transparent' 
-                              : isCorrect 
-                                ? 'border-[#10B981] text-[#10B981] bg-[#10B981]/5' 
-                                : 'border-[#EF4444] text-[#EF4444] bg-[#EF4444]/5'
-                          }`}>
-                            {notAttempted ? '—' : isCorrect ? '✓' : '✗'}
-                          </div>
-                          <div className="flex-1">
-                            <span className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                              notAttempted 
-                                ? 'bg-transparent text-gray-500 border border-[#2A2E3D]' 
-                                : isCorrect 
-                                  ? 'bg-accent-green/10 text-accent-green border border-accent-green/20' 
-                                  : 'bg-red-950/20 text-red-500 border border-red-900/20'
-                            }`}>
-                              PORT_0{i+1} • {notAttempted ? 'NOT ATTEMPTED' : isCorrect ? 'COMPILED SUCCESS' : 'VERIFY FAILED'}
+                  <div className="ide-panel-header justify-between py-2 border-b border-[var(--ide-border)] bg-[var(--ide-header-bg)]">
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest font-bold">telemetry_diagnostic_report.log</span>
+                  </div>
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {questions.map((q, i) => {
+                      const userAns = answers[i];
+                      const isCorrect = userAns === q.answer;
+                      return (
+                        <div key={q.id} className="p-5 border border-[var(--ide-border)] bg-[var(--ide-bg)]/80 rounded-lg space-y-3 font-mono text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[var(--text-muted)] font-bold uppercase">PORT_0{i+1}_METRICS</span>
+                            <span className={`font-bold flex items-center gap-1 uppercase ${isCorrect ? 'text-[#10B981]' : 'text-red-500'}`}>
+                              {isCorrect ? <CheckCircle2 className="w-3.5 h-3.5"/> : <XCircle className="w-3.5 h-3.5"/>}
+                              {isCorrect ? 'OK' : 'MISALIGNED'}
                             </span>
-                            <p className="text-sm font-bold text-white mt-2 leading-relaxed">
-                              {q.q}
-                            </p>
+                          </div>
+                          <p className="text-[var(--text-primary)] font-bold leading-relaxed">{q.q}</p>
+                          <div className="space-y-1.5 pt-2">
+                            {q.options.map((opt, oi) => {
+                              const isCorrectOption = oi === q.answer;
+                              const isUserOption = oi === userAns;
+                              let textColor = "text-[var(--text-secondary)]";
+                              if (isCorrectOption) textColor = "text-[#10B981] font-bold";
+                              else if (isUserOption) textColor = "text-red-500 font-bold";
+
+                              return (
+                                <div key={oi} className={`flex items-start gap-2 ${textColor}`}>
+                                  <span>{String.fromCharCode(65 + oi)}.</span>
+                                  <span>{opt}</span>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 ml-11">
-                          {q.options.map((opt, oi) => {
-                            const isUserPick = userAns === oi; 
-                            const isRight = q.answer === oi;
-                            
-                            let boxStyle = "border-[#2A2E3D] text-gray-400 bg-transparent";
-                            if (isRight) boxStyle = "border-accent-green/40 text-accent-green bg-accent-green/5";
-                            else if (isUserPick) boxStyle = "border-red-950 text-red-400 bg-red-950/20";
-                            
-                            return (
-                              <div key={oi} className={`px-4 py-2.5 rounded border text-xs font-bold flex items-center gap-2 ${boxStyle}`}>
-                                <span className={`w-5 h-5 rounded flex items-center justify-center text-[9px] font-black shrink-0 ${
-                                  isRight 
-                                    ? 'bg-[#10B981]/15 text-[#10B981]' 
-                                    : isUserPick 
-                                      ? 'bg-red-950/20 text-red-500' 
-                                      : 'bg-[#08090C] text-gray-600'
-                                }`}>
-                                  {String.fromCharCode(65 + oi)}
-                                </span>
-                                <span className="flex-1 text-[11px] font-bold">{opt}</span>
-                                {isRight && <CheckCircle2 className="w-3.5 h-3.5 ml-auto text-accent-green shrink-0"/>}
-                                {isUserPick && !isRight && <XCircle className="w-3.5 h-3.5 ml-auto text-red-500 shrink-0"/>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -585,55 +537,49 @@ export default function TestPage() {
         </div>
       )}
 
-      {/* ═══ CONSOLE TERMINATE DIALOG ═══ */}
+      {/* Exit verification screen */}
       <AnimatePresence>
         {showEndConfirm && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[99999] flex items-center justify-center p-4" 
-            onClick={() => setShowEndConfirm(false)}
-          >
-            <div className="absolute inset-0 bg-black/85 backdrop-blur-sm"/>
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/85 z-[10000] backdrop-blur-sm" />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
-              exit={{ scale: 0.95 }} 
-              onClick={e => e.stopPropagation()} 
-              className="relative bg-[#0D0E12] border border-red-500/40 rounded-lg p-8 max-w-sm w-full shadow-2xl text-center font-mono text-xs"
+              exit={{ scale: 0.95, opacity: 0 }} 
+              className="fixed inset-0 z-[10001] flex items-center justify-center p-4"
             >
-              <div className="absolute top-0 left-0 w-full h-[3px] bg-[#EF4444]" />
-              <div className="w-14 h-14 mx-auto rounded border border-red-900/30 bg-red-950/10 flex items-center justify-center mb-4">
-                <AlertTriangle className="w-7 h-7 text-red-500 animate-pulse"/>
-              </div>
-              
-              <h3 className="text-md font-bold text-white mb-2 uppercase tracking-wider">TERMINATE VERIFICATION?</h3>
-              <p className="text-gray-400 mb-1 leading-relaxed">
-                You have resolved {attempted} of 10 threads.
-              </p>
-              <p className="text-red-400 font-bold mb-6">
-                UNRESOLVED PORTS WILL BE EVALUATED AS ZERO.
-              </p>
-              
-              <div className="flex gap-4">
-                <button 
-                  onClick={() => setShowEndConfirm(false)} 
-                  className="flex-1 py-3 border border-[#2A2E3D] hover:border-gray-500 rounded text-gray-400 hover:text-white uppercase font-bold transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={() => { setShowEndConfirm(false); handleSubmit(); }} 
-                  className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded uppercase font-bold transition-colors"
-                >
-                  End Scan
-                </button>
+              <div className="bg-[var(--ide-bg)] border border-red-500/40 rounded-lg p-8 max-w-sm w-full relative overflow-hidden font-mono">
+                <div className="absolute top-0 left-0 w-full h-[3px] bg-red-500" />
+                <div className="w-12 h-12 rounded border border-red-900/30 bg-red-950/10 flex items-center justify-center mx-auto mb-5 text-red-500">
+                  <AlertTriangle className="w-6 h-6" />
+                </div>
+                <h3 className="text-[var(--text-primary)] font-bold uppercase tracking-wider text-center text-sm mb-2">ABORT ACTIVE PROTOCOL?</h3>
+                <p className="text-[var(--text-secondary)] text-xs text-center leading-relaxed mb-6 font-sans">
+                  Terminating the assessment now will cause a system disconnect and abort the current compiler process. Attempts can be re-run later.
+                </p>
+                <div className="flex gap-4 text-xs font-bold">
+                  <button 
+                    onClick={() => setShowEndConfirm(false)}
+                    className="flex-1 py-3 border border-[var(--ide-border)] hover:border-accent-pink rounded text-[var(--text-secondary)] hover:text-accent-pink transition-colors uppercase"
+                  >
+                    Resume
+                  </button>
+                  <button 
+                    onClick={() => {
+                      (async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); } catch(_) {} })();
+                      router.push('/student/skill-assessment');
+                    }}
+                    className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded transition-colors uppercase"
+                  >
+                    Abort
+                  </button>
+                </div>
               </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
+
     </main>
   );
 }

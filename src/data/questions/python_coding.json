@@ -1,0 +1,1816 @@
+[
+  {
+    "id": 1,
+    "title": "Median of Two Sorted Arrays",
+    "difficulty": "Hard",
+    "functionName": "findMedianSortedArrays",
+    "description": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).",
+    "constraints": [
+      "nums1.length == m",
+      "nums2.length == n",
+      "0 <= m, n <= 1000",
+      "-10^6 <= nums1[i], nums2[i] <= 10^6"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1, 3], [2]",
+        "expectedOutput": "2.0"
+      },
+      {
+        "input": "[1, 2], [3, 4]",
+        "expectedOutput": "2.5"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[0, 0], [0, 0]",
+        "expectedOutput": "0.0"
+      },
+      {
+        "input": "[], [1]",
+        "expectedOutput": "1.0"
+      },
+      {
+        "input": "[2], []",
+        "expectedOutput": "2.0"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Regular Expression Matching",
+    "difficulty": "Hard",
+    "functionName": "isMatch",
+    "description": "Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where '.' matches any single character and '*' matches zero or more of the preceding element.",
+    "constraints": [
+      "1 <= s.length <= 20",
+      "1 <= p.length <= 20",
+      "s contains only lowercase English letters.",
+      "p contains only lowercase English letters, '.', and '*'."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'aa', 'a'",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "'aa', 'a*'",
+        "expectedOutput": "True"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'ab', '.*'",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "'aab', 'c*a*b'",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "'mississippi', 'mis*is*ip*.'",
+        "expectedOutput": "True"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Merge k Sorted Lists",
+    "difficulty": "Hard",
+    "functionName": "mergeKLists",
+    "description": "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it.",
+    "constraints": [
+      "k == lists.length",
+      "0 <= k <= 10^4",
+      "0 <= lists[i].length <= 500",
+      "-10^4 <= lists[i][j] <= 10^4"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[1,4,5],[1,3,4],[2,6]]",
+        "expectedOutput": "[1,1,2,3,4,4,5,6]"
+      },
+      {
+        "input": "[]",
+        "expectedOutput": "[]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[]]",
+        "expectedOutput": "[]"
+      },
+      {
+        "input": "[[-1,5,11],[-9,-4,0,2],[1,3,7,12]]",
+        "expectedOutput": "[-9,-4,-1,0,1,2,3,5,7,11,12]"
+      },
+      {
+        "input": "[[1,3],[2,4],[5,6]]",
+        "expectedOutput": "[1,2,3,4,5,6]"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Reverse Nodes in k-Group",
+    "difficulty": "Hard",
+    "functionName": "reverseKGroup",
+    "description": "Given the head of a linked list, reverse the nodes of the list k at a time, and return the modified list. k is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of k then left-out nodes, in the end, should remain as they are.",
+    "constraints": [
+      "The number of nodes in the list is n.",
+      "1 <= k <= n <= 5000",
+      "0 <= Node.val <= 1000"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1,2,3,4,5], 2",
+        "expectedOutput": "[2,1,4,3,5]"
+      },
+      {
+        "input": "[1,2,3,4,5], 3",
+        "expectedOutput": "[3,2,1,4,5]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[1,2,3,4,5], 1",
+        "expectedOutput": "[1,2,3,4,5]"
+      },
+      {
+        "input": "[1], 1",
+        "expectedOutput": "[1]"
+      },
+      {
+        "input": "[1,2,3,4,5,6,7,8], 4",
+        "expectedOutput": "[4,3,2,1,8,7,6,5]"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Substring with Concatenation of All Words",
+    "difficulty": "Hard",
+    "functionName": "findSubstring",
+    "description": "You are given a string s and an array of strings words. All the strings of words are of the same length. Return the starting indices of all substrings in s that is a concatenation of each word in words exactly once, in any order, without any intervening characters.",
+    "constraints": [
+      "1 <= s.length <= 10^4",
+      "1 <= words.length <= 5000",
+      "1 <= words[i].length <= 30",
+      "s and words[i] consist of lowercase English letters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'barfoothefoobarman', ['foo','bar']",
+        "expectedOutput": "[0, 9]"
+      },
+      {
+        "input": "'wordgoodgoodgoodwordestingbah', ['word','good','best','word']",
+        "expectedOutput": "[]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'barfoofoobarthefoobarman', ['bar','foo','the']",
+        "expectedOutput": "[6, 9, 12]"
+      },
+      {
+        "input": "'wordgoodgoodgoodbestword', ['word','good','best','good']",
+        "expectedOutput": "[8]"
+      },
+      {
+        "input": "'lingmindraboofooowingdingbarrwingmonkeypoundcake', ['fooo','barr','wing','ding']",
+        "expectedOutput": "[13]"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Longest Valid Parentheses",
+    "difficulty": "Hard",
+    "functionName": "longestValidParentheses",
+    "description": "Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses substring.",
+    "constraints": [
+      "0 <= s.length <= 3 * 10^4",
+      "s[i] is '(' or ')'."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'(()'",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "')()())'",
+        "expectedOutput": "4"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "''",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "'()(()'",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "'(((())))()'",
+        "expectedOutput": "10"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "First Missing Positive",
+    "difficulty": "Hard",
+    "functionName": "firstMissingPositive",
+    "description": "Given an unsorted integer array nums. Return the smallest positive integer that is not present in nums. You must implement an algorithm that runs in O(n) time and uses O(1) auxiliary space.",
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-2^31 <= nums[i] <= 2^31 - 1"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1,2,0]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[3,4,-1,1]",
+        "expectedOutput": "2"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[7,8,9,11,12]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[1,2,3,4,5,6]",
+        "expectedOutput": "7"
+      },
+      {
+        "input": "[-5, 1000, 2, 1, 0, -20]",
+        "expectedOutput": "3"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "functionName": "trap",
+    "description": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "constraints": [
+      "n == height.length",
+      "1 <= n <= 2 * 10^4",
+      "0 <= height[i] <= 10^5"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[0,1,0,2,1,0,1,3,2,1,2,1]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[4,2,0,3,2,5]",
+        "expectedOutput": "9"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[0,0,0,0]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[1,2,3,4,5]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[3,0,2,0,4]",
+        "expectedOutput": "7"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "N-Queens",
+    "difficulty": "Hard",
+    "functionName": "solveNQueens",
+    "description": "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Given an integer n, return all distinct solutions to the n-queens puzzle. You may return the answer in any order. Each solution contains a distinct board configuration of the queen's placement, where 'Q' and '.' both indicate a queen and an empty space, respectively.",
+    "constraints": [
+      "1 <= n <= 9"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "4",
+        "expectedOutput": "[['.Q..', '...Q', 'Q...', '..Q.'], ['..Q.', 'Q...', '...Q', '.Q..']]"
+      },
+      {
+        "input": "1",
+        "expectedOutput": "[['Q']]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "2",
+        "expectedOutput": "[]"
+      },
+      {
+        "input": "3",
+        "expectedOutput": "[]"
+      },
+      {
+        "input": "5",
+        "expectedOutput": "[['Q....', '..Q..', '....Q', '.Q...', '...Q.'], ['Q....', '...Q.', '.Q...', '....Q', '..Q..'], ['.Q...', '...Q.', 'Q...', '..Q..', '....Q'], ['.Q...', '....Q', '..Q..', 'Q...', '...Q.'], ['..Q..', 'Q...', '...Q.', '.Q...', '....Q'], ['..Q..', '....Q', '.Q...', '...Q.', 'Q...'], ['...Q.', 'Q...', '..Q..', '....Q', '.Q...'], ['...Q.', '..Q..', 'Q...', '...Q.', '.Q...'], ['....Q', '.Q...', '...Q.', 'Q...', '..Q..'], ['....Q', '..Q..', 'Q...', '...Q.', '.Q...']]"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Wildcard Matching",
+    "difficulty": "Hard",
+    "functionName": "isMatchWildcard",
+    "description": "Given an input string s and a pattern p, implement wildcard pattern matching with support for '?' and '*' where '?' matches any single character and '*' matches any sequence of characters (including the empty sequence).",
+    "constraints": [
+      "0 <= s.length, p.length <= 2000",
+      "s contains only lowercase English letters.",
+      "p contains only lowercase English letters, '?' and '*'."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'aa', 'a'",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "'aa', '*'",
+        "expectedOutput": "True"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'cb', '?a'",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "'adceb', '*a*b'",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "'acdcb', 'a*c?b'",
+        "expectedOutput": "False"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Longest Increasing Path in a Matrix",
+    "difficulty": "Hard",
+    "functionName": "longestIncreasingPath",
+    "description": "Given an m x n integers matrix, return the length of the longest increasing path in matrix. From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary.",
+    "constraints": [
+      "m == matrix.length",
+      "n == matrix[i].length",
+      "1 <= m, n <= 200",
+      "0 <= matrix[i][j] <= 2^31 - 1"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[9,9,4],[6,6,8],[2,1,1]]",
+        "expectedOutput": "4"
+      },
+      {
+        "input": "[[3,4,5],[3,2,6],[2,2,1]]",
+        "expectedOutput": "4"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[1]]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[[1, 2], [3, 4]]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[[5, 8, 9], [4, 7, 10], [3, 2, 11]]",
+        "expectedOutput": "6"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Jump Game IV",
+    "difficulty": "Hard",
+    "functionName": "minJumps",
+    "description": "Given an array of integers arr, you are initially positioned at the first index of the array. In one step you can jump from index i to index: i + 1, i - 1, or any index j where arr[i] == arr[j] and i != j. Return the minimum number of steps to reach the last index of the array.",
+    "constraints": [
+      "1 <= arr.length <= 5 * 10^4",
+      "-10^8 <= arr[i] <= 10^8"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[100,-23,-23,404,100,23,23,23,3,404]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[7]",
+        "expectedOutput": "0"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[7,6,9,6,9,6,9,7]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[6,1,9]",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "[11,22,7,7,7,7,7,7,7,22,13]",
+        "expectedOutput": "3"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Palindrome Partitioning II",
+    "difficulty": "Hard",
+    "functionName": "minCut",
+    "description": "Given a string s, partition s such that every substring of the partition is a palindrome. Return the minimum cuts needed for a palindrome partitioning of s.",
+    "constraints": [
+      "1 <= s.length <= 2000",
+      "s consists of lowercase English letters only."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'aab'",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "'a'",
+        "expectedOutput": "0"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'ab'",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "'abcba'",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "'apapapapapapapapapapapapapap'",
+        "expectedOutput": "0"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Word Ladder II",
+    "difficulty": "Hard",
+    "functionName": "findLadders",
+    "description": "A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that every adjacent pair of words differs by a single letter, and all words are in wordList. Return all the shortest transformation sequences from beginWord to endWord, or an empty list if no such sequence exists.",
+    "constraints": [
+      "1 <= beginWord.length <= 5",
+      "endWord.length == beginWord.length",
+      "1 <= wordList.length <= 500",
+      "wordList[i].length == beginWord.length",
+      "beginWord, endWord, and wordList[i] consist of lowercase English letters.",
+      "All words in wordList are unique."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'hit', 'cog', ['hot','dot','dog','lot','log','cog']",
+        "expectedOutput": "[['hit', 'hot', 'dot', 'dog', 'cog'], ['hit', 'hot', 'lot', 'log', 'cog']]"
+      },
+      {
+        "input": "'hit', 'cog', ['hot','dot','dog','lot','log']",
+        "expectedOutput": "[]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'a', 'c', ['a','b','c']",
+        "expectedOutput": "[['a', 'c']]"
+      },
+      {
+        "input": "'red', 'tax', ['ted','tex','red','tax','tad','den','rex','pee']",
+        "expectedOutput": "[['red', 'ted', 'tad', 'tax'], ['red', 'ted', 'tex', 'tax'], ['red', 'rex', 'tex', 'tax']]"
+      },
+      {
+        "input": "'lost', 'cost', ['most','fist','lost','cost']",
+        "expectedOutput": "[['lost', 'cost']]"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Word Search II",
+    "difficulty": "Hard",
+    "functionName": "findWords",
+    "description": "Given an m x n board of characters and a list of strings words, return all words on the board. Each word must be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.",
+    "constraints": [
+      "m == board.length",
+      "n == board[i].length",
+      "1 <= m, n <= 12",
+      "1 <= words.length <= 3 * 10^4",
+      "1 <= words[i].length <= 10",
+      "board and words[i] consist of lowercase English letters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[['o','a','a','n'],['e','t','a','e'],['i','h','k','r'],['i','f','l','v']], ['oath','pea','eat','rain']",
+        "expectedOutput": "['eat', 'oath']"
+      },
+      {
+        "input": "[['a','b'],['c','d']], ['abcb']",
+        "expectedOutput": "[]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[['a']], ['a']",
+        "expectedOutput": "['a']"
+      },
+      {
+        "input": "[['a','b','c'],['a','e','d'],['a','g','f']], ['abcdefg','abces','adef']",
+        "expectedOutput": "['adef']"
+      },
+      {
+        "input": "[['a','b'],['a','b']], ['aba','ab','bab','ba']",
+        "expectedOutput": "['ab', 'aba', 'ba', 'bab']"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Edit Distance",
+    "difficulty": "Hard",
+    "functionName": "minDistance",
+    "description": "Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2. You have the following three operations permitted on a word: Insert a character, Delete a character, Replace a character.",
+    "constraints": [
+      "0 <= word1.length, word2.length <= 500",
+      "word1 and word2 consist of lowercase English letters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'horse', 'ros'",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "'intention', 'execution'",
+        "expectedOutput": "5"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'', ''",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "'a', ''",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "'zoologico', 'zoologico'",
+        "expectedOutput": "0"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Maximal Rectangle",
+    "difficulty": "Hard",
+    "functionName": "maximalRectangle",
+    "description": "Given a rows x cols binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.",
+    "constraints": [
+      "rows == matrix.length",
+      "cols == matrix[i].length",
+      "1 <= rows, cols <= 200",
+      "matrix[i][j] is '0' or '1'."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[['1','0','1','0','0'],['1','0','1','1','1'],['1','1','1','1','1'],['1','0','0','1','0']]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[['0']]",
+        "expectedOutput": "0"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[['1']]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[['0','0'],['0','0']]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[['1','1','1'],['1','1','1'],['1','1','1']]",
+        "expectedOutput": "9"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Largest Rectangle in Histogram",
+    "difficulty": "Hard",
+    "functionName": "largestRectangleArea",
+    "description": "Given an array of integers heights representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.",
+    "constraints": [
+      "1 <= heights.length <= 10^5",
+      "0 <= heights[i] <= 10^4"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[2,1,5,6,2,3]",
+        "expectedOutput": "10"
+      },
+      {
+        "input": "[2,4]",
+        "expectedOutput": "4"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[1]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[0, 0, 0, 0, 1]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[11, 11, 11, 11]",
+        "expectedOutput": "44"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "Hard",
+    "functionName": "maxPathSum",
+    "description": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root. The path sum of a path is the sum of the node's values in the path. Given the root of a binary tree, return the maximum path sum of any non-empty path.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 3 * 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1,2,3]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[-10,9,20,None,None,15,7]",
+        "expectedOutput": "42"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[-3]",
+        "expectedOutput": "-3"
+      },
+      {
+        "input": "[2,-1]",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "[1,-2,-3,1,3,-2,None,-1]",
+        "expectedOutput": "3"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "title": "Best Time to Buy and Sell Stock IV",
+    "difficulty": "Hard",
+    "functionName": "maxProfit",
+    "description": "You are given an integer array prices where prices[i] is the price of a given stock on the i-th day, and an integer k. Find the maximum profit you can achieve. You may complete at most k transactions. Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).",
+    "constraints": [
+      "1 <= k <= 100",
+      "1 <= prices.length <= 1000",
+      "0 <= prices[i] <= 1000"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "2, [2,4,1]",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "2, [3,2,6,5,0,3]",
+        "expectedOutput": "7"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "0, [1,2,3,4,5]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "1, [1, 10]",
+        "expectedOutput": "9"
+      },
+      {
+        "input": "100, [1, 2, 4, 2, 5, 7, 2, 4, 9, 0]",
+        "expectedOutput": "17"
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "title": "LFU Cache",
+    "difficulty": "Hard",
+    "functionName": "LFUCache",
+    "description": "Design and implement a data structure for a Least Frequently Used (LFU) cache. Implement the LFUCache class with capacity, get(key), and put(key, value) operations. get(key) returns the value of the key if it exists, otherwise -1. put(key, value) updates the value of the key if present, or inserts it. When capacity is full, it should invalidate the least frequently used key before inserting. If there is a tie, the least recently used key should be invalidated. All operations must run in O(1) average time complexity.",
+    "constraints": [
+      "0 <= capacity <= 10^4",
+      "0 <= key <= 10^5",
+      "0 <= value <= 10^9",
+      "At most 2 * 10^5 calls will be made to get and put."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "['LFUCache','put','put','get','put','get','get','put','get','get','get'], [[2],[1,1],[2,2],[1],[3,3],[2],[3],[4,4],[1],[3],[4]]",
+        "expectedOutput": "[None, None, None, 1, None, -1, 3, None, -1, 3, 4]"
+      },
+      {
+        "input": "['LFUCache','put','get'], [[0],[1,1],[1]]",
+        "expectedOutput": "[None, None, -1]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "['LFUCache','put','put','put','get','put','get'], [[2],[1,10],[2,20],[3,30],[1],[4,40],[3]]",
+        "expectedOutput": "[None, None, None, None, -1, None, 30]"
+      },
+      {
+        "input": "['LFUCache','put','get','put','get'], [[1],[2,3],[2],[4,5],[2]]",
+        "expectedOutput": "[None, None, 3, None, -1]"
+      },
+      {
+        "input": "['LFUCache','put','put','get','get','put','get'], [[2],[1,5],[2,10],[1],[1],[3,15],[2]]",
+        "expectedOutput": "[None, None, None, 5, 5, None, -1]"
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Word Break II",
+    "difficulty": "Hard",
+    "functionName": "wordBreak",
+    "description": "Given a string s and a dictionary of strings wordDict, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences in any order. Note that the same word in the dictionary may be reused multiple times in the segmentation.",
+    "constraints": [
+      "1 <= s.length <= 20",
+      "1 <= wordDict.length <= 1000",
+      "1 <= wordDict[i].length <= 10",
+      "s and wordDict[i] consist of lowercase English letters.",
+      "All words in wordDict are unique."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'catsanddog', ['cat','cats','and','sand','dog']",
+        "expectedOutput": "['cat sand dog', 'cats and dog']"
+      },
+      {
+        "input": "'pineapplepenapple', ['apple','pen','applepen','pine','pineapple']",
+        "expectedOutput": "['pine apple pen apple', 'pine applepen apple', 'pineapple pen apple']"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'catsandog', ['cats','dog','sand','and','cat']",
+        "expectedOutput": "[]"
+      },
+      {
+        "input": "'a', ['a']",
+        "expectedOutput": "['a']"
+      },
+      {
+        "input": "'aaaaaaa', ['a','aa','aaa']",
+        "expectedOutput": "['a a a a a a a', 'a a a a a aa', 'a a a a aa a', 'a a a aa a a', 'a a a aaa', 'a a aa a a a', 'a a aa aa', 'a a aaa a', 'a aa a a a a', 'a aa a aa', 'a aa aa a', 'a aa aaa', 'a aaa a a', 'a aaa aa', 'aa a a a a a', 'aa a a aa', 'aa a aa a', 'aa a aaa', 'aa aa a a', 'aa aa aa', 'aa aaa a', 'aaa a a a', 'aaa a aa', 'aaa aa a', 'aaa aaa']"
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "title": "Sliding Window Maximum",
+    "difficulty": "Hard",
+    "functionName": "maxSlidingWindow",
+    "description": "You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position. Return the max sliding window.",
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4",
+      "1 <= k <= nums.length"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1,3,-1,-3,5,3,6,7], 3",
+        "expectedOutput": "[3, 3, 5, 5, 6, 7]"
+      },
+      {
+        "input": "[1], 1",
+        "expectedOutput": "[1]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[9,11], 2",
+        "expectedOutput": "[11]"
+      },
+      {
+        "input": "[4,-2], 2",
+        "expectedOutput": "[4]"
+      },
+      {
+        "input": "[1,3,1,2,0,5], 3",
+        "expectedOutput": "[3, 3, 2, 5]"
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "title": "Count of Smaller Numbers After Self",
+    "difficulty": "Hard",
+    "functionName": "countSmaller",
+    "description": "Given an integer array nums, return an integer array counts where counts[i] is the number of smaller elements to the right of nums[i].",
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[5,2,6,1]",
+        "expectedOutput": "[2, 1, 1, 0]"
+      },
+      {
+        "input": "[-1]",
+        "expectedOutput": "[0]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[-1,-1]",
+        "expectedOutput": "[0, 0]"
+      },
+      {
+        "input": "[2,0,1]",
+        "expectedOutput": "[2, 0, 0]"
+      },
+      {
+        "input": "[1,2,3,4,0]",
+        "expectedOutput": "[1, 1, 1, 1, 0]"
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "title": "Remove Invalid Parentheses",
+    "difficulty": "Hard",
+    "functionName": "removeInvalidParentheses",
+    "description": "Given a string s that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid. Return all possible results. You may return the answer in any order.",
+    "constraints": [
+      "1 <= s.length <= 25",
+      "s consists of lowercase English letters and parentheses '(' and ')'."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'()())()'",
+        "expectedOutput": "['(())()', '()()()']"
+      },
+      {
+        "input": "'(a)())()'",
+        "expectedOutput": "['(a())()', '(a)()()']"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "')('",
+        "expectedOutput": "['']"
+      },
+      {
+        "input": "'(()'",
+        "expectedOutput": "['()']"
+      },
+      {
+        "input": "'(((k)'",
+        "expectedOutput": "['(k)']"
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "title": "Serialize and Deserialize Binary Tree",
+    "difficulty": "Hard",
+    "functionName": "serializeAndDeserialize",
+    "description": "Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure. Implement serialize(root) and deserialize(data).",
+    "constraints": [
+      "The number of nodes in the tree is in the range [0, 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1,2,3,None,None,4,5]",
+        "expectedOutput": "[1,2,3,None,None,4,5]"
+      },
+      {
+        "input": "[]",
+        "expectedOutput": "[]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[1]",
+        "expectedOutput": "[1]"
+      },
+      {
+        "input": "[1,2]",
+        "expectedOutput": "[1,2]"
+      },
+      {
+        "input": "[5,4,8,11,None,13,4,7,2,None,None,None,1]",
+        "expectedOutput": "[5,4,8,11,None,13,4,7,2,None,None,None,1]"
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "title": "Find Median from Data Stream",
+    "difficulty": "Hard",
+    "functionName": "MedianFinder",
+    "description": "The median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value and the median is the mean of the two middle values. Implement the MedianFinder class with addNum(num) and findMedian() operations.",
+    "constraints": [
+      "-10^5 <= num <= 10^5",
+      "There will be at most 5 * 10^4 calls to addNum and findMedian."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "['MedianFinder','addNum','addNum','findMedian','addNum','findMedian'], [[],[1],[2],[],[3],[]]",
+        "expectedOutput": "[None, None, None, 1.5, None, 2.0]"
+      },
+      {
+        "input": "['MedianFinder','addNum','findMedian'], [[],[10],[]]",
+        "expectedOutput": "[None, None, 10.0]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "['MedianFinder','addNum','addNum','addNum','findMedian'], [[],[-1],[-2],[-3],[]]",
+        "expectedOutput": "[None, None, None, None, -2.0]"
+      },
+      {
+        "input": "['MedianFinder','addNum','findMedian','addNum','findMedian'], [[],[0],[],[100],[]]",
+        "expectedOutput": "[None, None, 0.0, None, 50.0]"
+      },
+      {
+        "input": "['MedianFinder','addNum','addNum','addNum','addNum','findMedian'], [[],[5],[9],[1],[3],[]]",
+        "expectedOutput": "[None, None, None, None, None, 4.0]"
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "title": "Expression Add Operators",
+    "difficulty": "Hard",
+    "functionName": "addOperators",
+    "description": "Given a string num containing only digits and an integer target, return all possibilities to insert the binary operators '+', '-', and/or '*' between the digits of num so that the resultant expression evaluates to the target value. Note that operands in the returned expressions should not contain leading zeros.",
+    "constraints": [
+      "1 <= num.length <= 10",
+      "num consists of digits only.",
+      "-2^31 <= target <= 2^31 - 1"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'123', 6",
+        "expectedOutput": "['1+2+3', '1*2*3']"
+      },
+      {
+        "input": "'232', 8",
+        "expectedOutput": "['2*3+2', '2+3*2']"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'3456237490', 9191",
+        "expectedOutput": "[]"
+      },
+      {
+        "input": "'105', 5",
+        "expectedOutput": "['1*0+5', '10-5']"
+      },
+      {
+        "input": "'00', 0",
+        "expectedOutput": "['0+0', '0-0', '0*0']"
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "title": "Range Sum Query 2D - Mutable",
+    "difficulty": "Hard",
+    "functionName": "NumMatrix",
+    "description": "Given a 2D matrix matrix, handle multiple queries of the following types: Update the value of a cell in matrix, and Calculate the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2). Implement the NumMatrix class with update(row, col, val) and sumRegion(row1, col1, row2, col2) operations.",
+    "constraints": [
+      "m == matrix.length",
+      "n == matrix[i].length",
+      "1 <= m, n <= 200",
+      "-1000 <= matrix[i][j] <= 1000",
+      "0 <= row < m, 0 <= col < n",
+      "-1000 <= val <= 1000",
+      "At most 10^4 calls will be made to update and sumRegion."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "['NumMatrix','sumRegion','update','sumRegion'], [[[[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]],[2,1,4,3],[3,2,2],[2,1,4,3]]",
+        "expectedOutput": "[None, 8, None, 10]"
+      },
+      {
+        "input": "['NumMatrix','sumRegion'], [[[[1]]],[0,0,0,0]]",
+        "expectedOutput": "[None, 1]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "['NumMatrix','update','sumRegion'], [[[[5,3],[6,7]]],[0,1,10],[0,0,1,1]]",
+        "expectedOutput": "[None, None, 28]"
+      },
+      {
+        "input": "['NumMatrix','sumRegion','sumRegion'], [[[[1,2],[3,4]]],[0,0,0,1],[1,0,1,1]]",
+        "expectedOutput": "[None, 3, 7]"
+      },
+      {
+        "input": "['NumMatrix','update','update','sumRegion'], [[[[1,2,3],[4,5,6],[7,8,9]]],[1,1,0],[2,2,0],[0,0,2,2]]",
+        "expectedOutput": "[None, None, None, 31]"
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "title": "Reconstruct Itinerary",
+    "difficulty": "Hard",
+    "functionName": "findItinerary",
+    "description": "You are given a list of airline tickets where tickets[i] = [from_i, to_i] represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it. All of the tickets must belong to a valid itinerary. You must find the itinerary that begins with 'JFK'. If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.",
+    "constraints": [
+      "1 <= tickets.length <= 300",
+      "tickets[i].length == 2",
+      "from_i.length == 3, to_i.length == 3",
+      "from_i and to_i consist of uppercase English letters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[['MUC','LHR'],['JFK','MUC'],['SFO','SJC'],['LHR','SFO']]",
+        "expectedOutput": "['JFK', 'MUC', 'LHR', 'SFO', 'SJC']"
+      },
+      {
+        "input": "[['JFK','SFO'],['JFK','ATL'],['SFO','ATL'],['ATL','JFK'],['ATL','SFO']]",
+        "expectedOutput": "['JFK', 'ATL', 'JFK', 'SFO', 'ATL', 'SFO']"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[['JFK','A'],['A','JFK'],['JFK','B']]",
+        "expectedOutput": "['JFK', 'A', 'JFK', 'B']"
+      },
+      {
+        "input": "[['JFK','A'],['JFK','B'],['B','C'],['C','JFK']]",
+        "expectedOutput": "['JFK', 'B', 'C', 'JFK', 'A']"
+      },
+      {
+        "input": "[['JFK','ATL'],['ATL','ORD'],['ORD','JFK']]",
+        "expectedOutput": "['JFK', 'ATL', 'ORD', 'JFK']"
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "title": "Split Array Largest Sum",
+    "difficulty": "Hard",
+    "functionName": "splitArray",
+    "description": "Given an integer array nums and an integer k, split nums into k non-empty contiguous subarrays such that the largest sum of any subarray is minimized. Return the minimized largest sum of the split.",
+    "constraints": [
+      "1 <= nums.length <= 1000",
+      "0 <= nums[i] <= 10^6",
+      "1 <= k <= min(50, nums.length)"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[7,2,5,10,8], 2",
+        "expectedOutput": "18"
+      },
+      {
+        "input": "[1,2,3,4,5], 2",
+        "expectedOutput": "9"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[1,4,4], 3",
+        "expectedOutput": "4"
+      },
+      {
+        "input": "[10, 20, 30, 40], 1",
+        "expectedOutput": "100"
+      },
+      {
+        "input": "[2,3,1,1,1,1,1], 5",
+        "expectedOutput": "3"
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "title": "Frog Jump",
+    "difficulty": "Hard",
+    "functionName": "canCross",
+    "description": "A frog is crossing a river. The river is divided into some number of units, and at each unit, there may or may not be a stone. The frog can jump on a stone, but it must not jump into the water. Given a list of stones' positions (in units) in sorted ascending order, determine if the frog can cross the river by landing on the last stone. Initially, the frog is on the first stone and assumes the first jump must be 1 unit. If the frog's last jump was k units, its next jump must be either k - 1, k, or k + 1 units. The frog can only jump in the forward direction.",
+    "constraints": [
+      "2 <= stones.length <= 2000",
+      "0 <= stones[i] <= 2^31 - 1",
+      "stones[0] == 0",
+      "stones is sorted in a strictly increasing order."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[0,1,3,5,6,8,12,17]",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "[0,1,2,3,4,8,9,11]",
+        "expectedOutput": "False"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[0,1]",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "[0,2]",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "[0,1,3,6,10,15,21]",
+        "expectedOutput": "True"
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "title": "Strong Password Checker",
+    "difficulty": "Hard",
+    "functionName": "strongPasswordChecker",
+    "description": "Design a strong password checker. A password is strong if: it has at least 6 characters and at most 20 characters, contains at least one lowercase letter, at least one uppercase letter, and at least one digit, and does not contain three repeating characters in a row. Given a string password, return the minimum number of steps required to make password strong. A step is defined as inserting one character, deleting one character, or replacing one character.",
+    "constraints": [
+      "1 <= password.length <= 50",
+      "password consists of lowercase and uppercase English letters, digits, and special characters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'a'",
+        "expectedOutput": "5"
+      },
+      {
+        "input": "'aA1'",
+        "expectedOutput": "3"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'1337C0d3'",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "'..................'",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "'11111111111111111111111111111111111111'",
+        "expectedOutput": "20"
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "title": "Perfect Rectangle",
+    "difficulty": "Hard",
+    "functionName": "isRectangleCover",
+    "description": "Given an array rectangles where rectangles[i] = [xi, yi, ai, bi] represents an axis-aligned rectangle where (xi, yi) is the bottom-left corner and (ai, bi) is the top-right corner. Return true if all the rectangles together form an exact cover of a rectangular region.",
+    "constraints": [
+      "1 <= rectangles.length <= 2 * 10^4",
+      "rectangles[i].length == 4",
+      "-10^5 <= xi, yi, ai, bi <= 10^5"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[1,1,3,3],[3,1,4,2],[3,2,4,4],[1,3,2,4],[2,3,3,4]]",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "[[1,1,2,3],[1,3,2,4],[3,1,4,2],[3,2,4,4]]",
+        "expectedOutput": "False"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[1,1,3,3],[3,1,4,2],[1,3,2,4],[3,2,4,4]]",
+        "expectedOutput": "False"
+      },
+      {
+        "input": "[[1,1,2,2],[2,1,3,2],[1,2,2,3],[2,2,3,3]]",
+        "expectedOutput": "True"
+      },
+      {
+        "input": "[[1,1,3,3],[3,1,4,2],[2,2,4,4]]",
+        "expectedOutput": "False"
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "title": "Trapping Rain Water II",
+    "difficulty": "Hard",
+    "functionName": "trapRainWater",
+    "description": "Given an m x n integer matrix heightMap representing the height of each unit cell in a 2D elevation map, return the volume of water it can trap after raining.",
+    "constraints": [
+      "m == heightMap.length",
+      "n == heightMap[i].length",
+      "1 <= m, n <= 110",
+      "0 <= heightMap[i][j] <= 2 * 10^4"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]",
+        "expectedOutput": "4"
+      },
+      {
+        "input": "[[3,3,3,3,3],[3,2,2,2,3],[3,2,0,2,3],[3,2,2,2,3],[3,3,3,3,3]]",
+        "expectedOutput": "10"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[1,1,1],[1,0,1],[1,1,1]]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[[12,13,11,12],[13,8,10,12],[12,13,12,12]]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[[9,9,9],[9,1,9],[9,9,9]]",
+        "expectedOutput": "8"
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "title": "Basic Calculator",
+    "difficulty": "Hard",
+    "functionName": "calculate",
+    "description": "Given a string s representing a valid expression, implement a basic calculator to evaluate it. s consists of digits, '+', '-', '(', ')', and ' '.",
+    "constraints": [
+      "1 <= s.length <= 3 * 10^5",
+      "s consists of digits, '+', '-', '(', ')', and ' '.",
+      "s represents a valid expression.",
+      "Every number and running calculation will fit in a signed 32-bit integer."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'1 + 1'",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "' 2-1 + 2 '",
+        "expectedOutput": "3"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'(1+(4+5+2)-3)+(6+8)'",
+        "expectedOutput": "23"
+      },
+      {
+        "input": "'-2+ 1'",
+        "expectedOutput": "-1"
+      },
+      {
+        "input": "'((10 - (2 + 3)) - (4 - 1))'",
+        "expectedOutput": "2"
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "title": "Cut Off Trees for Golf Event",
+    "difficulty": "Hard",
+    "functionName": "cutOffTree",
+    "description": "You are asked to cut off all the trees in a forest for a golf event. The forest is represented as an m x n matrix. 0 represents an obstacle, 1 represents empty ground, and any integer > 1 represents a tree with its height. You must cut off trees in order from shortest to tallest, starting from (0,0). Return the minimum steps you need to walk to cut off all trees. If you cannot cut off all trees, return -1.",
+    "constraints": [
+      "m == forest.length",
+      "n == forest[i].length",
+      "1 <= m, n <= 50",
+      "0 <= forest[i][j] <= 10^9"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[1,2,3],[0,0,4],[7,6,5]]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[[1,2,3],[0,0,0],[7,6,5]]",
+        "expectedOutput": "-1"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[2,3,4],[0,0,5],[8,7,6]]",
+        "expectedOutput": "6"
+      },
+      {
+        "input": "[[1]]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[[1,2],[3,4]]",
+        "expectedOutput": "3"
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "title": "Cherry Pickup",
+    "difficulty": "Hard",
+    "functionName": "cherryPickup",
+    "description": "You are given an n x n grid representing a field of cherries, where each cell grid[i][j] represents: 0 empty, 1 cherry, -1 obstacle. You start at (0,0) and move to (n-1,n-1) moving only right or down. Then you return to (0,0) moving only left or up. Return the maximum cherries you can collect. If there is no valid path, return 0.",
+    "constraints": [
+      "n == grid.length",
+      "1 <= n <= 50",
+      "grid[i][j] is -1, 0, or 1."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[0,1,-1],[1,0,-1],[1,1,1]]",
+        "expectedOutput": "5"
+      },
+      {
+        "input": "[[1,1,-1],[1,-1,1],[-1,1,1]]",
+        "expectedOutput": "0"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[1]]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[[1,1,1],[1,1,1],[1,1,1]]",
+        "expectedOutput": "7"
+      },
+      {
+        "input": "[[0,1,1],[1,0,1],[1,1,0]]",
+        "expectedOutput": "4"
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "title": "Swim in Rising Water",
+    "difficulty": "Hard",
+    "functionName": "swimInWater",
+    "description": "You are given an n x n integer grid grid where grid[i][j] is the elevation at (i, j). Rain starts to fall. At time t, the depth of the water everywhere is t. You can swim from a square to another 4-directionally adjacent square if and only if both elevations are <= t. You start at (0,0). Return the least time until you can reach the bottom right square (n-1, n-1).",
+    "constraints": [
+      "n == grid.length",
+      "1 <= n <= 50",
+      "0 <= grid[i][j] < n^2",
+      "All the values of grid[i][j] are unique."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[0,2],[1,3]]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]",
+        "expectedOutput": "16"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[3, 2], [0, 1]]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[[0]]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[[10,3,4],[2,9,8],[7,6,5]]",
+        "expectedOutput": "10"
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "title": "Prefix and Suffix Search",
+    "difficulty": "Hard",
+    "functionName": "WordFilter",
+    "description": "Design a special dictionary with some words that helps to filter the words in it by a prefix and a suffix. Implement the WordFilter class: WordFilter(words: List[str]) Initializes the object with the words in the dictionary. f(pref: str, suff: str) -> int Returns the index of the word in the dictionary, which has the prefix pref and the suffix suff. If there is more than one valid index, return the largest of them. If there is no such word in the dictionary, return -1.",
+    "constraints": [
+      "1 <= words.length <= 10000",
+      "1 <= words[i].length <= 10",
+      "1 <= pref.length, suff.length <= 10",
+      "words[i], pref and suff consist of lowercase English letters only.",
+      "At most 10^4 calls will be made to the function f."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "['WordFilter','f'], [[['apple']],['a','e']]",
+        "expectedOutput": "[None, 0]"
+      },
+      {
+        "input": "['WordFilter','f'], [[['apple','banana']],['b','a']]",
+        "expectedOutput": "[None, 1]"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "['WordFilter','f'], [[['apple']],['p','e']]",
+        "expectedOutput": "[None, -1]"
+      },
+      {
+        "input": "['WordFilter','f','f'], [[['lala','laba']],['la','a'],['la','ba']]",
+        "expectedOutput": "[None, 1, 1]"
+      },
+      {
+        "input": "['WordFilter','f'], [[['a','ab','abc']],['ab','bc']]",
+        "expectedOutput": "[None, 2]"
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "title": "Parse Lisp Expression",
+    "difficulty": "Hard",
+    "functionName": "evaluateLisp",
+    "description": "You are given a string expression representing a Lisp-like expression to return the integer value of the expression. The syntax of the expression is either an integer, a let expression, an add expression, or a mult expression. Supports scope bindings.",
+    "constraints": [
+      "1 <= expression.length <= 2000",
+      "expression consists of lowercase English letters, digits, '+', '-', '(', ')', and spaces.",
+      "expression is a valid Lisp-like expression."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'(let x 2 (mult x (let x 3 (add x 5))))'",
+        "expectedOutput": "16"
+      },
+      {
+        "input": "'(let x 3 x 2 x)'",
+        "expectedOutput": "2"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'(let x 1 y 2 (add x y))'",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "'(mult 3 (add 2 3))'",
+        "expectedOutput": "15"
+      },
+      {
+        "input": "'(let a 10 b 20 (let a 5 (add a b)))'",
+        "expectedOutput": "25"
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "title": "Cracking the Safe",
+    "difficulty": "Hard",
+    "functionName": "crackSafe",
+    "description": "There is a safe protected by a password. The password is a sequence of n digits where each digit can be in the range [0, k - 1]. The safe has a shortcut where entering any sequence of length n that contains the password as a substring will crack the safe. Return any string of minimum length that is guaranteed to crack the safe at some point of entering it.",
+    "constraints": [
+      "1 <= n <= 4",
+      "1 <= k <= 10",
+      "1 <= k^n <= 4096"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "1, 2",
+        "expectedOutput": "'01'"
+      },
+      {
+        "input": "2, 2",
+        "expectedOutput": "'00110'"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "2, 1",
+        "expectedOutput": "'00'"
+      },
+      {
+        "input": "3, 2",
+        "expectedOutput": "'0001110100'"
+      },
+      {
+        "input": "1, 3",
+        "expectedOutput": "'012'"
+      }
+    ]
+  },
+  {
+    "id": 43,
+    "title": "Couples Holding Hands",
+    "difficulty": "Hard",
+    "functionName": "minSwapsCouples",
+    "description": "There are n couples sitting in 2n seats arranged in a row and want to hold hands. We want to know the minimum number of swaps so that every couple is sitting side by side. A swap consists of choosing any two people, then they stand up and switch seats. The people and seats are represented by an integer from 0 to 2n - 1, where the couples are (0, 1), (2, 3), and so on.",
+    "constraints": [
+      "2n == row.length",
+      "2 <= 2n <= 60",
+      "row contains a permutation of [0, 2n - 1]."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[0,2,1,3]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[3,2,0,1]",
+        "expectedOutput": "0"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[0, 1, 2, 3]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[5, 4, 3, 2, 1, 0]",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "[2, 0, 1, 4, 5, 3]",
+        "expectedOutput": "2"
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "title": "Sliding Puzzle",
+    "difficulty": "Hard",
+    "functionName": "slidingPuzzle",
+    "description": "On an 2 x 3 board, there are 5 tiles labeled from 1 to 5, and an empty square represented by 0. A move consists of choosing 0 and swapping it with a 4-directionally adjacent number. The state of the board is solved if and only if the board is [[1,2,3],[4,5,0]]. Given the puzzle board board, return the least number of moves required so that the state of the board is solved. If it is impossible, return -1.",
+    "constraints": [
+      "board.length == 2",
+      "board[i].length == 3",
+      "board[i][j] is an integer in the range [0, 5].",
+      "Each integer from 0 to 5 appears exactly once in board."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[1,2,3],[4,0,5]]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[[1,2,3],[5,4,0]]",
+        "expectedOutput": "-1"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[4,1,2],[5,0,3]]",
+        "expectedOutput": "5"
+      },
+      {
+        "input": "[[3,2,4],[1,5,0]]",
+        "expectedOutput": "14"
+      },
+      {
+        "input": "[[1,2,3],[4,5,0]]",
+        "expectedOutput": "0"
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "title": "Burst Balloons",
+    "difficulty": "Hard",
+    "functionName": "maxCoins",
+    "description": "You are given n balloons, indexed from 0 to n - 1. Each balloon is painted with a number on it represented by an array nums. You are asked to burst all the balloons. If you burst the i-th balloon, you will get nums[i - 1] * nums[i] * nums[i + 1] coins. If i - 1 or i + 1 goes out of bounds of the array, then treat it as if there is a balloon painted with a 1 on it. Return the maximum coins you can collect by bursting the balloons wisely.",
+    "constraints": [
+      "n == nums.length",
+      "1 <= n <= 300",
+      "0 <= nums[i] <= 100"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[3,1,5,8]",
+        "expectedOutput": "167"
+      },
+      {
+        "input": "[1,5]",
+        "expectedOutput": "10"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[3]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[9, 76]",
+        "expectedOutput": "693"
+      },
+      {
+        "input": "[1,2,3,4]",
+        "expectedOutput": "40"
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "title": "Max Points on a Line",
+    "difficulty": "Hard",
+    "functionName": "maxPoints",
+    "description": "Given an array of points where points[i] = [xi, yi] represents a point on the 2D plane, return the maximum number of points that lie on the same straight line.",
+    "constraints": [
+      "1 <= points.length <= 300",
+      "points[i].length == 2",
+      "-10^4 <= xi, yi <= 10^4",
+      "All the points are unique."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[1,1],[2,2],[3,3]]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]",
+        "expectedOutput": "4"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[1,1]]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[[1,1],[1,2]]",
+        "expectedOutput": "2"
+      },
+      {
+        "input": "[[1,1],[2,2],[1,4],[4,1],[3,3],[5,5]]",
+        "expectedOutput": "4"
+      }
+    ]
+  },
+  {
+    "id": 47,
+    "title": "Minimum Window Substring",
+    "difficulty": "Hard",
+    "functionName": "minWindow",
+    "description": "Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string \"\". The testcases will be generated such that the answer is unique.",
+    "constraints": [
+      "m == s.length",
+      "n == t.length",
+      "1 <= m, n <= 10^5",
+      "s and t consist of uppercase and lowercase English letters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'ADOBECODEBANC', 'ABC'",
+        "expectedOutput": "'BANC'"
+      },
+      {
+        "input": "'a', 'a'",
+        "expectedOutput": "'a'"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'a', 'aa'",
+        "expectedOutput": "''"
+      },
+      {
+        "input": "'ab', 'b'",
+        "expectedOutput": "'b'"
+      },
+      {
+        "input": "'aaaaaaaa', 'aaa'",
+        "expectedOutput": "'aaa'"
+      }
+    ]
+  },
+  {
+    "id": 48,
+    "title": "Russian Doll Envelopes",
+    "difficulty": "Hard",
+    "functionName": "maxEnvelopes",
+    "description": "You are given a 2D array of integers envelopes where envelopes[i] = [wi, hi] represents the width and the height of an envelope. One envelope can fit into another if and only if both the width and height of one envelope are strictly greater than the other envelope's width and height. Return the maximum number of envelopes you can Russian doll (i.e., put one inside another).",
+    "constraints": [
+      "1 <= envelopes.length <= 10^5",
+      "envelopes[i].length == 2",
+      "1 <= wi, hi <= 10^5"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[[5,4],[6,4],[6,7],[2,3]]",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "[[1,1],[1,1],[1,1]]",
+        "expectedOutput": "1"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[[2,100],[3,200],[4,300],[5,500],[5,400],[5,250],[6,370],[6,360],[7,380]]",
+        "expectedOutput": "5"
+      },
+      {
+        "input": "[[1,2],[2,3],[3,4],[3,5],[4,5],[5,6]]",
+        "expectedOutput": "5"
+      },
+      {
+        "input": "[[4,5],[4,6],[6,7],[2,3],[1,1]]",
+        "expectedOutput": "4"
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "title": "Distinct Subsequences",
+    "difficulty": "Hard",
+    "functionName": "numDistinct",
+    "description": "Given two strings s and t, return the number of distinct subsequences of s which equals t. The test cases are generated so that the answer fits in a 32-bit signed integer.",
+    "constraints": [
+      "1 <= s.length, t.length <= 1000",
+      "s and t consist of English letters."
+    ],
+    "visibleTestCases": [
+      {
+        "input": "'rabbbit', 'rabbit'",
+        "expectedOutput": "3"
+      },
+      {
+        "input": "'babgbag', 'bag'",
+        "expectedOutput": "5"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "'', 'a'",
+        "expectedOutput": "0"
+      },
+      {
+        "input": "'a', ''",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "'aaaaa', 'aa'",
+        "expectedOutput": "10"
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "title": "Burst Balloons II (Hard Coin Distribution)",
+    "difficulty": "Hard",
+    "functionName": "maxCoinsTwo",
+    "description": "Given a sequence of positive integers values, return the maximum score obtained by partitioning the sequence into subsets and taking the product of the borders in a circular fashion. Equivalent to an advanced burst balloon circle.",
+    "constraints": [
+      "1 <= values.length <= 100",
+      "1 <= values[i] <= 100"
+    ],
+    "visibleTestCases": [
+      {
+        "input": "[1, 2, 3]",
+        "expectedOutput": "12"
+      },
+      {
+        "input": "[4, 5]",
+        "expectedOutput": "20"
+      }
+    ],
+    "hiddenTestCases": [
+      {
+        "input": "[1]",
+        "expectedOutput": "1"
+      },
+      {
+        "input": "[2, 2, 2, 2]",
+        "expectedOutput": "24"
+      },
+      {
+        "input": "[3, 1, 5, 8]",
+        "expectedOutput": "167"
+      }
+    ]
+  }
+]

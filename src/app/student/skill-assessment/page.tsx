@@ -51,8 +51,8 @@ export default function SkillAssessment() {
   });
 
   return (
-    <main className="relative min-h-screen bg-[#08090C] text-[#F3F4F6] noise-bg overflow-x-hidden font-sans">
-      {/* ══ Animated Background ══ */}
+    <main className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] noise-bg overflow-x-hidden font-sans">
+      {/* Background Grids */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 developer-grid" />
 
       {/* Floating code symbols */}
@@ -60,7 +60,7 @@ export default function SkillAssessment() {
         {FLOATING_CODE.map((sym, i) => (
           <div 
             key={i} 
-            className="absolute font-mono select-none text-gray-800/10 text-xs" 
+            className="absolute font-mono select-none text-[var(--text-primary)]/10 text-xs" 
             style={{
               left: `${3 + ((i * 53) % 92)}%`,
               top: `${2 + ((i * 37) % 90)}%`,
@@ -73,10 +73,10 @@ export default function SkillAssessment() {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-20 py-4 px-8 flex items-center justify-between border-b border-[#2A2E3D]/50 bg-[#08090C]/80 backdrop-blur-md">
+      <nav className="relative z-20 py-4 px-8 flex items-center justify-between border-b border-[var(--ide-border)] bg-[var(--background)]/80 backdrop-blur-md">
         <button 
           onClick={() => router.push('/student/dashboard')} 
-          className="flex items-center gap-2 text-gray-500 text-xs font-mono font-bold uppercase tracking-wider hover:text-white transition-colors group"
+          className="flex items-center gap-2 text-[var(--text-muted)] text-xs font-mono font-bold uppercase tracking-widest hover:text-accent-pink transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           // EXIT_TO_DASHBOARD
@@ -88,16 +88,16 @@ export default function SkillAssessment() {
         
         {/* Hero */}
         <motion.div {...fadeUp(0)} className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-accent-pink/30 bg-accent-pink/5 text-accent-pink text-[11px] font-mono uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-[#FF3366]/20 bg-[#FF3366]/5 text-accent-pink text-[10px] font-mono uppercase tracking-widest font-bold">
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
             SKILL EVALUATION MODULE ACTIVE
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-mono font-bold text-white tracking-tight uppercase">
+          <h1 className="text-4xl md:text-5xl font-mono font-bold text-[var(--text-primary)] tracking-tight uppercase">
             CHOOSE YOUR <span className="text-[#FF3366] accent-glow">BATTLEGROUND</span>
           </h1>
           
-          <p className="text-gray-400 text-sm max-w-lg mx-auto font-mono leading-relaxed">
+          <p className="text-[var(--text-secondary)] text-xs max-w-lg mx-auto font-sans leading-relaxed">
             Select a technology compiler to scan your capabilities. Scoring 70%+ compiles a permanent badge, boosting match compatibility synergy.
           </p>
         </motion.div>
@@ -117,7 +117,7 @@ export default function SkillAssessment() {
               className={`px-4 py-2 border font-mono rounded text-xs uppercase tracking-wider transition-all duration-200 ${
                 category === cat.id 
                   ? 'bg-accent-pink/15 border-[#FF3366] text-[#FF3366] shadow-[0_0_10px_rgba(255,51,102,0.15)]' 
-                  : 'bg-[#15171F] border-[#2A2E3D] text-gray-400 hover:text-white hover:border-gray-500'
+                  : 'bg-[var(--ide-bg)] border-[var(--ide-border)] text-[var(--text-secondary)] hover:text-accent-pink hover:border-accent-pink'
               }`}
             >
               <span className="mr-1.5">{cat.emoji}</span>{cat.label}
@@ -133,7 +133,7 @@ export default function SkillAssessment() {
               value={searchFilter} 
               onChange={e => setSearchFilter(e.target.value)} 
               placeholder="SEARCH_TELEMETRY_NODES..." 
-              className="relative w-full px-5 py-3 rounded bg-[#15171F] border border-[#2A2E3D] text-xs text-white placeholder:text-gray-600 focus:outline-none focus:border-accent-pink transition-all font-bold" 
+              className="relative w-full px-5 py-3 rounded bg-[var(--ide-bg)] border border-[var(--ide-border)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-accent-pink transition-all font-bold" 
             />
           </div>
         </motion.div>
@@ -149,12 +149,12 @@ export default function SkillAssessment() {
               onMouseEnter={() => setHoveredSkill(skill.id)} 
               onMouseLeave={() => setHoveredSkill(null)}
               onClick={() => setSelectedSkill(skill)}
-              className="group text-left ide-panel bg-[#15171F] border-[#2A2E3D] hover:border-gray-500 overflow-hidden transition-all duration-300 flex flex-col justify-between"
+              className="group text-left glass-panel glass-panel-interactive rounded-lg overflow-hidden flex flex-col justify-between"
             >
               {/* Header */}
-              <div className="ide-panel-header w-full justify-between py-2 border-b border-[#2A2E3D]/50 bg-[#0D0E12]/80">
-                <span className="text-[9px] font-mono text-gray-500 uppercase">COMPILER // {skill.id.toUpperCase()}</span>
-                <span className="text-[9px] font-mono text-accent-pink opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest font-bold">
+              <div className="ide-panel-header w-full justify-between py-2.5 border-b border-[var(--ide-border)]/40 bg-[var(--ide-header-bg)]/50">
+                <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest font-bold">COMPILER // {skill.id.toUpperCase()}</span>
+                <span className="text-[8px] font-mono text-[#FF3366] opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest font-bold">
                   RUN_SYS &gt;
                 </span>
               </div>
@@ -166,23 +166,23 @@ export default function SkillAssessment() {
                     className="w-10 h-10 rounded border flex items-center justify-center text-xl shrink-0" 
                     style={{ 
                       color: skill.color, 
-                      borderColor: hoveredSkill===skill.id ? skill.color : '#2A2E3D', 
-                      backgroundColor: `${skill.color}08` 
+                      borderColor: hoveredSkill===skill.id ? skill.color : '#1E2333', 
+                      backgroundColor: `${skill.color}05` 
                     }}
                   >
                     {skill.icon}
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold font-mono text-white uppercase group-hover:text-accent-pink transition-colors">{skill.name}</h3>
-                    <span className="text-[9px] font-mono text-gray-500 uppercase">Telemetry Node</span>
+                    <h3 className="text-xs font-bold font-mono text-[var(--text-primary)] uppercase group-hover:text-accent-pink transition-colors">{skill.name}</h3>
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Telemetry Node</span>
                   </div>
                 </div>
 
-                <p className="text-gray-400 text-[11px] font-mono leading-relaxed h-10">
+                <p className="text-[var(--text-secondary)] text-xs font-sans leading-relaxed h-10">
                   {skill.desc}
                 </p>
 
-                <div className="flex items-center gap-3 font-mono text-[9px] text-gray-500 uppercase font-bold tracking-tight">
+                <div className="flex items-center gap-3 font-mono text-[9px] text-[var(--text-muted)] uppercase font-bold tracking-widest">
                   <span className="flex items-center gap-1"><Code2 className="w-3.5 h-3.5 text-accent-pink"/> {skill.questions} Q</span>
                   <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-accent-blue"/> {skill.time}</span>
                   <span className="flex items-center gap-1"><Target className="w-3.5 h-3.5 text-[#10B981]"/> {Math.ceil(skill.questions * 0.7)}+ TO PASS</span>
@@ -190,7 +190,7 @@ export default function SkillAssessment() {
               </div>
 
               {/* Progress bar border footer */}
-              <div className="h-1 bg-[#0D0E12] w-full mt-auto relative overflow-hidden">
+              <div className="h-[2px] bg-[var(--background)] w-full mt-auto relative overflow-hidden">
                 <motion.div 
                   className="h-full" 
                   style={{ background: skill.color }} 
@@ -205,12 +205,12 @@ export default function SkillAssessment() {
 
         {filtered.length === 0 && (
           <div className="text-center py-20 font-mono">
-            <p className="text-gray-600 text-xs">NO MODULES MATCH SEARCH PARAMETERS. RE-INITIATING FILTER POOL...</p>
+            <p className="text-[var(--text-muted)] text-xs">NO MODULES MATCH SEARCH PARAMETERS. RE-INITIATING FILTER POOL...</p>
           </div>
         )}
       </div>
 
-      {/* ══ Skill Detail Modal ══ */}
+      {/* Skill Detail Modal */}
       <AnimatePresence>
         {selectedSkill && (
           <motion.div 
@@ -226,31 +226,31 @@ export default function SkillAssessment() {
               animate={{ scale: 1, opacity: 1 }} 
               exit={{ scale: 0.95, opacity: 0 }} 
               onClick={e => e.stopPropagation()}
-              className="relative w-full max-w-lg bg-[#0D0E12] border border-[#2A2E3D] rounded overflow-hidden shadow-2xl"
+              className="relative w-full max-w-lg bg-[var(--ide-bg)] border border-[var(--ide-border)] rounded-lg overflow-hidden shadow-2xl"
             >
               {/* Header bar */}
-              <div className="ide-panel-header justify-between select-none">
+              <div className="ide-panel-header justify-between select-none border-b border-[var(--ide-border)] bg-[var(--ide-header-bg)]">
                 <div className="flex items-center gap-2">
                   <TerminalIcon className="w-3.5 h-3.5 text-accent-pink" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">battleground_compiler_setup.yaml</span>
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">battleground_compiler_setup.yaml</span>
                 </div>
-                <button onClick={() => setSelectedSkill(null)} className="w-6 h-6 rounded border border-[#2A2E3D] bg-[#15171F] flex items-center justify-center hover:border-white transition-colors">
-                  <X className="w-3.5 h-3.5 text-gray-500 hover:text-white" />
+                <button onClick={() => setSelectedSkill(null)} className="w-6 h-6 rounded border border-[var(--ide-border)] bg-[var(--ide-bg)] flex items-center justify-center hover:border-accent-pink transition-colors">
+                  <X className="w-3.5 h-3.5 text-[var(--text-muted)] hover:text-accent-pink" />
                 </button>
               </div>
 
               <div className="p-8 space-y-6">
                 
-                <div className="flex items-center gap-4 border-b border-[#2A2E3D]/50 pb-5">
+                <div className="flex items-center gap-4 border-b border-[var(--ide-border)]/50 pb-5">
                   <div 
                     className="w-14 h-14 rounded border flex items-center justify-center text-3xl shrink-0" 
-                    style={{ background: `${selectedSkill.color}08`, borderColor: `${selectedSkill.color}25` }}
+                    style={{ background: `${selectedSkill.color}05`, borderColor: `${selectedSkill.color}25` }}
                   >
                     {selectedSkill.icon}
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold font-mono text-white uppercase">{selectedSkill.name} CHALLENGE</h2>
-                    <p className="text-xs font-mono text-gray-500 mt-0.5 uppercase">{selectedSkill.desc}</p>
+                    <h2 className="text-xl font-bold font-mono text-[var(--text-primary)] uppercase">{selectedSkill.name} CHALLENGE</h2>
+                    <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5 uppercase tracking-wider">{selectedSkill.desc}</p>
                   </div>
                 </div>
 
@@ -261,37 +261,37 @@ export default function SkillAssessment() {
                     { icon: Clock, val: `${selectedSkill.time}`, label: 'DURATION', color: '#3B82F6' },
                     { icon: Trophy, val: '+50 XP', label: 'PRESTIGE HP', color: '#F59E0B' },
                   ].map((s) => (
-                    <div key={s.label} className="rounded border border-[#2A2E3D] p-4 text-center bg-[#15171F]/50">
+                    <div key={s.label} className="rounded border border-[var(--ide-border)] p-4 text-center bg-[var(--ide-header-bg)]/50">
                       <s.icon className="w-5 h-5 mx-auto mb-2" style={{ color: s.color }} />
-                      <p className="text-sm font-bold text-white uppercase">{s.val}</p>
-                      <p className="text-[9px] text-gray-500 uppercase font-bold tracking-wider mt-1">{s.label}</p>
+                      <p className="text-sm font-bold text-[var(--text-primary)] uppercase">{s.val}</p>
+                      <p className="text-[8px] text-[var(--text-muted)] uppercase font-bold tracking-widest mt-1">{s.label}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Target badge */}
-                <div className="flex items-center justify-center gap-3 py-3 px-4 rounded border border-dashed border-[#2A2E3D] bg-[#15171F] font-mono">
+                <div className="flex items-center justify-center gap-3 py-3 px-4 rounded border border-dashed border-[var(--ide-border)] bg-[var(--ide-header-bg)]/50 font-mono">
                   <Target className="w-4 h-4 text-[#10B981]" />
-                  <p className="text-xs text-[#10B981] font-bold uppercase tracking-wider">
+                  <p className="text-xs text-[#10B981] font-bold uppercase tracking-wider text-center">
                     Score {Math.ceil(selectedSkill.questions * 0.7)}+ out of {selectedSkill.questions} correct to unlock matchmaking
                   </p>
                 </div>
 
                 {/* Rules */}
-                <div className="rounded border border-[#2A2E3D] p-5 bg-[#15171F]/30 font-mono space-y-3">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                <div className="rounded border border-[var(--ide-border)] p-5 bg-[var(--ide-header-bg)]/20 font-mono space-y-3">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--text-muted)] flex items-center gap-2">
                     <Target className="w-3.5 h-3.5"/> ASSESSMENT CRITERIA
                   </p>
-                  <ul className="space-y-2 text-xs text-gray-400">
-                    <li className="flex items-center gap-2.5">
+                  <ul className="space-y-2 text-xs text-[var(--text-secondary)]">
+                    <li className="flex items-center gap-2.5 font-sans">
                       <Flame className="w-3.5 h-3.5 text-accent-pink shrink-0" />
                       Timed multi-choice verification.
                     </li>
-                    <li className="flex items-center gap-2.5">
+                    <li className="flex items-center gap-2.5 font-sans">
                       <Flame className="w-3.5 h-3.5 text-accent-pink shrink-0" />
                       Zero limits on system re-execution/attempts.
                     </li>
-                    <li className="flex items-center gap-2.5">
+                    <li className="flex items-center gap-2.5 font-sans">
                       <Flame className="w-3.5 h-3.5 text-accent-pink shrink-0" />
                       Compiles permanent Hacker badge profile chips.
                     </li>
@@ -302,13 +302,13 @@ export default function SkillAssessment() {
                 <div className="flex items-center gap-4 font-mono text-xs pt-2">
                   <button 
                     onClick={() => setSelectedSkill(null)} 
-                    className="flex-1 py-3.5 border border-[#2A2E3D] hover:border-gray-500 text-gray-400 hover:text-white rounded uppercase font-bold transition-colors"
+                    className="flex-1 py-3.5 border border-[var(--ide-border)] hover:border-accent-pink text-[var(--text-secondary)] hover:text-accent-pink rounded uppercase font-bold transition-colors"
                   >
                     Cancel
                   </button>
                   <button 
                     onClick={() => router.push(`/student/skill-assessment/${selectedSkill.id}`)}
-                    className="flex-1 py-3.5 bg-[#FF3366] hover:bg-accent-pink-hover text-white rounded uppercase font-bold transition-colors flex items-center justify-center gap-2"
+                    className="btn-premium flex-1 py-3.5 flex items-center justify-center gap-2"
                   >
                     <Zap className="w-4 h-4" />
                     INIT PROTOCOL

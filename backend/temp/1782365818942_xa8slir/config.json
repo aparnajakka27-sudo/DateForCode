@@ -1,0 +1,17 @@
+{
+  "functionName": "TodoApp",
+  "testCases": [
+    {
+      "input": "System Edge Case 1",
+      "expected": "Success"
+    },
+    {
+      "input": "System Edge Case 2",
+      "expected": "Success"
+    },
+    {
+      "input": "System Edge Case 3",
+      "expected": "Success"
+    }
+  ]
+}

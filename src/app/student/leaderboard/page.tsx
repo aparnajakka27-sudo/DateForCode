@@ -63,26 +63,26 @@ export default function LeaderboardPage() {
   const myRank = sorted.findIndex(u => hp > u.hp) + 1 || sorted.length + 1;
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] relative overflow-hidden">
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0" style={{backgroundImage:'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.015) 1px, transparent 0)',backgroundSize:'32px 32px'}} />
         <motion.div animate={{y:[-20,20,-20]}} transition={{duration:8,repeat:Infinity}} className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FFD700]/[0.02] rounded-full blur-[120px]" />
         <motion.div animate={{y:[20,-20,20]}} transition={{duration:10,repeat:Infinity}} className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#FF4D6D]/[0.02] rounded-full blur-[100px]" />
       </div>
 
-      <motion.header {...fadeUp(0)} className="sticky top-0 z-20 bg-white/70 backdrop-blur-xl border-b border-black/5 px-8 py-4 flex items-center justify-between">
+      <motion.header {...fadeUp(0)} className="sticky top-0 z-20 bg-[var(--nav-bg)] backdrop-blur-md border-b border-[var(--nav-border)] px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/student/dashboard" className="flex items-center gap-2 px-3 py-2 rounded-xl text-black/30 hover:text-black hover:bg-black/[0.02] transition-all border border-transparent hover:border-black/5">
+          <Link href="/student/dashboard" className="flex items-center gap-2 px-3 py-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--btn-sec-bg)] transition-all border border-transparent hover:border-[var(--ide-border)]">
             <ArrowLeft className="w-4 h-4"/><span className="text-xs font-bold">Dashboard</span>
           </Link>
           <div className="w-px h-5 bg-black/8"/>
           <Logo showText={true} className="scale-[0.8] origin-left" />
         </div>
         <div className="flex items-center gap-3">
-          <div className="px-4 py-2 rounded-xl bg-white border border-black/5 shadow-sm flex items-center gap-2">
+          <div className="px-4 py-2 rounded-xl bg-[var(--ide-bg)] border border-[var(--ide-border)] shadow-sm flex items-center gap-2">
             <Zap className="w-4 h-4 text-[#FF4D6D]"/><span className="text-sm font-extrabold">{hp} HP</span>
           </div>
-          <div className="px-4 py-2 rounded-xl bg-white border border-black/5 shadow-sm flex items-center gap-2">
+          <div className="px-4 py-2 rounded-xl bg-[var(--ide-bg)] border border-[var(--ide-border)] shadow-sm flex items-center gap-2">
             <Flame className="w-4 h-4 text-orange-500"/><span className="text-sm font-extrabold">{streak}d</span>
           </div>
         </div>
@@ -94,14 +94,14 @@ export default function LeaderboardPage() {
           <motion.div initial={{scale:0,rotate:-20}} animate={{scale:1,rotate:0}} transition={{type:'spring',delay:0.2}} className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white mb-4 shadow-xl" style={{boxShadow:'0 10px 35px rgba(245,158,11,0.25)'}}>
             <Trophy className="w-8 h-8"/>
           </motion.div>
-          <h1 className="text-3xl font-black text-[#111] mb-1">Global Leaderboard</h1>
-          <p className="text-xs text-black/25">Top coders ranked by performance • Send pair requests to compete together</p>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] mb-1">Global Leaderboard</h1>
+          <p className="text-xs text-[var(--text-muted)]">Top coders ranked by performance • Send pair requests to compete together</p>
         </motion.div>
 
         {/* Tabs */}
         <motion.div {...fadeUp(0.15)} className="flex items-center gap-2 justify-center mb-8">
           {[{key:'hp' as const,label:'HP Score',icon:Zap,c:'#FF4D6D'},{key:'streak' as const,label:'Streak',icon:Flame,c:'#F97316'}].map(t=>(
-            <button key={t.key} onClick={()=>setTab(t.key)} className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold border-2 transition-all ${tab===t.key?'shadow-sm':'border-black/5 text-black/25'}`}
+            <button key={t.key} onClick={()=>setTab(t.key)} className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold border-2 transition-all ${tab===t.key?'shadow-sm':'border-[var(--ide-border)] text-[var(--text-muted)]'}`}
               style={tab===t.key?{background:`${t.c}08`,color:t.c,borderColor:`${t.c}25`}:{}}>
               <t.icon className="w-4 h-4"/>{t.label}
             </button>
@@ -123,11 +123,11 @@ export default function LeaderboardPage() {
                     style={{background:RANK_BG[r],boxShadow:RANK_SHADOW[r]}}>
                     {u.avatar}
                   </motion.div>
-                  {u.online && <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-white"/>}
+                  {u.online && <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-[var(--ide-bg)]"/>}
                   {r===1 && <motion.div animate={{rotate:[0,10,-10,0]}} transition={{duration:2,repeat:Infinity}} className="absolute -top-3 left-1/2 -translate-x-1/2 text-xl">👑</motion.div>}
                 </div>
-                <p className="text-xs font-bold text-[#222] mb-0.5">{u.name}</p>
-                <p className="text-[9px] text-black/25 font-bold mb-2">{tab==='hp'?`${u.hp} HP`:`${u.streak} days`}</p>
+                <p className="text-xs font-bold text-[var(--text-primary)] mb-0.5">{u.name}</p>
+                <p className="text-[9px] text-[var(--text-muted)] font-bold mb-2">{tab==='hp'?`${u.hp} HP`:`${u.streak} days`}</p>
                 <div className={`${heights[pos]} w-20 rounded-t-xl flex items-start justify-center pt-3 relative overflow-hidden`}
                   style={{background:`${RANK_BG[r]}15`}}>
                   <span className="text-2xl relative z-10">{r===1?'🥇':r===2?'🥈':'🥉'}</span>
@@ -139,8 +139,8 @@ export default function LeaderboardPage() {
         </motion.div>
 
         {/* Full List */}
-        <motion.div {...fadeUp(0.3)} className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden mb-6">
-          <div className="px-6 py-3 bg-black/[0.01] border-b border-black/5 grid grid-cols-12 text-[9px] font-bold uppercase tracking-wider text-black/20">
+        <motion.div {...fadeUp(0.3)} className="bg-[var(--ide-bg)] rounded-2xl border border-[var(--ide-border)] shadow-sm overflow-hidden mb-6">
+          <div className="px-6 py-3 bg-[var(--btn-sec-bg)] border-b border-[var(--ide-border)] grid grid-cols-12 text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
             <span className="col-span-1">#</span><span className="col-span-4">Player</span><span className="col-span-2 text-center">HP</span><span className="col-span-2 text-center">Streak</span><span className="col-span-3 text-right">Action</span>
           </div>
           {sorted.map((u,i) => {
@@ -149,9 +149,9 @@ export default function LeaderboardPage() {
             const isRequested = sentRequests.includes(u.id);
             return (
               <motion.div key={u.id} initial={{opacity:0,x:-20}} animate={{opacity:1,x:0}} transition={{delay:0.35+i*0.04}}
-                className={`px-6 py-3.5 grid grid-cols-12 items-center border-b border-black/[0.03] hover:bg-black/[0.01] transition-colors cursor-pointer ${i<3?'bg-amber-50/20':''}`}
+                className={`px-6 py-3.5 grid grid-cols-12 items-center border-b border-[var(--ide-border)]/50 hover:bg-[var(--btn-sec-bg)] transition-colors cursor-pointer ${i<3?'bg-amber-50/20':''}`}
                 onClick={()=>setSelectedUser(u)}>
-                <span className="col-span-1 text-xs font-extrabold text-black/25 flex items-center gap-1">
+                <span className="col-span-1 text-xs font-extrabold text-[var(--text-muted)] flex items-center gap-1">
                   {i+1}
                   {rankChange>0 && <ArrowUpRight className="w-3 h-3 text-green-500"/>}
                   {rankChange<0 && <ArrowDownRight className="w-3 h-3 text-red-400"/>}
@@ -159,11 +159,11 @@ export default function LeaderboardPage() {
                 <div className="col-span-4 flex items-center gap-3">
                   <div className="relative">
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[9px] font-black text-white" style={{background:i<3?RANK_BG[i+1]:'linear-gradient(135deg,#CBD5E1,#94A3B8)'}}>{u.avatar}</div>
-                    {u.online && <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-white"/>}
+                    {u.online && <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-[var(--ide-bg)]"/>}
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-[#222] block">{u.name}</span>
-                    <span className="text-[8px] text-black/20">{u.skills.join(' • ')}</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] block">{u.name}</span>
+                    <span className="text-[8px] text-[var(--text-muted)]">{u.skills.join(' • ')}</span>
                   </div>
                 </div>
                 <span className="col-span-2 text-center text-xs font-bold text-[#FF4D6D]">{u.hp}</span>
@@ -212,8 +212,8 @@ export default function LeaderboardPage() {
           <>
             <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50" onClick={()=>setSelectedUser(null)}/>
             <motion.div initial={{scale:0.9,opacity:0,y:20}} animate={{scale:1,opacity:1,y:0}} exit={{scale:0.9,opacity:0}} className="fixed inset-0 z-50 flex items-center justify-center p-6">
-              <div className="bg-white rounded-2xl border border-black/5 shadow-2xl max-w-sm w-full p-8 text-center">
-                <button onClick={()=>setSelectedUser(null)} className="absolute top-4 right-4 w-8 h-8 rounded-xl bg-black/5 flex items-center justify-center"><X className="w-4 h-4 text-black/30"/></button>
+              <div className="bg-[var(--ide-bg)] rounded-2xl border border-[var(--ide-border)] shadow-2xl max-w-sm w-full p-8 text-center">
+                <button onClick={()=>setSelectedUser(null)} className="absolute top-4 right-4 w-8 h-8 rounded-xl bg-[var(--btn-sec-bg)] flex items-center justify-center"><X className="w-4 h-4 text-[var(--text-secondary)]"/></button>
                 <div className="relative inline-block mb-4">
                   <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-xl mx-auto"
                     style={{background:sorted.indexOf(selectedUser)<3?RANK_BG[sorted.indexOf(selectedUser)+1]:'linear-gradient(135deg,#CBD5E1,#94A3B8)'}}>
@@ -221,20 +221,20 @@ export default function LeaderboardPage() {
                   </div>
                   {selectedUser.online && <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-400 border-3 border-white"/>}
                 </div>
-                <h3 className="text-xl font-black text-[#111] mb-1">{selectedUser.name}</h3>
-                <p className="text-[10px] text-black/20 uppercase tracking-widest font-bold mb-4">Rank #{sorted.indexOf(selectedUser)+1} • {selectedUser.online?'🟢 Online':'⚫ Offline'}</p>
+                <h3 className="text-xl font-black text-[var(--text-primary)] mb-1">{selectedUser.name}</h3>
+                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-bold mb-4">Rank #{sorted.indexOf(selectedUser)+1} • {selectedUser.online?'🟢 Online':'⚫ Offline'}</p>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="p-3 rounded-xl bg-[#FF4D6D]/5 border border-[#FF4D6D]/10">
                     <p className="text-lg font-black text-[#FF4D6D]">{selectedUser.hp}</p>
-                    <p className="text-[8px] text-black/20 uppercase font-bold">HP Score</p>
+                    <p className="text-[8px] text-[var(--text-muted)] uppercase font-bold">HP Score</p>
                   </div>
                   <div className="p-3 rounded-xl bg-orange-50 border border-orange-200">
                     <p className="text-lg font-black text-orange-500">{selectedUser.streak}d</p>
-                    <p className="text-[8px] text-black/20 uppercase font-bold">Streak</p>
+                    <p className="text-[8px] text-[var(--text-muted)] uppercase font-bold">Streak</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 justify-center mb-5">
-                  {selectedUser.skills.map(s=>(<span key={s} className="px-3 py-1 rounded-lg text-[9px] font-bold bg-black/[0.03] text-black/40">{s}</span>))}
+                  {selectedUser.skills.map(s=>(<span key={s} className="px-3 py-1 rounded-lg text-[9px] font-bold bg-[var(--btn-sec-bg)] text-[var(--text-muted)]">{s}</span>))}
                 </div>
                 {sentRequests.includes(selectedUser.id) ? (
                   <div className="py-3 rounded-xl bg-green-50 border border-green-200 text-green-600 text-xs font-bold flex items-center justify-center gap-2"><CheckCircle2 className="w-4 h-4"/>Request Sent</div>

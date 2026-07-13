@@ -10,15 +10,16 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
+import PortalSidebar from '@/components/PortalSidebar';
+import ThemeToggle from '@/components/ThemeToggle';
 import { auth, db } from '@/lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 
-// Super Premium Entrance Animation
 const fadeUp = (d=0) => ({ 
-  initial: { opacity: 0, y: 30, scale: 0.95, filter: 'blur(4px)' }, 
-  animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }, 
-  transition: { duration: 0.6, delay: d, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } 
+  initial: { opacity: 0, y: 20, scale: 0.98 }, 
+  animate: { opacity: 1, y: 0, scale: 1 }, 
+  transition: { duration: 0.5, delay: d, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } 
 });
 
 const SKILLS_COLORS: Record<string,string> = {
@@ -43,14 +44,12 @@ export default function StudentDashboard() {
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Fetch Profile from Firestore
         const unsubProf = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
           if (docSnap.exists()) {
             setProfile(docSnap.data() as any);
           }
         });
         
-        // Fetch Progress from Firestore
         const unsubProg = onSnapshot(doc(db, 'users', user.uid, 'progress', 'main'), (docSnap) => {
           if (docSnap.exists()) {
             const p = docSnap.data() as any;
@@ -67,7 +66,6 @@ export default function StudentDashboard() {
           }
         });
 
-        // Notifications
         try { const n = JSON.parse(localStorage.getItem('dateforcode_notifications')||'[]'); setNotifications(n); } catch(_){}
 
         return () => { unsubProf(); unsubProg(); };
@@ -85,6 +83,7 @@ export default function StudentDashboard() {
     { label:'Coding Room', icon:Code, href:progress.matchDone?'/student/coding-room':'#', locked:!progress.matchDone },
     { label:'Gamification', icon:Gamepad2, href:'/student/gamification' },
     { label:'Challenges', icon:Zap, href:'/student/challenges' },
+    { label:'Playground', icon:TerminalIcon, href:'/student/playground' },
     { label:'Leaderboard', icon:Trophy, href:'/student/leaderboard' },
     { label:'Mentor Guidance', icon:GraduationCap, href:'/student/mentor-guidance' },
   ];
@@ -98,116 +97,73 @@ export default function StudentDashboard() {
   const avatarImg = profile?.avatar ? `https://api.dicebear.com/7.x/bottts/svg?seed=${profile.avatar}` : 'https://api.dicebear.com/7.x/bottts/svg?seed=default';
 
   return (
-    <div className="flex min-h-screen bg-[#08090C] text-[#F3F4F6] font-sans noise-bg">
-      {/* ═══ Monochrome Grid Background ═══ */}
+    <div className="flex min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans noise-bg">
+      {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none z-0 developer-grid" />
 
-      {/* ═══ Solid Premium Sidebar ═══ */}
-      <motion.aside 
-        initial={{ x: -100, opacity: 0 }} 
-        animate={{ x: 0, opacity: 1 }} 
-        transition={{ duration: 0.5 }} 
-        className={`fixed top-0 left-0 h-screen bg-[#0D0E12] border-r border-[#2A2E3D]/50 flex flex-col z-50 transition-all duration-500 shadow-2xl ${isSidebarOpen ? 'w-64' : 'w-[88px]'}`}
-      >
-        
-        {/* Collapse Toggle Button */}
-        <button 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-          className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded border border-[#2A2E3D] bg-[#15171F] flex items-center justify-center text-gray-400 hover:text-white z-[60] transition-colors"
-        >
-          {isSidebarOpen ? <ChevronLeft className="w-3 h-3"/> : <ChevronRight className="w-3 h-3"/>}
-        </button>
-
-        <div className={`p-6 pb-4 flex items-center ${isSidebarOpen ? '' : 'justify-center'}`}>
-          <Logo showText={isSidebarOpen} className={`origin-left transition-all duration-500 ${isSidebarOpen ? 'scale-[0.8]' : 'scale-[0.5]'}`} />
-        </div>
-
-        {isSidebarOpen && (
-          <div className="px-4 mb-2">
-            <p className="text-[9px] font-mono font-bold uppercase tracking-widest text-gray-500 px-3">system modules</p>
-          </div>
-        )}
-
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-          {SIDEBAR_ITEMS.map((item) => (
-            <a 
-              key={item.label} 
-              href={(item as any).locked ? '#' : item.href}
-              onClick={e => {
-                if ((item as any).locked) {
-                  e.preventDefault();
-                  if (item.label === 'Matching') {
-                    setLockModal({
-                      show: true,
-                      title: 'MODULE LOCKED: MATCHING',
-                      msg: 'You must successfully pass a Core Skill Assessment before entering the Matching Arena. This preserves system pairing synergy.',
-                      action: 'INITIATE ASSESSMENT',
-                      href: '/student/skill-assessment'
-                    });
-                  } else if (item.label === 'Coding Room') {
-                    setLockModal({
-                      show: true,
-                      title: 'MODULE LOCKED: CODING_ROOM',
-                      msg: 'No active pair connection. You must secure a partner node in the Matching Room before opening a live collaborative IDE session.',
-                      action: 'OPEN MATCHING ROOM',
-                      href: '/student/matching-room'
-                    });
-                  }
-                }
-              }}
-              className={`flex items-center gap-3 px-3 py-3 rounded text-[13px] font-bold font-mono transition-all duration-200 group ${isSidebarOpen ? '' : 'justify-center'} ${
-                item.active 
-                  ? 'bg-[#FF3366] text-white shadow-lg shadow-[#FF3366]/20' 
-                  : (item as any).locked 
-                    ? 'text-gray-600 cursor-not-allowed border border-transparent' 
-                    : 'text-[#9CA3AF] hover:text-white hover:bg-[#15171F]'
-              }`}
+      <PortalSidebar 
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        items={SIDEBAR_ITEMS.map((item) => ({
+          ...item,
+          onClick: (e) => {
+            if ((item as any).locked) {
+              e.preventDefault();
+              if (item.label === 'Matching') {
+                setLockModal({
+                  show: true,
+                  title: 'MODULE LOCKED: MATCHING',
+                  msg: 'You must successfully pass a Core Skill Assessment before entering the Matching Arena. This preserves system pairing synergy.',
+                  action: 'INITIATE ASSESSMENT',
+                  href: '/student/skill-assessment'
+                });
+              } else if (item.label === 'Coding Room') {
+                setLockModal({
+                  show: true,
+                  title: 'MODULE LOCKED: CODING_ROOM',
+                  msg: 'No active pair connection. You must secure a partner node in the Matching Room before opening a live collaborative IDE session.',
+                  action: 'OPEN MATCHING ROOM',
+                  href: '/student/matching-room'
+                });
+              }
+            }
+          }
+        }))}
+        headerBadge={
+          <p className="text-[9px] font-mono font-bold uppercase tracking-widest text-[var(--text-muted)] px-3">system modules</p>
+        }
+        bottomActions={
+          <>
+            <Link 
+              href="/mentor/dashboard" 
+              className={`flex items-center gap-3 px-3 py-3 rounded bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white font-bold font-mono transition-all duration-300 shadow-lg shadow-purple-900/25 hover:shadow-purple-700/40 group ${isSidebarOpen ? '' : 'justify-center'}`}
             >
-              {(item as any).locked ? (
-                <Lock className="w-4 h-4 text-gray-700 flex-shrink-0" />
-              ) : (
-                <item.icon className={`w-4 h-4 flex-shrink-0 ${item.active ? 'text-white' : 'text-gray-400 group-hover:text-white'} transition-colors`} />
-              )}
-              
-              <div className={`flex items-center justify-between overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'w-full opacity-100' : 'w-0 opacity-0'}`}>
-                <span className="truncate">{item.label}</span>
-                {(item as any).locked && <Lock className="w-3.5 h-3.5 text-gray-700 ml-auto" />}
+              <Briefcase className="w-4 h-4 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
+              <div className={`overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'w-full opacity-100' : 'w-0 opacity-0'}`}>
+                <span className="truncate text-[11px] uppercase tracking-wider font-bold">MENTOR CONSOLE</span>
               </div>
-            </a>
-          ))}
-        </nav>
+            </Link>
 
-        {/* Bottom Actions: Become Mentor + Logout */}
-        <div className="p-4 mt-auto space-y-2">
-          <Link 
-            href="/mentor/dashboard" 
-            className={`flex items-center gap-3 px-3 py-3 rounded bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white font-bold font-mono transition-all duration-300 shadow-lg shadow-purple-900/25 hover:shadow-purple-700/40 group ${isSidebarOpen ? '' : 'justify-center'}`}
-          >
-            <Briefcase className="w-4 h-4 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
-            <div className={`overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'w-full opacity-100' : 'w-0 opacity-0'}`}>
-              <span className="truncate text-[12px] uppercase tracking-wide">MENTOR CONSOLE</span>
-            </div>
-          </Link>
+            <div className="h-[1px] bg-[var(--ide-border)] my-2 w-full" />
+            
+            <button 
+              onClick={async () => {
+                await signOut(auth);
+                localStorage.clear();
+                router.push('/');
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-3 rounded text-[11px] font-mono font-bold text-red-400 hover:text-red-500 bg-red-950/10 hover:bg-red-950/20 border border-red-900/25 transition-all duration-300 group ${isSidebarOpen ? '' : 'justify-center'}`}
+            >
+              <LogOut className="w-4 h-4 flex-shrink-0 group-hover:-translate-x-1 transition-transform" />
+              <div className={`overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'w-full opacity-100' : 'w-0 opacity-0'}`}>
+                <span className="truncate text-left block w-full uppercase tracking-widest font-bold">EXIT NODE</span>
+              </div>
+            </button>
+          </>
+        }
+      />
 
-          <div className="h-[1px] bg-[#2A2E3D]/50 my-2 w-full" />
-          
-          <button 
-            onClick={async () => {
-              await signOut(auth);
-              localStorage.clear();
-              router.push('/');
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded text-[12px] font-mono font-bold text-red-400 hover:text-red-500 bg-red-950/10 hover:bg-red-950/20 border border-red-900/25 transition-all duration-300 group ${isSidebarOpen ? '' : 'justify-center'}`}
-          >
-            <LogOut className="w-4 h-4 flex-shrink-0 group-hover:-translate-x-1 transition-transform" />
-            <div className={`overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'w-full opacity-100' : 'w-0 opacity-0'}`}>
-              <span className="truncate text-left block w-full uppercase tracking-wider">EXIT NODE</span>
-            </div>
-          </button>
-        </div>
-      </motion.aside>
-
-      {/* ═══ Main Content Wrapper ═══ */}
+      {/* Main Content Wrapper */}
       <div className={`flex-1 min-h-screen relative z-10 transition-all duration-500 ${isSidebarOpen ? 'ml-64' : 'ml-[88px]'}`}>
         
         {/* Sticky Header */}
@@ -215,20 +171,21 @@ export default function StudentDashboard() {
           initial={{ y: -50, opacity: 0 }} 
           animate={{ y: 0, opacity: 1 }} 
           transition={{ duration: 0.5 }} 
-          className="sticky top-0 z-40 bg-[#08090C]/80 backdrop-blur-md border-b border-[#2A2E3D]/50 px-8 py-4 flex items-center justify-between shadow-sm"
+          className="sticky top-0 z-40 bg-[var(--nav-bg)] backdrop-blur-md border-b border-[var(--nav-border)] px-8 py-4.5 flex items-center justify-between shadow-sm"
         >
           <div />
-          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-[#FF3366] font-mono absolute left-1/2 -translate-x-1/2 drop-shadow-[0_0_10px_rgba(255,51,102,0.2)]">
-            SYSTEM_STATUS: OPERATIONAL
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF3366] font-mono absolute left-1/2 -translate-x-1/2 drop-shadow-[0_0_10px_rgba(255,51,102,0.2)]">
+            FROM_HELLO_WORLD_TO_WORLD_CLASS
           </p>
           
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <div className="relative">
               <button 
                 onClick={() => setShowNotifs(!showNotifs)} 
-                className="w-9 h-9 rounded bg-[#15171F] border border-[#2A2E3D] flex items-center justify-center hover:border-accent-pink transition-colors relative"
+                className="w-9 h-9 rounded bg-[var(--ide-bg)] border border-[var(--ide-border)] flex items-center justify-center hover:border-accent-pink transition-colors relative"
               >
-                <Bell className="w-4 h-4 text-gray-400" />
+                <Bell className="w-4 h-4 text-[var(--text-secondary)]" />
                 {notifications.filter(n=>n.status==='pending').length > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF3366] text-white text-[8px] font-bold flex items-center justify-center shadow-lg">
                     {notifications.filter(n=>n.status==='pending').length}
@@ -244,26 +201,26 @@ export default function StudentDashboard() {
                     animate={{ opacity: 1, y: 0, scale: 1 }} 
                     exit={{ opacity: 0, y: 15, scale: 0.95 }} 
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 top-12 w-80 bg-[#0D0E12] rounded border border-[#2A2E3D] shadow-2xl z-50 overflow-hidden"
+                    className="absolute right-0 top-12 w-80 bg-[var(--ide-bg)] rounded border border-[var(--ide-border)] shadow-2xl z-50 overflow-hidden"
                   >
-                    <div className="px-4 py-3 border-b border-[#2A2E3D] flex items-center justify-between bg-[#15171F]">
-                      <span className="text-xs font-mono font-bold text-white uppercase">INCOMING SYSTEM LOGS</span>
+                    <div className="px-4 py-3 border-b border-[var(--ide-border)] flex items-center justify-between bg-[var(--ide-header-bg)]">
+                      <span className="text-[10px] font-mono font-bold text-[var(--text-primary)] uppercase tracking-wider">INCOMING SYSTEM LOGS</span>
                       <button onClick={() => setShowNotifs(false)} className="hover:rotate-90 transition-transform">
-                        <X className="w-3.5 h-3.5 text-gray-500" />
+                        <X className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                       </button>
                     </div>
-                    <div className="max-h-80 overflow-y-auto font-mono text-[11px]">
+                    <div className="max-h-80 overflow-y-auto font-mono text-[11px] bg-[var(--ide-header-bg)]/50">
                       {notifications.length === 0 ? (
-                        <div className="p-8 text-center"><p className="text-xs text-gray-600">NO ACTIVE SIGNALS</p></div>
+                        <div className="p-8 text-center"><p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider">NO ACTIVE SIGNALS</p></div>
                       ) : notifications.map((n:any, i:number) => (
-                        <div key={n.id||i} className="px-4 py-3 border-b border-[#2A2E3D]/50 hover:bg-[#15171F]/40 transition-colors">
+                        <div key={n.id||i} className="px-4 py-3 border-b border-[var(--ide-border)]/50 hover:bg-[var(--ide-bg)]/40 transition-colors">
                           <div className="flex items-center gap-3">
                             <div className="w-7 h-7 rounded border border-accent-pink/30 bg-accent-pink/5 flex items-center justify-center shrink-0">
                               <Users className="w-3.5 h-3.5 text-accent-pink"/>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-bold text-white truncate">MATCH_REQUEST: <span className="text-[#FF3366]">@{n.from}</span></p>
-                              <p className="text-[9px] text-gray-500 uppercase mt-0.5">COMPATIBILITY RESOLVED</p>
+                              <p className="font-bold text-[var(--text-primary)] truncate">MATCH_REQUEST: <span className="text-[#FF3366]">@{n.from}</span></p>
+                              <p className="text-[9px] text-[var(--text-muted)] uppercase mt-0.5 tracking-wider">COMPATIBILITY RESOLVED</p>
                             </div>
                           </div>
                           {n.status==='pending' ? (
@@ -284,14 +241,15 @@ export default function StudentDashboard() {
                                   const updated = notifications.map((x:any)=>x.id===n.id?{...x,status:'declined'}:x); 
                                   setNotifications(updated); 
                                   localStorage.setItem('dateforcode_notifications',JSON.stringify(updated)); 
+                                  
                                 }}
-                                className="px-3 py-1 rounded border border-[#2A2E3D] text-gray-400 text-[9px] font-bold uppercase hover:bg-white/[0.03]"
+                                className="px-3 py-1 rounded border border-[var(--ide-border)] text-[var(--text-secondary)] text-[9px] font-bold uppercase hover:bg-white/[0.03]"
                               >
                                 Decline
                               </button>
                             </div>
                           ) : (
-                            <p className={`text-[10px] font-bold mt-1.5 ml-10 ${n.status==='accepted'?'text-accent-green':'text-gray-600'}`}>
+                            <p className={`text-[10px] font-bold mt-1.5 ml-10 ${n.status==='accepted'?'text-[#10B981]':'text-[var(--text-muted)]'}`}>
                               {n.status==='accepted'?'// REQUEST_ACCEPTED':'// REQUEST_DECLINED'}
                             </p>
                           )}
@@ -305,34 +263,34 @@ export default function StudentDashboard() {
             
             <button 
               onClick={() => router.push('/student/settings')} 
-              className="w-9 h-9 rounded bg-[#15171F] border border-[#2A2E3D] flex items-center justify-center hover:border-accent-pink transition-colors"
+              className="w-9 h-9 rounded bg-[var(--ide-bg)] border border-[var(--ide-border)] flex items-center justify-center hover:border-accent-pink transition-colors"
             >
-              <Settings className="w-4 h-4 text-gray-400" />
+              <Settings className="w-4 h-4 text-[var(--text-secondary)]" />
             </button>
             
             <button 
               onClick={() => setShowProfile(true)} 
-              className="flex items-center gap-3 pl-3 border-l border-[#2A2E3D] hover:opacity-80 transition-opacity"
+              className="flex items-center gap-3 pl-3 border-l border-[var(--ide-border)] hover:opacity-80 transition-opacity"
             >
               <div className="text-right">
-                <p className="text-xs font-mono font-bold text-white">@{profile?.username || 'user'}</p>
-                <p className="text-[9px] font-mono text-accent-pink font-bold uppercase tracking-wider">LEVEL 01 // CRITICAL</p>
+                <p className="text-xs font-mono font-bold text-[var(--text-primary)]">@{profile?.username || 'user'}</p>
+                <p className="text-[9px] font-mono text-[#FF3366] font-bold uppercase tracking-widest">LEVEL 01 // CRITICAL</p>
               </div>
-              <div className="w-9 h-9 rounded overflow-hidden border border-accent-pink/30 bg-[#15171F] p-0.5">
-                <img src={avatarImg} alt="avatar" className="w-full h-full" />
+              <div className="w-9 h-9 rounded overflow-hidden border border-accent-pink/30 bg-[var(--ide-bg)] p-0.5">
+                <img src={avatarImg} alt="avatar" className="w-full h-full animate-pulse" />
               </div>
             </button>
           </div>
         </motion.header>
 
         {/* Main Content Area */}
-        <div className="p-8 pb-20 max-w-7xl mx-auto space-y-12">
+        <div className="p-8 pb-20 max-w-7xl mx-auto space-y-12 relative">
           
-          {/* ═══ Matching Steps Flow ═══ */}
+          {/* Matching Steps Flow */}
           <motion.div {...fadeUp(0.1)} className="space-y-6">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-6 rounded bg-[#FF3366]" />
-              <h2 className="text-xl font-bold font-mono tracking-wider uppercase text-white">MATCHING PROTOCOL JOURNEY</h2>
+              <div className="w-1 h-5 rounded bg-[#FF3366]" />
+              <h2 className="text-sm font-bold font-mono tracking-widest uppercase text-[var(--text-primary)]">MATCHING PROTOCOL JOURNEY</h2>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -340,23 +298,23 @@ export default function StudentDashboard() {
                 <motion.div 
                   key={s.step} 
                   {...fadeUp(0.2+i*0.1)} 
-                  className="ide-panel bg-[#15171F] border-[#2A2E3D] relative overflow-hidden transition-all duration-300 hover:border-gray-500"
+                  className="glass-panel relative overflow-hidden rounded-lg"
                 >
                   {/* Top colored indicator bar */}
                   <div 
-                    className="absolute top-0 left-0 right-0 h-1" 
-                    style={{ background: s.status==='ready' ? s.color : '#2A2E3D' }} 
+                    className="absolute top-0 left-0 right-0 h-[2px]" 
+                    style={{ background: s.status==='ready' ? s.color : '#1E2333' }} 
                   />
                   
                   {/* IDE-style panel header */}
-                  <div className="ide-panel-header justify-between py-2">
-                    <span className="text-[10px] font-mono text-gray-500 uppercase">STEP_0{s.step}_THREAD</span>
+                  <div className="ide-panel-header justify-between py-2 border-b border-[var(--ide-border)]/40 bg-[var(--ide-header-bg)]/50">
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-wider">STEP_0{s.step}_THREAD</span>
                     {s.status==='ready' ? (
-                      <span className="text-[9px] font-mono text-accent-pink animate-pulse font-bold tracking-widest">// READY</span>
+                      <span className="text-[8px] font-mono text-accent-pink animate-pulse font-bold tracking-widest">// READY</span>
                     ) : s.status==='done' ? (
-                      <span className="text-[9px] font-mono text-accent-green font-bold tracking-widest">// COMPILED</span>
+                      <span className="text-[8px] font-mono text-accent-green font-bold tracking-widest">// COMPILED</span>
                     ) : (
-                      <span className="text-[9px] font-mono text-gray-600 font-bold tracking-widest">// LOCKED</span>
+                      <span className="text-[8px] font-mono text-[var(--text-muted)] font-bold tracking-widest">// LOCKED</span>
                     )}
                   </div>
 
@@ -366,26 +324,26 @@ export default function StudentDashboard() {
                         className="w-12 h-12 rounded border flex items-center justify-center shrink-0"
                         style={{
                           color: s.status==='ready' ? s.color : '#4B5563',
-                          borderColor: s.status==='ready' ? `${s.color}30` : '#2A2E3D',
-                          backgroundColor: s.status==='ready' ? `${s.color}08` : '#0D0E12',
+                          borderColor: s.status==='ready' ? `${s.color}30` : '#1E2333',
+                          backgroundColor: s.status==='ready' ? `${s.color}05` : '#08090C',
                         }}
                       >
                         <s.icon className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="font-bold font-mono text-white text-md uppercase tracking-wider">{s.title}</h3>
-                        <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">telemetry node 0{s.step}</span>
+                        <h3 className="font-bold font-mono text-[var(--text-primary)] text-sm uppercase tracking-wider">{s.title}</h3>
+                        <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest">telemetry node 0{s.step}</span>
                       </div>
                     </div>
 
-                    <p className="text-gray-400 text-xs font-mono leading-relaxed h-12">
+                    <p className="text-[var(--text-secondary)] text-xs font-sans leading-relaxed h-12">
                       {s.desc}
                     </p>
 
                     {s.status==='ready' && (
                       <button 
                         onClick={() => router.push(s.href || '/student/skill-assessment')}
-                        className="w-full py-2.5 bg-[#FF3366] text-white text-xs font-mono font-bold uppercase tracking-widest hover:bg-accent-pink-hover transition-colors flex items-center justify-center gap-2"
+                        className="btn-premium w-full py-2.5 text-xs flex items-center justify-center gap-2"
                       >
                         <span>EXECUTE MODULE</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -393,7 +351,7 @@ export default function StudentDashboard() {
                     )}
                     
                     {s.status==='done' && (
-                      <div className="w-full py-2.5 border border-accent-green/30 bg-accent-green/5 text-[#10B981] text-xs font-mono font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                      <div className="w-full py-2.5 border border-[#10B981]/20 bg-[#10B981]/5 text-[#10B981] text-[10px] font-mono font-bold uppercase tracking-widest flex items-center justify-center gap-2 rounded-md">
                         <CheckCircle2 className="w-3.5 h-3.5"/>SYSTEM COMPILED
                       </div>
                     )}
@@ -419,7 +377,7 @@ export default function StudentDashboard() {
                             });
                           }
                         }}
-                        className="w-full py-2.5 bg-[#0D0E12] border border-[#2A2E3D] text-gray-600 hover:text-gray-400 hover:border-gray-600 transition-colors text-xs font-mono font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                        className="w-full py-2.5 bg-[var(--background)] border border-[var(--ide-border)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-gray-500 transition-colors text-xs font-mono font-bold uppercase tracking-widest flex items-center justify-center gap-2 rounded-md"
                       >
                         <Lock className="w-3.5 h-3.5"/> LOCKED PROTOCOL
                       </button>
@@ -430,7 +388,7 @@ export default function StudentDashboard() {
             </div>
           </motion.div>
 
-          {/* ═══ Premium IDE-Panel Stats Row ═══ */}
+          {/* Premium Stats Row */}
           <motion.div {...fadeUp(0.3)} className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { label:'XP Score (Honor Points)', value:progress.hp, icon:Zap, color:'#FF3366', suffix:' HP', details:'COLLECTIVE LEVEL' },
@@ -441,47 +399,47 @@ export default function StudentDashboard() {
               <motion.div 
                 key={stat.label} 
                 {...fadeUp(0.35+i*0.1)} 
-                className="group bg-[#15171F] border border-[#2A2E3D] hover:border-gray-500 rounded p-6 relative overflow-hidden transition-all duration-300"
+                className="group glass-panel glass-panel-interactive p-6 rounded-lg relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/[0.01] to-transparent pointer-events-none" />
                 <div className="flex items-center gap-4 relative z-10">
                   <div 
                     className="w-12 h-12 rounded border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:rotate-12"
-                    style={{ color: stat.color, borderColor: `${stat.color}25`, backgroundColor: `${stat.color}05` }}
+                    style={{ color: stat.color, borderColor: `${stat.color}25`, backgroundColor: `${stat.color}03` }}
                   >
                     <stat.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest block mb-0.5">{stat.details}</span>
-                    <p className="text-2xl font-mono font-bold text-white leading-none">
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest block mb-0.5">{stat.details}</span>
+                    <p className="text-2xl font-mono font-bold text-[var(--text-primary)] leading-none">
                       {stat.value}
-                      <span className="text-xs font-bold text-gray-500 ml-1 font-mono uppercase">{stat.suffix}</span>
+                      <span className="text-xs font-bold text-[var(--text-muted)] ml-1 font-mono uppercase">{stat.suffix}</span>
                     </p>
-                    <span className="text-[9px] font-mono text-gray-400 block mt-1.5 uppercase font-bold tracking-tight">{stat.label.split(' (')[0]}</span>
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] block mt-1.5 uppercase font-bold tracking-tight">{stat.label.split(' (')[0]}</span>
                   </div>
                 </div>
               </motion.div>
             ))}
           </motion.div>
 
-          {/* ═══ Two Column: Weekly Activity + Skill Progress ═══ */}
+          {/* Two Column: Activity + Skill Progress */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            {/* Weekly Activity (Telemetry graph style) */}
+            {/* Weekly Activity */}
             <motion.div 
               {...fadeUp(0.4)} 
-              className="lg:col-span-7 bg-[#15171F] border border-[#2A2E3D] rounded overflow-hidden"
+              className="lg:col-span-7 glass-panel rounded-lg overflow-hidden"
             >
-              <div className="ide-panel-header justify-between py-2.5">
+              <div className="ide-panel-header justify-between py-2.5 border-b border-[var(--ide-border)] bg-[var(--ide-header-bg)]">
                 <div className="flex items-center gap-2">
                   <TerminalIcon className="w-3.5 h-3.5 text-accent-pink" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">activity_frequency_telemetry.log</span>
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">activity_frequency_telemetry.log</span>
                 </div>
-                <span className="text-[9px] font-mono text-gray-600 uppercase font-bold">INTERVAL: 7 DAYS</span>
+                <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase font-bold">INTERVAL: 7 DAYS</span>
               </div>
 
-              <div className="p-8 space-y-6">
-                <div className="flex items-end gap-5 h-44 border-b border-[#2A2E3D]/50 pb-2">
+              <div className="p-8 space-y-6 bg-[var(--ide-header-bg)]/30">
+                <div className="flex items-end gap-5 h-44 border-b border-[var(--ide-border)]/50 pb-2">
                   {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day, i) => {
                     const todayIdx = new Date().getDay();
                     const adjustedIdx = todayIdx === 0 ? 6 : todayIdx - 1;
@@ -506,52 +464,52 @@ export default function StudentDashboard() {
                           transition={{ duration: 0.8, delay: 0.5+i*0.08 }}
                           className="w-full rounded-sm relative overflow-hidden transition-all"
                           style={{ 
-                            background: heights[i] > 0 ? 'linear-gradient(to top, #FF3366, #FF4D6D)' : '#2A2E3D',
+                            background: heights[i] > 0 ? 'linear-gradient(to top, #FF3366, #FF4D6D)' : 'var(--ide-border)',
                             boxShadow: heights[i] > 0 ? '0 0 10px rgba(255,51,102,0.15)' : 'none'
                           }}
                         >
                           {heights[i] > 0 && (
-                            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-200" />
+                            <div className="absolute inset-0 bg-[var(--btn-sec-bg)] translate-y-full group-hover:translate-y-0 transition-transform duration-200" />
                           )}
                         </motion.div>
-                        <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${i===adjustedIdx ? 'text-[#FF3366]' : 'text-gray-500'}`}>
+                        <span className={`text-[9px] font-mono font-bold uppercase tracking-widest ${i===adjustedIdx ? 'text-[#FF3366]' : 'text-[var(--text-muted)]'}`}>
                           {day}
                         </span>
                       </div>
                     );
                   })}
                 </div>
-                <div className="text-[10px] font-mono text-gray-500 flex justify-between uppercase">
+                <div className="text-[10px] font-mono text-[var(--text-muted)] flex justify-between uppercase">
                   <span>// ACTIVE COMPILATION TELEMETRY GRAPH</span>
                   <span className="text-[#FF3366] font-bold">XP Velocity active</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Skill Progress Bar (Solid engineering tokens) */}
+            {/* Skill Progress Bar */}
             <motion.div 
               {...fadeUp(0.5)} 
-              className="lg:col-span-5 bg-[#15171F] border border-[#2A2E3D] rounded overflow-hidden"
+              className="lg:col-span-5 glass-panel rounded-lg overflow-hidden"
             >
-              <div className="ide-panel-header justify-between py-2.5">
+              <div className="ide-panel-header justify-between py-2.5 border-b border-[var(--ide-border)] bg-[var(--ide-header-bg)]">
                 <div className="flex items-center gap-2">
                   <TerminalIcon className="w-3.5 h-3.5 text-accent-blue" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">skills_telemetry_density.yaml</span>
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">skills_telemetry_density.yaml</span>
                 </div>
-                <span className="text-[9px] font-mono text-gray-600 uppercase font-bold">TELEMETRY</span>
+                <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase font-bold">TELEMETRY</span>
               </div>
 
-              <div className="p-8 space-y-6">
+              <div className="p-8 space-y-6 bg-[var(--ide-header-bg)]/30">
                 {(profile?.skills || ['JavaScript','Python','React']).slice(0, 4).map((skill, i) => {
                   const pct = progress.sessions > 0 ? Math.min(100, progress.sessions * 8) : 25;
                   const color = SKILLS_COLORS[skill] || '#FF3366';
                   return (
                     <div key={skill} className="space-y-2">
-                      <div className="flex justify-between items-center text-xs font-mono">
-                        <span className="text-white uppercase tracking-wider font-bold">{skill}</span>
-                        <span className="text-gray-400 font-bold">{pct}% MATCH LEVEL</span>
+                      <div className="flex justify-between items-center text-[10px] font-mono">
+                        <span className="text-[var(--text-primary)] uppercase tracking-wider font-bold">{skill}</span>
+                        <span className="text-[var(--text-secondary)] font-bold">{pct}% MATCH LEVEL</span>
                       </div>
-                      <div className="h-2 bg-[#0D0E12] rounded-sm overflow-hidden border border-[#2A2E3D]/50 p-[1px]">
+                      <div className="h-2 bg-[var(--background)] rounded-sm overflow-hidden border border-[var(--ide-border)]/50 p-[1px]">
                         <motion.div
                           initial={{ width: 0 }} 
                           animate={{ width: `${pct}%` }}
@@ -571,22 +529,22 @@ export default function StudentDashboard() {
 
           </div>
 
-          {/* ═══ Achievements Row (Precision Hacker Badges) ═══ */}
+          {/* Achievements Row */}
           <motion.div 
             {...fadeUp(0.6)} 
-            className="bg-[#15171F] border border-[#2A2E3D] rounded overflow-hidden"
+            className="glass-panel rounded-lg overflow-hidden"
           >
-            <div className="ide-panel-header justify-between py-2.5">
+            <div className="ide-panel-header justify-between py-2.5 border-b border-[var(--ide-border)] bg-[var(--ide-header-bg)]">
               <div className="flex items-center gap-2">
                 <Trophy className="w-4 h-4 text-accent-gold" />
-                <span className="text-[10px] font-mono text-gray-500 uppercase">achievements_system_registry.bin</span>
+                <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">achievements_system_registry.bin</span>
               </div>
               <span className="text-[9px] font-mono text-[#F59E0B] px-2 py-0.5 rounded bg-accent-gold/10 border border-accent-gold/20 uppercase tracking-widest font-bold">
                 {[progress.matchDone,progress.streak>=3,progress.codeDone,progress.matchDone,progress.hp>=50,progress.hp>=100].filter(Boolean).length} / 6 VERIFIED
               </span>
             </div>
 
-            <div className="p-8 grid grid-cols-2 md:grid-cols-6 gap-6">
+            <div className="p-8 grid grid-cols-2 md:grid-cols-6 gap-6 bg-[var(--ide-header-bg)]/30">
               {[
                 { icon: Target, name: 'First Match', locked: !progress.matchDone },
                 { icon: Flame, name: '3 Day Streak', locked: progress.streak < 3 },
@@ -599,12 +557,12 @@ export default function StudentDashboard() {
                   key={ach.name}
                   className={`flex flex-col items-center gap-3 p-5 rounded border transition-all duration-300 relative ${
                     ach.locked 
-                      ? 'border-[#2A2E3D] opacity-35 bg-[#0D0E12]/50 grayscale' 
+                      ? 'border-[var(--ide-border)] opacity-35 bg-[var(--background)] grayscale' 
                       : 'border-accent-gold/30 bg-[#F59E0B]/5 shadow-lg shadow-accent-gold/5'
                   }`}
                 >
-                  <ach.icon className={`w-8 h-8 ${ach.locked ? 'text-gray-600' : 'text-[#F59E0B]'}`} />
-                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-gray-400 text-center z-10">
+                  <ach.icon className={`w-8 h-8 ${ach.locked ? 'text-[var(--text-muted)]' : 'text-[#F59E0B]'}`} />
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--text-muted)] text-center z-10">
                     {ach.name}
                   </span>
                   {!ach.locked && (
@@ -615,11 +573,11 @@ export default function StudentDashboard() {
             </div>
           </motion.div>
 
-          {/* ═══ Explore & Build (High density portals) ═══ */}
+          {/* Explore & Build */}
           <motion.div {...fadeUp(0.7)} className="space-y-6">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-6 rounded bg-[#10B981]" />
-              <h2 className="text-xl font-bold font-mono tracking-wider uppercase text-white">ARENA OPERATIONS MODULES</h2>
+              <div className="w-1 h-5 rounded bg-[#10B981]" />
+              <h2 className="text-sm font-bold font-mono tracking-widest uppercase text-[var(--text-primary)]">ARENA OPERATIONS MODULES</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -632,7 +590,7 @@ export default function StudentDashboard() {
                 <div 
                   key={card.title}
                   onClick={() => { if (card.href !== '#') router.push(card.href); }}
-                  className="group bg-[#15171F] border border-[#2A2E3D] hover:border-gray-500 rounded p-6 relative overflow-hidden cursor-pointer transition-all duration-300"
+                  className="group glass-panel glass-panel-interactive p-6 rounded-lg relative overflow-hidden cursor-pointer"
                 >
                   <div className="absolute top-0 left-0 w-[4px] h-full" style={{ backgroundColor: card.color }} />
                   <div className="flex items-start gap-5">
@@ -643,10 +601,10 @@ export default function StudentDashboard() {
                       <card.icon className="w-6 h-6" />
                     </div>
                     <div className="space-y-1.5 flex-1">
-                      <h3 className="font-bold font-mono text-white text-md uppercase tracking-wider">{card.title}</h3>
-                      <p className="text-gray-400 text-xs font-mono leading-relaxed">{card.desc}</p>
+                      <h3 className="font-bold font-mono text-[var(--text-primary)] text-sm uppercase tracking-wider">{card.title}</h3>
+                      <p className="text-[var(--text-secondary)] text-xs font-sans leading-relaxed">{card.desc}</p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors mt-3" />
+                    <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-accent-pink transition-colors mt-3" />
                   </div>
                 </div>
               ))}
@@ -656,7 +614,7 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      {/* ═══ Profile Overlay Slide Panel ═══ */}
+      {/* Profile Overlay Slide Panel */}
       <AnimatePresence>
         {showProfile && (
           <>
@@ -672,30 +630,30 @@ export default function StudentDashboard() {
               animate={{ x: 0 }} 
               exit={{ x: '100%' }} 
               transition={{ type: 'spring', damping: 30, stiffness: 200 }} 
-              className="fixed top-0 right-0 h-full w-full max-w-md bg-[#0D0E12] border-l border-[#2A2E3D] z-[101] overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-full max-w-md bg-[var(--ide-bg)] border-l border-[var(--ide-border)] z-[101] overflow-y-auto"
             >
               <div className="p-8 space-y-8 h-full flex flex-col">
-                <div className="flex justify-between items-center pb-4 border-b border-[#2A2E3D]">
+                <div className="flex justify-between items-center pb-4 border-b border-[var(--ide-border)]">
                   <span className="text-[10px] font-mono text-accent-pink uppercase font-bold tracking-widest">// NODE DETAILS</span>
-                  <button onClick={() => setShowProfile(false)} className="w-8 h-8 rounded border border-[#2A2E3D] bg-[#15171F] flex items-center justify-center hover:border-white transition-colors">
-                    <X className="w-4 h-4 text-gray-400 hover:text-white" />
+                  <button onClick={() => setShowProfile(false)} className="w-8 h-8 rounded border border-[var(--ide-border)] bg-[var(--ide-bg)] flex items-center justify-center hover:border-accent-pink transition-colors">
+                    <X className="w-4 h-4 text-[var(--text-secondary)] hover:text-accent-pink" />
                   </button>
                 </div>
 
                 {/* Avatar info */}
                 <div className="text-center space-y-4 py-4">
                   <div className="relative w-24 h-24 mx-auto">
-                    <div className="w-full h-full rounded border-2 border-[#FF3366] bg-[#15171F] p-1.5">
+                    <div className="w-full h-full rounded border-2 border-[#FF3366] bg-[var(--ide-bg)] p-1.5">
                       <img src={avatarImg} alt="avatar" className="w-full h-full" />
                     </div>
                     <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-accent-green border border-black shadow-[0_0_10px_#10B981]" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-mono text-white">@{profile?.username || 'user'}</h3>
-                    <p className="text-[9px] font-mono text-gray-500 uppercase tracking-widest mt-1">LEVEL 01 ACCESS THREAD</p>
+                    <h3 className="text-xl font-bold font-mono text-[var(--text-primary)]">@{profile?.username || 'user'}</h3>
+                    <p className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest mt-1">LEVEL 01 ACCESS THREAD</p>
                   </div>
                   {profile?.bio && (
-                    <p className="text-gray-400 text-xs font-mono leading-relaxed max-w-xs mx-auto border border-[#2A2E3D]/50 bg-[#15171F]/50 p-3 rounded">
+                    <p className="text-[var(--text-secondary)] text-xs font-mono leading-relaxed max-w-xs mx-auto border border-[var(--ide-border)]/50 bg-[var(--ide-bg)]/50 p-3 rounded">
                       {profile.bio}
                     </p>
                   )}
@@ -709,17 +667,17 @@ export default function StudentDashboard() {
                     { label: 'Match Nodes', val: `${progress.matches}`, icon: Heart, color: '#3B82F6' },
                     { label: 'IDE Compiles', val: `${progress.sessions}`, icon: Code, color: '#8B5CF6' }
                   ].map((s) => (
-                    <div key={s.label} className="p-4 rounded border border-[#2A2E3D] bg-[#15171F]">
+                    <div key={s.label} className="p-4 rounded border border-[var(--ide-border)] bg-[var(--ide-bg)]">
                       <s.icon className="w-5 h-5 mb-2" style={{ color: s.color }} />
-                      <p className="text-lg font-mono font-bold text-white">{s.val}</p>
-                      <p className="text-[9px] font-mono text-gray-500 uppercase tracking-wider font-bold">{s.label}</p>
+                      <p className="text-lg font-mono font-bold text-[var(--text-primary)]">{s.val}</p>
+                      <p className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest font-bold">{s.label}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Skills */}
                 <div className="space-y-3">
-                  <span className="text-[10px] font-mono text-gray-500 uppercase font-bold tracking-wider block">STACK REGISTRY</span>
+                  <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase font-bold tracking-wider block">STACK REGISTRY</span>
                   <div className="flex flex-wrap gap-2">
                     {(profile?.skills || []).map((s) => (
                       <span 
@@ -741,7 +699,7 @@ export default function StudentDashboard() {
                 <div className="space-y-3 pt-4 mt-auto">
                   <button 
                     onClick={() => { setShowProfile(false); router.push('/student/settings?tab=edit-profile'); }}
-                    className="w-full py-3 rounded bg-[#15171F] border border-[#2A2E3D] text-xs font-mono font-bold uppercase tracking-widest text-[#9CA3AF] hover:text-white hover:border-gray-500 transition-colors text-center"
+                    className="w-full py-3 rounded bg-[var(--ide-bg)] border border-[var(--ide-border)] text-xs font-mono font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:text-accent-pink hover:border-accent-pink transition-colors text-center"
                   >
                     Edit Profile Node
                   </button>
@@ -758,7 +716,7 @@ export default function StudentDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Premium Dark Lock Modal */}
+      {/* Lock Modal */}
       <AnimatePresence>
         {lockModal.show && (
           <>
@@ -776,24 +734,24 @@ export default function StudentDashboard() {
               transition={{ duration: 0.15 }}
               className="fixed inset-0 z-[111] flex items-center justify-center p-4"
             >
-              <div className="bg-[#0D0E12] border border-[#FF3366]/40 rounded-lg shadow-2xl p-8 max-w-md w-full relative overflow-hidden">
+              <div className="bg-[var(--ide-bg)] border border-[#FF3366]/40 rounded-lg shadow-2xl p-8 max-w-md w-full relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-[3px] bg-[#FF3366]" />
                 
                 <div className="w-16 h-16 mx-auto rounded border border-red-900/30 bg-red-950/10 flex items-center justify-center mb-6">
                   <Lock className="w-8 h-8 text-[#FF3366]" />
                 </div>
                 
-                <h3 className="text-lg font-bold font-mono text-center text-white mb-3 uppercase tracking-wider">
+                <h3 className="text-lg font-bold font-mono text-center text-[var(--text-primary)] mb-3 uppercase tracking-wider">
                   {lockModal.title}
                 </h3>
-                <p className="text-xs font-mono text-center text-gray-400 leading-relaxed mb-8">
+                <p className="text-xs font-mono text-center text-[var(--text-secondary)] leading-relaxed mb-8">
                   {lockModal.msg}
                 </p>
                 
                 <div className="flex gap-4 font-mono text-xs">
                   <button 
                     onClick={() => setLockModal({ show: false, title: '', msg: '' })}
-                    className="flex-1 py-3 border border-[#2A2E3D] hover:border-gray-500 rounded text-gray-400 hover:text-white transition-colors uppercase font-bold"
+                    className="flex-1 py-3 border border-[var(--ide-border)] hover:border-gray-500 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase font-bold"
                   >
                     Dismiss
                   </button>

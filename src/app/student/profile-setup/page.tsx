@@ -19,7 +19,7 @@ const AVATARS = [
   { id: 'pixel', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel', ring: '#10B981', role: 'Frontend Architect', colorClass: 'text-accent-green border-accent-green/30' },
   { id: 'cyber', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=cyber', ring: '#F59E0B', role: 'AI Compiler Engineer', colorClass: 'text-accent-gold border-accent-gold/30' },
   { id: 'nova', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova', ring: '#8B5CF6', role: 'Quantum Cryptographer', colorClass: 'text-accent-purple border-accent-purple/30' },
-  { id: 'ghost', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=ghost', ring: '#94A3B8', role: 'SecOps Penetration Tester', colorClass: 'text-gray-400 border-gray-400/30' },
+  { id: 'ghost', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=ghost', ring: '#94A3B8', role: 'SecOps Penetration Tester', colorClass: 'text-[var(--text-secondary)] border-gray-400/30' },
 ];
 
 const SKILLS = [
@@ -84,7 +84,7 @@ export default function ProfileSetupPage() {
   ];
 
   return (
-    <main className="grid grid-cols-1 lg:grid-cols-12 min-h-screen bg-[#08090C] text-[#F3F4F6] relative overflow-hidden font-sans select-none">
+    <main className="grid grid-cols-1 lg:grid-cols-12 min-h-screen bg-[var(--ide-header-bg)] text-[var(--foreground)] relative overflow-hidden font-sans select-none">
       
       {/* LEFT COLUMN: Setup Steps Form Flow */}
       <section className="col-span-1 lg:col-span-7 flex flex-col justify-between p-6 md:p-12 min-h-screen relative z-10">
@@ -94,7 +94,7 @@ export default function ProfileSetupPage() {
           <Logo showText={true} className="scale-[0.8] origin-left" />
           <button 
             onClick={() => step > 0 ? setStep(step - 1) : router.back()} 
-            className="flex items-center gap-2 text-gray-500 text-xs font-mono tracking-wider hover:text-accent-pink transition-colors cursor-pointer"
+            className="flex items-center gap-2 text-[var(--text-muted)] text-xs font-mono tracking-wider hover:text-accent-pink transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             BACK
@@ -105,7 +105,7 @@ export default function ProfileSetupPage() {
         <div className="max-w-xl w-full mx-auto my-6">
           <div className="flex items-center gap-1.5">
             {[0, 1, 2, 3].map(i => (
-              <div key={i} className="flex-1 h-1 bg-[#15171F] border border-border-dark overflow-hidden">
+              <div key={i} className="flex-1 h-1 bg-[var(--ide-bg)] border border-border-dark overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: i <= step ? '100%' : '0%' }}
@@ -115,7 +115,7 @@ export default function ProfileSetupPage() {
               </div>
             ))}
           </div>
-          <div className="flex justify-between items-center mt-2 font-mono text-[9px] text-gray-500 uppercase tracking-widest">
+          <div className="flex justify-between items-center mt-2 font-mono text-[9px] text-[var(--text-muted)] uppercase tracking-widest">
             <span>STEP: {step + 1} OF 4</span>
             <span>SYSTEM CONTEXT MATCHING READY</span>
           </div>
@@ -134,15 +134,15 @@ export default function ProfileSetupPage() {
                 <Terminal className="w-3.5 h-3.5" /> PROFILE CONFIGURATION MODULE
               </span>
               <h1 className="text-3xl font-bold font-mono tracking-tight text-white mb-2 uppercase">{steps[step].title}</h1>
-              <p className="text-gray-400 text-sm leading-relaxed">{steps[step].sub}</p>
+              <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{steps[step].sub}</p>
             </div>
 
             {/* Step 0: Username */}
             {step === 0 && (
-              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark space-y-4">
-                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Developer Handle (UID)</label>
+              <div className="ide-panel p-6 bg-[var(--background)] border-border-dark space-y-4">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5 block">Developer Handle (UID)</label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-mono text-gray-600">@</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-mono text-[var(--text-muted)]">@</span>
                   <input
                     type="text" 
                     value={username} 
@@ -150,19 +150,19 @@ export default function ProfileSetupPage() {
                     placeholder="e.g. kernel_hacker" 
                     maxLength={20} 
                     autoFocus
-                    className="w-full pl-10 pr-4 py-3.5 bg-[#15171F] border border-border-dark rounded text-md text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-700"
+                    className="w-full pl-10 pr-4 py-3.5 bg-[var(--ide-bg)] border border-border-dark rounded text-md text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-[var(--text-secondary)]"
                   />
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-mono text-gray-500">
+                <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
                   <span>No spaces or capitals, numbers & underscores allowed</span>
-                  <span className={username.length >= 3 ? 'text-accent-green' : 'text-gray-600'}>{username.length}/20 chars</span>
+                  <span className={username.length >= 3 ? 'text-accent-green' : 'text-[var(--text-muted)]'}>{username.length}/20 chars</span>
                 </div>
               </div>
             )}
 
             {/* Step 1: Avatar / Persona Class */}
             {step === 1 && (
-              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark">
+              <div className="ide-panel p-6 bg-[var(--background)] border-border-dark">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {AVATARS.map((av) => (
                     <button 
@@ -170,7 +170,7 @@ export default function ProfileSetupPage() {
                       onClick={() => setSelectedAvatar(av.id)}
                       className={`p-3 rounded border text-left flex flex-col items-center justify-between gap-3 cursor-pointer transition-all duration-200 ${
                         selectedAvatar === av.id 
-                          ? 'bg-[#15171F] border-accent-pink' 
+                          ? 'bg-[var(--ide-bg)] border-accent-pink' 
                           : 'bg-[#0E1015] border-border-dark hover:border-gray-700'
                       }`}
                     >
@@ -184,7 +184,7 @@ export default function ProfileSetupPage() {
                       </div>
                       <div className="text-center">
                         <div className="text-[10px] font-mono font-bold text-white uppercase tracking-tight">{av.id}</div>
-                        <div className={`text-[8px] font-mono border px-1 py-0.5 rounded mt-1 bg-black/40 ${av.colorClass}`}>{av.role}</div>
+                        <div className={`text-[8px] font-mono border px-1 py-0.5 rounded mt-1 bg-[var(--btn-sec-bg)] ${av.colorClass}`}>{av.role}</div>
                       </div>
                     </button>
                   ))}
@@ -194,8 +194,8 @@ export default function ProfileSetupPage() {
 
             {/* Step 2: Technology Skills Stack */}
             {step === 2 && (
-              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark space-y-4">
-                <div className="flex justify-between items-center text-[10px] font-mono text-gray-400">
+              <div className="ide-panel p-6 bg-[var(--background)] border-border-dark space-y-4">
+                <div className="flex justify-between items-center text-[10px] font-mono text-[var(--text-secondary)]">
                   <span>SELECT SYSTEM CAPABILITIES</span>
                   <span className="text-accent-pink font-bold">{selectedSkills.length}/8 SELECTED</span>
                 </div>
@@ -208,7 +208,7 @@ export default function ProfileSetupPage() {
                         onClick={() => toggleSkill(skill.name)}
                         className={`p-2.5 rounded border text-left flex flex-col justify-between font-mono cursor-pointer transition-colors duration-150 ${
                           active 
-                            ? 'bg-[#15171F] border-accent-pink' 
+                            ? 'bg-[var(--ide-bg)] border-accent-pink' 
                             : 'bg-[#0E1015] border-border-dark hover:border-gray-700'
                         }`}
                       >
@@ -219,9 +219,9 @@ export default function ProfileSetupPage() {
                             skill.demand === 'High' ? 'bg-amber-950/40 text-amber-400 border border-amber-900/50' : 'bg-zinc-950/40 text-zinc-400 border border-zinc-900/50'
                           }`}>{skill.demand}</span>
                         </div>
-                        <div className="flex justify-between items-center w-full mt-2 text-[8px] text-gray-500">
+                        <div className="flex justify-between items-center w-full mt-2 text-[8px] text-[var(--text-muted)]">
                           <span>POPULARITY:</span>
-                          <span className="text-gray-300">{skill.popularity}</span>
+                          <span className="text-[var(--text-secondary)]">{skill.popularity}</span>
                         </div>
                       </button>
                     );
@@ -232,8 +232,8 @@ export default function ProfileSetupPage() {
 
             {/* Step 3: Bio */}
             {step === 3 && (
-              <div className="ide-panel p-6 bg-[#0D0E12] border-border-dark space-y-4">
-                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400 mb-1.5 block">Compiler Bio Statement</label>
+              <div className="ide-panel p-6 bg-[var(--background)] border-border-dark space-y-4">
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1.5 block">Compiler Bio Statement</label>
                 <div className="relative">
                   <textarea
                     value={bio} 
@@ -241,9 +241,9 @@ export default function ProfileSetupPage() {
                     maxLength={160}
                     placeholder="e.g. Linux systems programmer looking to build highly-optimized Rust microservices. Streaks active."
                     rows={5}
-                    className="w-full p-4 bg-[#15171F] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-gray-600 resize-none leading-relaxed"
+                    className="w-full p-4 bg-[var(--ide-bg)] border border-border-dark rounded text-sm text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-[var(--text-muted)] resize-none leading-relaxed"
                   />
-                  <div className="absolute bottom-3 right-3 text-[9px] font-mono text-gray-500">
+                  <div className="absolute bottom-3 right-3 text-[9px] font-mono text-[var(--text-muted)]">
                     {bio.length}/160
                   </div>
                 </div>
@@ -255,7 +255,7 @@ export default function ProfileSetupPage() {
               <button 
                 onClick={() => step > 0 && setStep(step - 1)} 
                 className={`flex items-center gap-1.5 text-xs font-mono tracking-wider transition-colors cursor-pointer uppercase ${
-                  step === 0 ? 'opacity-0 pointer-events-none' : 'text-gray-500 hover:text-white'
+                  step === 0 ? 'opacity-0 pointer-events-none' : 'text-[var(--text-muted)] hover:text-white'
                 }`}
               >
                 <ArrowLeft className="w-4 h-4" /> PREV STEP
@@ -284,30 +284,30 @@ export default function ProfileSetupPage() {
         </div>
 
         {/* Small operational notice */}
-        <div className="text-[9px] font-mono text-gray-600 text-center tracking-wide uppercase">
+        <div className="text-[9px] font-mono text-[var(--text-muted)] text-center tracking-wide uppercase">
           Ecosystem ID generation encrypted under SHA-256 standard protocols.
         </div>
       </section>
 
       {/* RIGHT COLUMN: Live Card Preview Render */}
-      <section className="hidden lg:flex lg:col-span-5 bg-[#0D0E12] border-l border-border-dark p-8 flex-col justify-center items-center relative noise-bg developer-grid">
+      <section className="hidden lg:flex lg:col-span-5 bg-[var(--background)] border-l border-border-dark p-8 flex-col justify-center items-center relative noise-bg developer-grid">
         
         {/* Interactive glow effect in back */}
         <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-[160px] opacity-10 bg-accent-pink" style={{ background: avatarData.ring }} />
 
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
-            <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Live Compiler Preview</span>
+            <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Live Compiler Preview</span>
           </div>
 
           {/* Premium Developer Identity Card */}
-          <div className="ide-panel bg-[#15171F]/80 backdrop-blur border-border-dark relative overflow-hidden shadow-2xl">
+          <div className="ide-panel bg-[var(--ide-bg)]/80 backdrop-blur border-border-dark relative overflow-hidden shadow-2xl">
             
             {/* Design header lines */}
             <div className="ide-panel-header justify-between">
               <div className="flex items-center gap-1.5">
                 <Code className="w-3.5 h-3.5 text-accent-pink" />
-                <span className="font-mono text-[9px] uppercase tracking-wider text-gray-400">SYS_CARD // COMPILING</span>
+                <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--text-secondary)]">SYS_CARD // COMPILING</span>
               </div>
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500/80" />
@@ -322,7 +322,7 @@ export default function ProfileSetupPage() {
               <div className="flex items-center gap-4">
                 {/* Avatar ring representation */}
                 <div className="relative shrink-0">
-                  <div className="w-20 h-20 rounded bg-[#0D0E12] border-2 flex items-center justify-center shadow-lg" style={{ borderColor: avatarData.ring }}>
+                  <div className="w-20 h-20 rounded bg-[var(--background)] border-2 flex items-center justify-center shadow-lg" style={{ borderColor: avatarData.ring }}>
                     <img src={avatarData.img} alt="avatar" className="w-16 h-16" />
                   </div>
                   <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-accent-green border-2 border-[#15171F] rounded-full flex items-center justify-center" />
@@ -341,15 +341,15 @@ export default function ProfileSetupPage() {
 
               {/* Bio Block */}
               <div className="space-y-1.5">
-                <div className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">Developer Statement</div>
-                <div className="p-3 bg-[#0D0E12] border border-border-dark rounded min-h-[72px] text-xs font-mono text-gray-300 leading-relaxed">
+                <div className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Developer Statement</div>
+                <div className="p-3 bg-[var(--background)] border border-border-dark rounded min-h-[72px] text-xs font-mono text-[var(--text-secondary)] leading-relaxed">
                   {bio || "Waiting for compiler bio statement..."}
                 </div>
               </div>
 
               {/* Tech stack */}
               <div className="space-y-2">
-                <div className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">Capabilities Stack</div>
+                <div className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest">Capabilities Stack</div>
                 <div className="flex flex-wrap gap-1.5 min-h-[30px]">
                   {selectedSkills.length > 0 ? (
                     selectedSkills.map(s => {
@@ -365,23 +365,23 @@ export default function ProfileSetupPage() {
                       );
                     })
                   ) : (
-                    <span className="text-[10px] font-mono text-gray-600 uppercase">Stack empty. Select items...</span>
+                    <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">Stack empty. Select items...</span>
                   )}
                 </div>
               </div>
 
               {/* Ecosystem Stats Preview block */}
               <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-border-dark text-center font-mono">
-                <div className="bg-[#0D0E12] p-2 border border-border-dark rounded">
-                  <div className="text-[8px] text-gray-500 uppercase">SYNERGY</div>
+                <div className="bg-[var(--background)] p-2 border border-border-dark rounded">
+                  <div className="text-[8px] text-[var(--text-muted)] uppercase">SYNERGY</div>
                   <div className="text-xs font-bold text-white">0%</div>
                 </div>
-                <div className="bg-[#0D0E12] p-2 border border-border-dark rounded">
-                  <div className="text-[8px] text-gray-500 uppercase">HP STREAK</div>
+                <div className="bg-[var(--background)] p-2 border border-border-dark rounded">
+                  <div className="text-[8px] text-[var(--text-muted)] uppercase">HP STREAK</div>
                   <div className="text-xs font-bold text-accent-pink">1x</div>
                 </div>
-                <div className="bg-[#0D0E12] p-2 border border-border-dark rounded">
-                  <div className="text-[8px] text-gray-500 uppercase">ARENA XP</div>
+                <div className="bg-[var(--background)] p-2 border border-border-dark rounded">
+                  <div className="text-[8px] text-[var(--text-muted)] uppercase">ARENA XP</div>
                   <div className="text-xs font-bold text-accent-gold">0 XP</div>
                 </div>
               </div>
@@ -390,7 +390,7 @@ export default function ProfileSetupPage() {
 
           </div>
 
-          <div className="flex gap-2 text-[10px] font-mono text-gray-500 justify-center">
+          <div className="flex gap-2 text-[10px] font-mono text-[var(--text-muted)] justify-center">
             <Cpu className="w-3.5 h-3.5 text-accent-pink" />
             <span>Multiplayer Profile Synchronizer active</span>
           </div>
@@ -406,7 +406,7 @@ export default function ProfileSetupPage() {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
-              className="fixed inset-0 bg-[#08090C]/80 backdrop-blur-md z-40" 
+              className="fixed inset-0 bg-[var(--ide-header-bg)]/80 backdrop-blur-md z-40" 
               onClick={() => setShowPreview(false)} 
             />
             
@@ -416,12 +416,12 @@ export default function ProfileSetupPage() {
               animate={{ scale: 1, opacity: 1 }} 
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#0D0E12] border border-border-dark z-50 shadow-2xl p-8 rounded-lg overflow-y-auto"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[var(--background)] border border-border-dark z-50 shadow-2xl p-8 rounded-lg overflow-y-auto"
             >
               {/* Close */}
               <button 
                 onClick={() => setShowPreview(false)} 
-                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors cursor-pointer"
+                className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -435,22 +435,22 @@ export default function ProfileSetupPage() {
                 </div>
 
                 {/* Main Rendered Card */}
-                <div className="ide-panel bg-[#15171F] border-border-dark p-6 relative overflow-hidden text-left">
+                <div className="ide-panel bg-[var(--ide-bg)] border-border-dark p-6 relative overflow-hidden text-left">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-accent-pink/10 rounded-full blur-[40px]" style={{ backgroundColor: avatarData.ring }} />
                   <div className="relative flex items-center gap-4">
-                    <div className="w-16 h-16 rounded bg-[#0D0E12] border flex items-center justify-center shrink-0" style={{ borderColor: avatarData.ring }}>
+                    <div className="w-16 h-16 rounded bg-[var(--background)] border flex items-center justify-center shrink-0" style={{ borderColor: avatarData.ring }}>
                       <img src={avatarData.img} alt="avatar" className="w-12 h-12" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold font-mono text-white">@{username}</h3>
-                      <div className={`text-[8px] font-mono border px-1.5 py-0.5 rounded inline-block bg-black/40 font-bold uppercase tracking-wider ${avatarData.colorClass}`}>
+                      <div className={`text-[8px] font-mono border px-1.5 py-0.5 rounded inline-block bg-[var(--btn-sec-bg)] font-bold uppercase tracking-wider ${avatarData.colorClass}`}>
                         {avatarData.role}
                       </div>
                     </div>
                   </div>
 
                   {bio && (
-                    <div className="mt-4 p-3 bg-[#0D0E12] border border-border-dark rounded text-xs font-mono text-gray-300">
+                    <div className="mt-4 p-3 bg-[var(--background)] border border-border-dark rounded text-xs font-mono text-[var(--text-secondary)]">
                       {bio}
                     </div>
                   )}
@@ -472,16 +472,16 @@ export default function ProfileSetupPage() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2.5 text-center font-mono">
-                  <div className="bg-[#15171F] p-3 border border-border-dark rounded">
-                    <span className="text-[8px] text-gray-500 block uppercase">SYNERGY</span>
+                  <div className="bg-[var(--ide-bg)] p-3 border border-border-dark rounded">
+                    <span className="text-[8px] text-[var(--text-muted)] block uppercase">SYNERGY</span>
                     <span className="text-sm font-bold text-white">99%</span>
                   </div>
-                  <div className="bg-[#15171F] p-3 border border-border-dark rounded">
-                    <span className="text-[8px] text-gray-500 block uppercase">STREAK</span>
+                  <div className="bg-[var(--ide-bg)] p-3 border border-border-dark rounded">
+                    <span className="text-[8px] text-[var(--text-muted)] block uppercase">STREAK</span>
                     <span className="text-sm font-bold text-accent-pink">1x</span>
                   </div>
-                  <div className="bg-[#15171F] p-3 border border-border-dark rounded">
-                    <span className="text-[8px] text-gray-500 block uppercase">XP REWARD</span>
+                  <div className="bg-[var(--ide-bg)] p-3 border border-border-dark rounded">
+                    <span className="text-[8px] text-[var(--text-muted)] block uppercase">XP REWARD</span>
                     <span className="text-sm font-bold text-accent-gold">+200</span>
                   </div>
                 </div>

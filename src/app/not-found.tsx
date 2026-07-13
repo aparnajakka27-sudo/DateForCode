@@ -3,10 +3,10 @@ import Logo from '../components/Logo';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#FDFDFD] flex flex-col items-center justify-center p-8 text-center">
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-8 text-center">
       <Logo className="mb-12 scale-125" />
-      <h1 className="text-6xl font-serif font-bold text-black mb-4">404</h1>
-      <p className="text-xl text-black/40 mb-12 max-w-md mx-auto font-serif">
+      <h1 className="text-6xl font-serif font-bold text-[var(--text-primary)] mb-4">404</h1>
+      <p className="text-xl text-[var(--text-muted)] mb-12 max-w-md mx-auto font-serif">
         The page you are looking for has been moved or doesn't exist in our current protocol.
       </p>
       <Link 

@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Code2, Sparkles, Zap, Search, Wifi, Globe, ArrowRight, Shield, Heart, Star, CheckCircle2, Loader2, ArrowLeft, Terminal, Cpu, Clock, Calendar, BarChart3, Database } from 'lucide-react';
@@ -70,7 +71,6 @@ function MatchingRoomContent() {
       idx++;
       setScanProgress(Math.min((idx / 30) * 100, 100));
       
-      // Inject console logs
       if (idx % 3 === 0 && idx / 3 < logTemplates.length) {
         setConsoleLogs(prev => [...prev, `[SYS] ${logTemplates[Math.floor(idx / 3)]}`]);
       }
@@ -101,42 +101,41 @@ function MatchingRoomContent() {
   };
 
   return (
-    <main className="fixed inset-0 bg-[#08090C] text-[#F3F4F6] z-[9999] overflow-hidden flex flex-col font-sans">
+    <main className="fixed inset-0 bg-[var(--background)] text-[var(--foreground)] z-[9999] overflow-hidden flex flex-col font-sans">
       {/* ═══ DEVELOPER DEEP ACCENT BACKGROUND ═══ */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* IDE grid background overlay */}
-        <div className="absolute inset-0 developer-grid opacity-[0.08]" />
+        <div className="absolute inset-0 developer-grid opacity-[0.2]" />
         
-        {/* Soft glowing mesh color matrices (based on theme parameters) */}
+        {/* Soft glowing mesh matrices */}
         <motion.div 
-          className="absolute w-[600px] h-[600px] rounded-full blur-[140px] opacity-[0.07]" 
+          className="absolute w-[600px] h-[600px] rounded-full blur-[140px] opacity-[0.08]" 
           animate={{ x: [0, 40, -40, 0], y: [0, -40, 40, 0] }} 
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }} 
           style={{ background: meta.color, left: '-10%', top: '-10%' }} 
         />
         <motion.div 
-          className="absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.07]" 
+          className="absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.08]" 
           animate={{ x: [0, -30, 40, 0], y: [0, 40, -30, 0] }} 
           transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} 
           style={{ background: '#FF3366', right: '-5%', top: '20%' }} 
         />
       </div>
 
-      {/* ═══ PREMIUM TERMINAL TOP HEADER ═══ */}
-      <nav className="relative z-30 bg-[#08090C]/90 backdrop-blur-md border-b border-[#2A2E3D]/60 px-6 py-3 flex items-center justify-between flex-shrink-0">
+      {/* ═══ PREMIUM NAVIGATION HEADER ═══ */}
+      <nav className="relative z-30 bg-[var(--background)]/75 backdrop-blur-md border-b border-[var(--ide-border)] px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <Logo showText={true} className="scale-[0.8] origin-left" />
-          <div className="w-px h-5 bg-[#2A2E3D]" />
-          <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">// MATCHING_ENGINE</span>
+          <div className="w-px h-5 bg-[#1E2333]" />
+          <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest font-bold">// MATCHING_ENGINE</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#10B981]/5 border border-[#10B981]/25 text-[#10B981] font-mono text-[10px] font-bold">
+          <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#10B981]/5 border border-[#10B981]/25 text-[#10B981] font-mono text-[9px] font-bold tracking-widest uppercase">
             <Wifi className="w-3 h-3 animate-pulse" />
             <span>{onlineCount} NODES ONLINE</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded bg-[#15171F] border border-[#2A2E3D] text-xs font-mono text-white/80">
-            <span className="text-sm shrink-0">{meta.icon}</span>
-            <span className="text-[10px] font-bold uppercase">{meta.name}</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded bg-[var(--ide-bg)] border border-[var(--ide-border)] text-[9px] font-mono text-[var(--text-primary)]/80 font-bold uppercase tracking-widest">
+            <span className="shrink-0">{meta.icon}</span>
+            <span>{meta.name}</span>
           </div>
         </div>
       </nav>
@@ -149,64 +148,64 @@ function MatchingRoomContent() {
           {phase === 'intro' && (
             <motion.div 
               key="intro" 
-              initial={{ opacity: 0, y: 15 }} 
+              initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
               exit={{ opacity: 0, y: -20 }} 
               className="text-center max-w-2xl w-full"
             >
               {/* Scientific pairing beam compiler visualization */}
-              <div className="relative w-40 h-40 mx-auto mb-8 flex items-center justify-center">
+              <div className="relative w-48 h-48 mx-auto mb-8 flex items-center justify-center">
                 <motion.div 
-                  className="absolute inset-0 rounded-full border border-dashed border-[#2A2E3D]"
+                  className="absolute inset-0 rounded-full border border-dashed border-[var(--ide-border)]"
                   animate={{ rotate: 360 }} 
-                  transition={{ duration: 30, repeat: Infinity, ease: 'linear' }} 
+                  transition={{ duration: 35, repeat: Infinity, ease: 'linear' }} 
                 />
                 <motion.div 
-                  className="absolute inset-4 rounded-full border-2 border-dashed border-[#FF3366]/20"
+                  className="absolute inset-4 rounded-full border-2 border-dashed border-[#FF3366]/15"
                   animate={{ rotate: -360 }} 
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} 
+                  transition={{ duration: 25, repeat: Infinity, ease: 'linear' }} 
                 />
                 <motion.div 
-                  className="absolute inset-8 rounded-full border border-dashed border-[#3B82F6]/30"
+                  className="absolute inset-10 rounded-full border border-dashed border-[#3B82F6]/20"
                   animate={{ rotate: 360 }} 
-                  transition={{ duration: 15, repeat: Infinity, ease: 'linear' }} 
+                  transition={{ duration: 18, repeat: Infinity, ease: 'linear' }} 
                 />
                 
                 <motion.div 
-                  animate={{ scale: [1, 1.05, 1], boxShadow: [`0 0 0 0px ${meta.color}00`, `0 0 25px 4px ${meta.color}33`, `0 0 0 0px ${meta.color}00`] }} 
+                  animate={{ scale: [1, 1.03, 1], boxShadow: [`0 0 0 0px ${meta.color}00`, `0 0 30px 4px ${meta.color}20`, `0 0 0 0px ${meta.color}00`] }} 
                   transition={{ duration: 3, repeat: Infinity }}
-                  className="w-20 h-20 rounded-xl flex items-center justify-center text-3xl bg-[#15171F] border border-[#2A2E3D] z-10"
+                  className="w-24 h-24 rounded-2xl flex items-center justify-center bg-[var(--ide-bg)] border border-[var(--ide-border)] z-10 shadow-2xl"
                 >
-                  <Users className="w-10 h-10 text-white" />
+                  <Users className="w-10 h-10 text-[var(--text-primary)]" />
                 </motion.div>
 
                 {/* Satellite data nodes orbiting */}
                 {[0, 1, 2].map(i => (
                   <motion.div 
                     key={i} 
-                    className="absolute w-2.5 h-2.5 rounded-full" 
+                    className="absolute w-2 h-2 rounded-full" 
                     style={{ background: i === 0 ? '#FF3366' : i === 1 ? '#3B82F6' : '#10B981' }}
                     animate={{ rotate: 360 }} 
-                    transition={{ duration: 6 + i * 2, repeat: Infinity, ease: 'linear' }}
+                    transition={{ duration: 8 + i * 3, repeat: Infinity, ease: 'linear' }}
                   >
-                    <div className="absolute -top-1" style={{ left: 58 + i * 8 }} />
+                    <div className="absolute -top-1" style={{ left: 68 + i * 10 }} />
                   </motion.div>
                 ))}
               </div>
 
               {/* Monospace Developer-Native Titles */}
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#FF3366]/10 border border-[#FF3366]/30 text-[#FF3366] text-[10px] font-mono uppercase tracking-widest font-bold">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#FF3366]/5 border border-[#FF3366]/20 text-[#FF3366] text-[9px] font-mono uppercase tracking-widest font-bold">
                   <Cpu className="w-3.5 h-3.5 animate-pulse" />
                   TELEMETRY MATCHMAKER SYSTEM ACTIVE
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-mono font-black text-white leading-tight uppercase">
+                <h1 className="text-4xl md:text-5xl font-mono font-black text-[var(--text-primary)] leading-[1.1] uppercase">
                   SCIENTIFIC <span className="text-[#FF3366] accent-glow">PAIRING</span> GRID
                 </h1>
 
-                <p className="text-gray-400 text-xs max-w-md mx-auto font-mono leading-relaxed">
-                  Avoid the generic SaaS social template swiping. Match with highly compatible engineers computed on strict schedule availability, code speeds, and toolbox complementary balances.
+                <p className="text-[var(--text-secondary)] text-xs max-w-md mx-auto font-sans leading-relaxed">
+                  Avoid the generic social templates. Match with highly compatible engineers computed on strict schedule availability, code speeds, and toolbox complementary balances.
                 </p>
               </div>
 
@@ -223,7 +222,7 @@ function MatchingRoomContent() {
                     initial={{ opacity: 0, scale: 0.9 }} 
                     animate={{ opacity: 1, scale: 1 }} 
                     transition={{ delay: 0.1 + i * 0.1 }}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#15171F] border border-[#2A2E3D] text-[9px] font-mono text-gray-400"
+                    className="flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-[var(--ide-bg)] border border-[var(--ide-border)] text-[9px] font-mono text-[var(--text-secondary)] font-bold"
                   >
                     <f.icon className="w-3 h-3 text-[#FF3366]" />
                     <span>{f.text.toUpperCase()}</span>
@@ -235,19 +234,17 @@ function MatchingRoomContent() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button 
                   onClick={() => router.push('/student/dashboard')} 
-                  className="flex items-center gap-2 px-6 py-3 border border-[#2A2E3D] hover:border-gray-500 rounded bg-[#15171F] text-xs font-mono text-gray-400 hover:text-white transition-all uppercase"
+                  className="flex items-center gap-2 px-6 py-3 border border-[var(--ide-border)] hover:border-accent-pink rounded bg-[var(--ide-bg)] text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)] hover:text-accent-pink transition-all"
                 >
                   <ArrowLeft className="w-4 h-4" /> Exit telemetry
                 </button>
                 
-                <motion.button 
-                  whileHover={{ scale: 1.02 }} 
-                  whileTap={{ scale: 0.98 }}
+                <button 
                   onClick={startScanning}
-                  className="flex items-center gap-2 px-8 py-3 rounded bg-[#FF3366] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#FF3366]/90 transition-all border border-[#FF3366] hover:border-[#FF5E85] shadow-[0_0_15px_rgba(255,51,102,0.3)]"
+                  className="btn-premium px-8 py-3 flex items-center gap-2 text-xs"
                 >
                   <Search className="w-4 h-4" /> Start Matching Sequence <ArrowRight className="w-4 h-4" />
-                </motion.button>
+                </button>
               </div>
             </motion.div>
           )}
@@ -259,26 +256,26 @@ function MatchingRoomContent() {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
-              className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch"
+              className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch"
             >
-              {/* Left Column: Console Matrix Telemetry Logger (7 Columns) */}
+              {/* Left Column: Console Matrix Telemetry Logger */}
               <div className="lg:col-span-7 flex flex-col space-y-4">
-                <div className="ide-panel flex-1 bg-[#15171F] border-[#2A2E3D] flex flex-col min-h-[320px] rounded-lg overflow-hidden">
-                  <div className="ide-panel-header w-full justify-between py-2.5 border-b border-[#2A2E3D]/50 bg-[#0D0E12]/80 px-4">
-                    <span className="text-[9px] font-mono text-gray-500 uppercase flex items-center gap-1.5">
+                <div className="glass-panel flex-1 flex flex-col min-h-[320px] rounded-lg overflow-hidden border-[var(--ide-border)]">
+                  <div className="ide-panel-header w-full justify-between py-2.5 border-b border-[var(--ide-border)]/40 bg-[var(--ide-header-bg)]/50 px-4">
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase flex items-center gap-1.5 font-bold">
                       <Terminal className="w-3.5 h-3.5 text-[#FF3366]" /> SYSTEM_LOG_COMPILER.SH
                     </span>
-                    <span className="w-2 h-2 rounded-full bg-[#FF3366] animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF3366] animate-pulse" />
                   </div>
                   
                   {/* Active telemetry terminal output stream */}
-                  <div className="p-4 flex-1 font-mono text-[10px] text-gray-400 space-y-1.5 overflow-y-auto max-h-[250px] scrollbar-none flex flex-col justify-end">
+                  <div className="p-5 flex-1 font-mono text-[10px] text-[var(--text-secondary)] space-y-2 overflow-y-auto max-h-[250px] scrollbar-none flex flex-col justify-end bg-[var(--ide-header-bg)]/30">
                     {consoleLogs.map((log, i) => (
                       <motion.div 
                         key={i} 
                         initial={{ opacity: 0, x: -10 }} 
                         animate={{ opacity: 1, x: 0 }}
-                        className={log.startsWith('[SUCCESS]') ? 'text-[#10B981] font-bold' : log.startsWith('[FOUND]') ? 'text-[#3B82F6]' : 'text-gray-500'}
+                        className={log.startsWith('[SUCCESS]') ? 'text-[#10B981] font-bold' : log.startsWith('[FOUND]') ? 'text-[#3B82F6]' : 'text-[var(--text-muted)]'}
                       >
                         {log}
                       </motion.div>
@@ -290,14 +287,14 @@ function MatchingRoomContent() {
                   </div>
 
                   {/* Linear Progress Bar */}
-                  <div className="p-4 border-t border-[#2A2E3D]/50 bg-[#0D0E12]/40 space-y-2">
-                    <div className="flex justify-between items-center text-[10px] font-mono">
-                      <span className="text-gray-500">COMPILING PAIR SYNERGY</span>
+                  <div className="p-4 border-t border-[var(--ide-border)]/40 bg-[var(--ide-header-bg)]/50 space-y-2">
+                    <div className="flex justify-between items-center text-[9px] font-mono font-bold text-[var(--text-muted)] uppercase">
+                      <span>COMPILING PAIR SYNERGY</span>
                       <span className="text-[#FF3366] font-bold">{Math.round(scanProgress)}%</span>
                     </div>
-                    <div className="h-1.5 rounded bg-[#0D0E12] overflow-hidden border border-[#2A2E3D]/40">
+                    <div className="h-1.5 rounded bg-[var(--background)] overflow-hidden border border-[var(--ide-border)]/40 p-[1px]">
                       <motion.div 
-                        className="h-full bg-gradient-to-r from-[#FF3366] to-[#3B82F6]" 
+                        className="h-full bg-gradient-to-r from-[#FF3366] to-[#3B82F6] rounded-sm" 
                         animate={{ width: `${scanProgress}%` }} 
                         transition={{ ease: 'easeOut' }}
                       />
@@ -306,21 +303,21 @@ function MatchingRoomContent() {
                 </div>
               </div>
 
-              {/* Right Column: Active candidate parsing queue (5 Columns) */}
+              {/* Right Column: Active candidate parsing queue */}
               <div className="lg:col-span-5 flex flex-col space-y-4">
-                <div className="ide-panel bg-[#15171F] border-[#2A2E3D] flex-1 flex flex-col rounded-lg overflow-hidden">
-                  <div className="ide-panel-header w-full py-2.5 border-b border-[#2A2E3D]/50 bg-[#0D0E12]/80 px-4">
-                    <span className="text-[9px] font-mono text-gray-500 uppercase flex items-center gap-1.5">
+                <div className="glass-panel flex-1 flex flex-col rounded-lg overflow-hidden border-[var(--ide-border)]">
+                  <div className="ide-panel-header w-full py-2.5 border-b border-[var(--ide-border)]/40 bg-[var(--ide-header-bg)]/50 px-4">
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase flex items-center gap-1.5 font-bold">
                       <Cpu className="w-3.5 h-3.5 text-[#3B82F6]" /> MATCH_CANDIDATE_POOL
                     </span>
                   </div>
 
-                  <div className="p-4 flex-1 space-y-3 overflow-y-auto max-h-[300px] scrollbar-none">
+                  <div className="p-5 flex-1 space-y-3 overflow-y-auto max-h-[300px] scrollbar-none bg-[var(--ide-header-bg)]/10">
                     <AnimatePresence mode="popLayout">
                       {scannedUsers.length === 0 ? (
-                        <div className="h-full flex items-center justify-center flex-col text-center py-12 text-gray-600 space-y-2">
+                        <div className="h-full flex items-center justify-center flex-col text-center py-12 text-[var(--text-muted)] space-y-2">
                           <Loader2 className="w-8 h-8 animate-spin text-[#FF3366]" />
-                          <p className="text-[10px] font-mono uppercase tracking-widest">Searching node streams...</p>
+                          <p className="text-[9px] font-mono uppercase tracking-widest font-bold">Searching node streams...</p>
                         </div>
                       ) : (
                         scannedUsers.slice(-4).map((u, i) => (
@@ -329,20 +326,20 @@ function MatchingRoomContent() {
                             initial={{ opacity: 0, y: 15, scale: 0.98 }} 
                             animate={{ opacity: i === scannedUsers.slice(-4).length - 1 ? 1 : 0.4, y: 0, scale: 1 }} 
                             exit={{ opacity: 0, x: -20 }}
-                            className={`p-3 rounded border font-mono ${
+                            className={`p-3 rounded-md border font-mono ${
                               i === scannedUsers.slice(-4).length - 1 
-                                ? 'bg-[#15171F] border-[#FF3366]/40 text-white' 
-                                : 'bg-[#0D0E12]/50 border-[#2A2E3D]/40 text-gray-500'
+                                ? 'bg-[var(--ide-bg)] border-[#FF3366]/40 text-[var(--text-primary)]' 
+                                : 'bg-[var(--ide-header-bg)]/30 border-[var(--ide-border)]/40 text-[var(--text-muted)]'
                             }`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <div className="w-7 h-7 rounded border border-[#2A2E3D] bg-[#0D0E12] flex items-center justify-center text-[10px] font-bold text-accent-pink">
+                                <div className="w-7 h-7 rounded border border-[var(--ide-border)] bg-[var(--background)] flex items-center justify-center text-[10px] font-bold text-accent-pink">
                                   {u.avatar}
                                 </div>
                                 <div className="text-left">
                                   <p className="text-xs font-bold">{u.name}</p>
-                                  <p className="text-[8px] text-gray-500">{u.skill.toUpperCase()} // {u.overlap.toUpperCase()}</p>
+                                  <p className="text-[8px] text-[var(--text-muted)] font-bold uppercase tracking-wide">{u.skill} // {u.overlap}</p>
                                 </div>
                               </div>
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#FF3366]/10 text-[#FF3366] border border-[#FF3366]/20">
@@ -369,37 +366,37 @@ function MatchingRoomContent() {
             >
               {/* Title Header */}
               <div className="text-center space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] text-[10px] font-mono uppercase tracking-widest font-bold">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] text-[9px] font-mono uppercase tracking-widest font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   HIGH COMPATIBILITY CODER MATCHED SUCCESSFULLY
                 </div>
-                <h2 className="text-3xl font-mono font-black text-white uppercase tracking-tight">
+                <h2 className="text-3xl font-mono font-black text-[var(--text-primary)] uppercase tracking-tight">
                   PARTNER_SYNERGY_<span className="text-[#10B981]">ESTABLISHED</span>
                 </h2>
               </div>
 
               {/* Core Pairing Visual Node Split */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                 
-                {/* Left Side: Coder Details & Synergy Metrics (8 Columns) */}
+                {/* Left Side: Coder Details & Synergy Metrics */}
                 <div className="lg:col-span-8 flex flex-col space-y-4">
-                  <div className="ide-panel bg-[#15171F] border-[#2A2E3D] rounded-lg overflow-hidden flex-1 flex flex-col justify-between">
+                  <div className="glass-panel border-[var(--ide-border)] rounded-lg overflow-hidden flex-1 flex flex-col justify-between bg-[var(--ide-bg)]">
                     {/* Header */}
-                    <div className="ide-panel-header w-full justify-between py-2 border-b border-[#2A2E3D]/50 bg-[#0D0E12]/80 px-4">
-                      <span className="text-[9px] font-mono text-gray-500 uppercase flex items-center gap-1.5">
+                    <div className="ide-panel-header w-full justify-between py-2.5 border-b border-[var(--ide-border)]/50 bg-[var(--ide-header-bg)]/80 px-4">
+                      <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase flex items-center gap-1.5 font-bold">
                         <Cpu className="w-3.5 h-3.5 text-[#10B981]" /> ECOSYSTEM_SYNERGY_ANALYSIS
                       </span>
                       <span className="text-[10px] font-mono font-bold text-[#10B981]">MATCH_ID: #D4C-{Math.floor(Math.random()*9000+1000)}</span>
                     </div>
 
                     {/* Node Connection Beam Animation Block */}
-                    <div className="p-6 bg-[#0D0E12]/50 border-b border-[#2A2E3D]/40 flex items-center justify-center gap-4 py-8">
+                    <div className="p-6 bg-[var(--ide-header-bg)]/30 border-b border-[var(--ide-border)]/40 flex items-center justify-center gap-4 py-8">
                       {/* You Node */}
                       <div className="flex flex-col items-center space-y-2">
                         <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#FF3366] to-[#FF5E85] border border-[#FF3366]/40 flex items-center justify-center text-white text-base font-mono font-black shadow-[0_0_15px_rgba(255,51,102,0.2)]">
                           YOU
                         </div>
-                        <span className="text-[9px] font-mono text-gray-500 uppercase">LOCAL_NODE</span>
+                        <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase font-bold tracking-widest">LOCAL_NODE</span>
                       </div>
 
                       {/* Connection teleporter beam line */}
@@ -416,7 +413,7 @@ function MatchingRoomContent() {
                           animate={{ scale: [1, 1.08, 1] }} 
                           transition={{ duration: 2, repeat: Infinity }}
                         >
-                          <Heart className="w-4 h-4 text-[#10B981] fill-[#10B981]/20" />
+                          <Code2 className="w-4 h-4 text-[#10B981]" />
                         </motion.div>
                       </div>
 
@@ -425,78 +422,76 @@ function MatchingRoomContent() {
                         <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] border border-[#3B82F6]/40 flex items-center justify-center text-white text-base font-mono font-black shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                           {matchedUser.avatar}
                         </div>
-                        <span className="text-[9px] font-mono text-gray-500 uppercase">PEER_NODE</span>
+                        <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase font-bold tracking-widest">PEER_NODE</span>
                       </div>
                     </div>
 
-                    {/* Scientific Synergy Radar Parameters (High Density Info Grid) */}
-                    <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 bg-[#15171F]">
-                      <div className="p-3 border border-[#2A2E3D] bg-[#0D0E12]/60 rounded font-mono text-left">
-                        <span className="text-[8px] text-gray-500 uppercase block mb-1">Timezone Overlap</span>
-                        <div className="flex items-center gap-1.5 text-white">
+                    {/* Scientific Synergy Radar Parameters */}
+                    <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 bg-[var(--ide-header-bg)]/50">
+                      <div className="p-3 border border-[var(--ide-border)] bg-[var(--background)]/60 rounded font-mono text-left">
+                        <span className="text-[8px] text-[var(--text-muted)] uppercase block mb-1">Timezone Overlap</span>
+                        <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
                           <Calendar className="w-3.5 h-3.5 text-[#3B82F6]" />
                           <span className="text-xs font-bold">{matchedUser.overlap}</span>
                         </div>
-                        <span className="text-[8px] text-gray-500 block mt-1">UTC+5:30 Alignment</span>
+                        <span className="text-[8px] text-[var(--text-muted)] block mt-1">UTC+5:30 Alignment</span>
                       </div>
 
-                      <div className="p-3 border border-[#2A2E3D] bg-[#0D0E12]/60 rounded font-mono text-left">
-                        <span className="text-[8px] text-gray-500 uppercase block mb-1">Coding Speed</span>
-                        <div className="flex items-center gap-1.5 text-white">
+                      <div className="p-3 border border-[var(--ide-border)] bg-[var(--background)]/60 rounded font-mono text-left">
+                        <span className="text-[8px] text-[var(--text-muted)] uppercase block mb-1">Coding Speed</span>
+                        <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
                           <Zap className="w-3.5 h-3.5 text-[#FF3366]" />
                           <span className="text-xs font-bold">{matchedUser.speed}</span>
                         </div>
-                        <span className="text-[8px] text-gray-500 block mt-1">70 WPM Cohort avg</span>
+                        <span className="text-[8px] text-[var(--text-muted)] block mt-1">70 WPM Cohort avg</span>
                       </div>
 
-                      <div className="p-3 border border-[#2A2E3D] bg-[#0D0E12]/60 rounded font-mono text-left">
-                        <span className="text-[8px] text-gray-500 uppercase block mb-1">Pairing Style</span>
-                        <div className="flex items-center gap-1.5 text-white">
+                      <div className="p-3 border border-[var(--ide-border)] bg-[var(--background)]/60 rounded font-mono text-left">
+                        <span className="text-[8px] text-[var(--text-muted)] uppercase block mb-1">Pairing Style</span>
+                        <div className="flex items-center gap-1.5 text-[var(--text-primary)]">
                           <Code2 className="w-3.5 h-3.5 text-[#10B981]" />
                           <span className="text-xs font-bold text-ellipsis overflow-hidden whitespace-nowrap">{matchedUser.style}</span>
                         </div>
-                        <span className="text-[8px] text-gray-500 block mt-1">Balanced driver</span>
+                        <span className="text-[8px] text-[var(--text-muted)] block mt-1">Balanced driver</span>
                       </div>
 
-                      <div className="p-3 border border-[#2A2E3D] bg-[#0D0E12]/60 rounded font-mono text-left">
-                        <span className="text-[8px] text-gray-500 uppercase block mb-1">Synergy Quotient</span>
+                      <div className="p-3 border border-[var(--ide-border)] bg-[var(--background)]/60 rounded font-mono text-left">
+                        <span className="text-[8px] text-[var(--text-muted)] uppercase block mb-1">Synergy Quotient</span>
                         <div className="flex items-center gap-1.5 text-[#10B981]">
                           <BarChart3 className="w-3.5 h-3.5 text-[#10B981]" />
                           <span className="text-xs font-bold">96% SYNERGY</span>
                         </div>
-                        <span className="text-[8px] text-gray-500 block mt-1">Extremely compatible</span>
+                        <span className="text-[8px] text-[var(--text-muted)] block mt-1">Extremely compatible</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Right Side: Quick Action Options Terminal (4 Columns) */}
+                {/* Right Side: Quick Action Options Terminal */}
                 <div className="lg:col-span-4 flex flex-col space-y-4">
-                  <div className="ide-panel bg-[#15171F] border-[#2A2E3D] rounded-lg overflow-hidden flex-1 flex flex-col justify-between p-5 space-y-5">
+                  <div className="glass-panel border-[var(--ide-border)] rounded-lg overflow-hidden flex-1 flex flex-col justify-between p-5 space-y-5 bg-[var(--ide-bg)]">
                     <div className="space-y-2">
-                      <p className="text-[9px] font-mono text-gray-500 uppercase tracking-widest">// TARGET_PEER_SUMMARY</p>
-                      <h3 className="text-base font-mono font-bold text-white uppercase">{matchedUser.name}</h3>
-                      <p className="text-xs text-gray-400 font-mono leading-relaxed bg-[#0D0E12]/60 p-3 border border-[#2A2E3D] rounded">
+                      <p className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-widest font-bold">// TARGET_PEER_SUMMARY</p>
+                      <h3 className="text-base font-mono font-bold text-[var(--text-primary)] uppercase">{matchedUser.name}</h3>
+                      <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed bg-[var(--background)]/60 p-3 border border-[var(--ide-border)] rounded-lg">
                         Experienced coder focusing on {meta.name} design configurations, compiler telemetry pipelines, and strict type safety matrices.
                       </p>
                     </div>
 
-                    <div className="space-y-2 border-t border-[#2A2E3D]/50 pt-4">
+                    <div className="space-y-2 border-t border-[var(--ide-border)]/50 pt-4">
                       <div className="flex justify-between items-center text-[10px] font-mono">
-                        <span className="text-gray-500">PEER TELEMETRY XP</span>
+                        <span className="text-[var(--text-muted)]">PEER TELEMETRY XP</span>
                         <span className="text-[#FF3366] font-bold">{matchedUser.hp} HP</span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] font-mono">
-                        <span className="text-gray-500">PEER ACCENT STATE</span>
-                        <span className="text-[#3B82F6] font-bold">VERIFIED CODER</span>
+                        <span className="text-[var(--text-muted)]">PEER ACCENT STATE</span>
+                        <span className="text-[#3B82F6] font-bold uppercase">VERIFIED CODER</span>
                       </div>
                     </div>
 
                     {/* Enter room CTA actions */}
                     <div className="space-y-3 pt-2">
-                      <motion.button 
-                        whileHover={{ scale: 1.02 }} 
-                        whileTap={{ scale: 0.98 }}
+                      <button 
                         onClick={() => {
                           try {
                             const p = JSON.parse(localStorage.getItem('dateforcode_progress') || '{}');
@@ -506,14 +501,14 @@ function MatchingRoomContent() {
                           } catch (_) {}
                           router.push(`/student/coding-room?skill=${skillId}&partner=${encodeURIComponent(matchedUser.name)}&avatar=${matchedUser.avatar}`);
                         }}
-                        className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded bg-[#10B981] hover:bg-[#10B981]/90 text-white font-mono text-xs font-bold uppercase tracking-wider border border-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.25)] transition-all"
+                        className="btn-premium w-full py-3.5 text-xs flex items-center justify-center gap-2"
                       >
                         <Code2 className="w-4 h-4" /> Enter Coding Room <ArrowRight className="w-4 h-4" />
-                      </motion.button>
+                      </button>
 
                       <button 
                         onClick={() => router.push('/student/dashboard')} 
-                        className="w-full py-2.5 rounded border border-[#2A2E3D] hover:border-gray-500 bg-[#0D0E12] text-xs font-mono text-gray-500 hover:text-white uppercase transition-all"
+                        className="w-full py-2.5 rounded border border-[var(--ide-border)] hover:border-accent-pink bg-[var(--background)] text-[10px] font-mono font-bold text-[var(--text-muted)] hover:text-accent-pink uppercase transition-all"
                       >
                         Decline & Return to Command
                       </button>
@@ -535,7 +530,7 @@ function MatchingRoomContent() {
 export default function MatchingRoom() {
   return (
     <React.Suspense fallback={
-      <div className="min-h-screen bg-[#08090C] flex flex-col items-center justify-center font-mono text-xs text-gray-500">
+      <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center font-mono text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest">
         <p>WARMING PAIR MATCHING GRID PORT TELEMETRY...</p>
       </div>
     }>

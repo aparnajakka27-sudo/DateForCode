@@ -1,0 +1,9 @@
+{
+  "functionName": "SearchFilter",
+  "testCases": [
+    {
+      "input": "Type \"an\"",
+      "expected": "Shows \"Banana\""
+    }
+  ]
+}
