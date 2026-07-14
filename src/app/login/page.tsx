@@ -111,8 +111,8 @@ function LoginContent() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Invalid email or password');
         
-        // Let middleware route to correct dashboard if needed, or explicitly push
-        if (data.user.role === 'owner') {
+        const isAdmin = data.user.role === 'owner' || data.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+        if (isAdmin) {
           router.push('/admin');
         } else {
           router.push(`/${data.user.role === 'mentor' ? 'mentor' : 'student'}/dashboard`);
@@ -147,8 +147,9 @@ function LoginContent() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `${provider} authentication failed`);
       
+      const isAdmin = data.user.role === 'owner' || data.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
       const isNew = result.user.metadata.creationTime === result.user.metadata.lastSignInTime; 
-      if (data.user.role === 'owner') {
+      if (isAdmin) {
         router.push('/admin');
       } else {
         router.push(isNew ? `/${data.user.role}/profile-setup` : `/${data.user.role}/dashboard`);
