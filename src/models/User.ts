@@ -40,7 +40,7 @@ const UserSchema = new mongoose.Schema({
   resumeUrl: { type: String, default: '' },
 
   // Platform Data
-  role: { type: String, enum: ['user', 'premium', 'mentor', 'moderator', 'owner'], default: 'user' },
+  role: { type: String, enum: ['user', 'student', 'premium', 'mentor', 'moderator', 'owner'], default: 'user' },
   isPremium: { type: Boolean, default: false },
   codingStreak: { type: Number, default: 0 },
   totalMatches: { type: Number, default: 0 },
