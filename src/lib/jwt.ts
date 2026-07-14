@@ -1,7 +1,10 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback_key_do_not_use_in_prod';
+const JWT_SECRET: string = process.env.JWT_SECRET as string;
 
+if (!JWT_SECRET) {
+  throw new Error('Please define the JWT_SECRET environment variable inside .env.local');
+}
 export function signToken(payload: object, expiresIn: SignOptions['expiresIn'] = '7d') {
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }

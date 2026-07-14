@@ -30,7 +30,11 @@ export async function POST(request: Request) {
     });
 
     // Create JWT
-    const token = signToken({ id: newUser._id, role: newUser.role, email: newUser.email });
+    const token = signToken({ 
+      id: newUser._id.toString(), 
+      role: newUser.role, 
+      email: newUser.email 
+    });
 
     // Set HTTP-only cookie
     (await cookies()).set('session', token, {
@@ -47,6 +51,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Registration successful', user: newUser }, { status: 201 });
   } catch (error: any) {
     console.error('Registration Error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || 'An unexpected error occurred during registration.',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+      { status: 500 }
+    );
   }
 }

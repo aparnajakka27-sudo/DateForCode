@@ -47,7 +47,11 @@ export async function POST(request: Request) {
     await user.save();
 
     // Create JWT
-    const token = signToken({ id: user._id, role: user.role, email: user.email });
+    const token = signToken({ 
+      id: user._id.toString(), 
+      role: user.role, 
+      email: user.email 
+    });
 
     // Set HTTP-only cookie
     (await cookies()).set('session', token, {
@@ -61,6 +65,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Social login successful', user }, { status: 200 });
   } catch (error: any) {
     console.error('Social Login Error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || 'An unexpected error occurred during social login.',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+      { status: 500 }
+    );
   }
 }
