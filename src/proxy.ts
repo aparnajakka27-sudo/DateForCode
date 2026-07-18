@@ -9,7 +9,7 @@ if (!JWT_SECRET) {
 }
 const key = new TextEncoder().encode(JWT_SECRET);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const sessionCookie = request.cookies.get('session')?.value;
   const { pathname } = request.nextUrl;
 
@@ -29,44 +29,41 @@ export async function middleware(request: NextRequest) {
   }
 
   const role = decodedToken?.role || 'user';
-  const email = decodedToken?.email || '';
-  const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'aparnajakka27@gmail.com').trim().toLowerCase();
   
   // Define route categories
   const isLandingPage = pathname === '/';
   const isLoginPage = pathname === '/login' || pathname === '/register';
-  const isAdminRoute = pathname.startsWith('/admin');
   const isMentorRoute = pathname.startsWith('/mentor');
   const isStudentRoute = pathname.startsWith('/student');
-  const isProtectedRoute = isStudentRoute || isMentorRoute || isAdminRoute;
+  const isProtectedRoute = isStudentRoute || isMentorRoute;
 
-  // 1. If hitting Landing Page or Login Page while authenticated, redirect to proper dashboard instantly
-  if (isAuthenticated && (isLandingPage || isLoginPage)) {
-    if (email === adminEmail || role === 'owner') {
-      return NextResponse.redirect(new URL('/admin', request.url));
-    } else if (role === 'mentor') {
-      return NextResponse.redirect(new URL('/mentor/dashboard', request.url));
-    } else {
+  // Helper for dashboard redirect
+  const getDashboardUrl = () => {
+    return new URL(role === 'mentor' ? '/mentor/dashboard' : '/student/dashboard', request.url);
+  };
+
+  // 1. Unauthenticated Users
+  if (!isAuthenticated) {
+    if (isProtectedRoute || pathname === '/email-verification') {
+      return NextResponse.redirect(new URL('/login?error=session_expired', request.url));
+    }
+    // Allow access to landing page, login, register, public routes
+    return NextResponse.next();
+  }
+
+  // 2. Authenticated Users flow
+  
+  // A. Hitting Login or Register Page while authenticated
+  if (isLoginPage) {
+    return NextResponse.redirect(getDashboardUrl());
+  }
+
+  // B. Hitting Protected Routes (Role Verification)
+  if (isProtectedRoute) {
+    // Mentor Access Control check
+    if (isMentorRoute && role !== 'mentor' && role !== 'owner') {
       return NextResponse.redirect(new URL('/student/dashboard', request.url));
     }
-  }
-
-  // 2. If hitting protected routes without authentication, redirect to login
-  if (!isAuthenticated && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/login?error=session_expired', request.url));
-  }
-
-  // 3. Strict Admin Access Control
-  if (isAdminRoute) {
-    if (email !== adminEmail && role !== 'owner') {
-      // Access denied, redirect to user dashboard
-      return NextResponse.redirect(new URL('/student/dashboard', request.url));
-    }
-  }
-
-  // 4. Mentor Access Control (Optional strict checking, assumes role === mentor)
-  if (isMentorRoute && role !== 'mentor' && role !== 'owner') {
-    return NextResponse.redirect(new URL('/student/dashboard', request.url));
   }
 
   return NextResponse.next();
@@ -78,7 +75,7 @@ export const config = {
     '/', 
     '/login', 
     '/register',
-    '/admin/:path*', 
+    '/email-verification',
     '/student/:path*', 
     '/mentor/:path*'
   ],

@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Terminal, Shield, Users, Trophy, Code, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
+import { useUser } from '@/context/UserContext';
 import { auth, db, googleProvider, githubProvider } from '@/lib/firebase';
 import { 
   signInWithEmailAndPassword, 
@@ -36,8 +37,14 @@ const mockTerminalLogs = [
 
 function LoginContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const role = (searchParams.get('role') || 'student').trim();
+  const [role, setRole] = useState('student');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setRole((params.get('role') || 'student').trim());
+    }
+  }, []);
 
   const [isRegister, setIsRegister] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -50,9 +57,16 @@ function LoginContent() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [terminalFeed, setTerminalFeed] = useState(mockTerminalLogs);
 
-  // Redirection bypass when valid authenticated session exists is now handled entirely by Edge Middleware!
-  // If the user reaches this component, they are strictly unauthenticated.
+  // Add redirect for already authenticated users
+  const { user, profile, loading: isAuthLoading } = useUser();
 
+  useEffect(() => {
+    if (!isAuthLoading && user) {
+      // Always route to dashboard. ProtectedRoute will intercept and handle email verification / profile completion logic.
+      const userRole = (profile as any)?.role || role || 'student';
+      router.replace(`/${userRole}/dashboard`);
+    }
+  }, [user, profile, isAuthLoading, router, role]);
   // Auto-scrolling simulated logs
   useEffect(() => {
     const interval = setInterval(() => {
@@ -94,9 +108,25 @@ function LoginContent() {
         });
         
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Registration failed');
+        if (!res.ok || !data.success) throw new Error(data.error || 'Registration failed');
         
-        router.push(`/${role}/profile-setup`);
+        // Also register in Firebase Auth for client-side state
+        let fbUser = null;
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          fbUser = cred.user;
+        } catch (fbErr: any) {
+          // If already in use, just sign in
+          if (fbErr.code === 'auth/email-already-in-use') {
+            const cred = await signInWithEmailAndPassword(auth, email, password);
+            fbUser = cred.user;
+          } else {
+            console.error('Firebase Auth Error:', fbErr);
+          }
+        }
+        
+        // Route to dashboard. ProtectedRoute handles incomplete profiles and email verification.
+        router.push(`/${role}/dashboard`);
       } else {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
@@ -109,14 +139,24 @@ function LoginContent() {
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Invalid email or password');
+        if (!res.ok || !data.success) throw new Error(data.error || 'Invalid email or password');
         
-        const isAdmin = data.user.role === 'owner' || data.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-        if (isAdmin) {
-          router.push('/admin');
-        } else {
-          router.push(`/${data.user.role === 'mentor' ? 'mentor' : 'student'}/dashboard`);
+        // Also login to Firebase Auth for client-side state
+        let fbUser = null;
+        try {
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          fbUser = cred.user;
+        } catch (fbErr: any) {
+          console.error('Firebase Auth Error:', fbErr);
         }
+        
+        if (fbUser && !fbUser.emailVerified) {
+          router.push('/email-verification');
+          return;
+        }
+
+        const u = data.data.user;
+        router.push(`/${u.role === 'mentor' ? 'mentor' : 'student'}/dashboard`);
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please try again.');
@@ -145,15 +185,17 @@ function LoginContent() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `${provider} authentication failed`);
+      if (!res.ok || !data.success) throw new Error(data.error || `${provider} authentication failed`);
       
-      const isAdmin = data.user.role === 'owner' || data.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
       const isNew = result.user.metadata.creationTime === result.user.metadata.lastSignInTime; 
-      if (isAdmin) {
-        router.push('/admin');
-      } else {
-        router.push(isNew ? `/${data.user.role}/profile-setup` : `/${data.user.role}/dashboard`);
+      
+      if (!result.user.emailVerified) {
+        router.push('/email-verification');
+        return;
       }
+
+      // Always push to dashboard. ProtectedRoute handles the rest.
+      router.push(`/${data.data.user.role}/dashboard`);
     } catch (err: any) {
       setError(err.message || `${provider} sign-in failed.`);
     }
@@ -441,16 +483,5 @@ function LoginContent() {
 }
 
 export default function LoginPage() {
-  return (
-    <React.Suspense fallback={
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center font-sans">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#FF4D8D]/20 border-t-[#FF4D8D] rounded-full animate-spin" />
-          <div className="text-xs text-[var(--text-muted)] uppercase tracking-widest font-bold font-mono">Warming engine core...</div>
-        </div>
-      </div>
-    }>
-      <LoginContent />
-    </React.Suspense>
-  );
+  return <LoginContent />;
 }

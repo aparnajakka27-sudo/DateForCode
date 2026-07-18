@@ -478,13 +478,17 @@ function CodingRoomContent() {
   }, [phase]);
 
   const finishSession = useCallback(() => {
-    setPhase('results');
+    if (searchParams.get('mode') === 'mentor') {
+      setPhase('results');
+    } else {
+      router.push('/student/results');
+    }
     (async () => {
       try {
         if (document.fullscreenElement) {
           await document.exitFullscreen();
         }
-      } catch (_) { }
+      } catch (err) {}
     })();
 
     // Update LocalStorage metrics
@@ -507,7 +511,7 @@ function CodingRoomContent() {
         localStorage.setItem('dateforcode_progress', JSON.stringify(p));
       }
     } catch (_) { }
-  }, [roleSwaps, passedStatus, searchParams]);
+  }, [roleSwaps, passedStatus, searchParams, router]);
 
   // Execute visible test cases flow (Calls Secure Docker Sandbox API)
   const runTests = async () => {
@@ -1144,12 +1148,8 @@ function CodingRoomContent() {
 
                             {/* Live Preview Panel */}
                             <div className="w-[38%] h-full bg-[var(--ide-bg)] border-l border-border-dark/50 flex flex-col shrink-0 overflow-hidden font-mono text-[var(--text-secondary)] relative">
-                              <div className="hidden">
-                                <SandpackPreview />
-                                <SandpackConsole />
-                              </div>
                               {!isRunning ? (
-                                <div className="absolute inset-0 flex items-center justify-center bg-[var(--ide-header-bg)]">
+                                <div className="absolute inset-0 flex items-center justify-center bg-[var(--ide-header-bg)] z-10">
                                   <button
                                     onClick={() => setIsRunning(true)}
                                     className="w-[120px] h-[36px] bg-[#10B981] hover:bg-[#059669] text-white font-bold rounded-lg shadow-[0_4px_14px_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] transition-all flex items-center justify-center cursor-pointer tracking-wide text-sm font-sans border border-[#10B981]/50"
@@ -1158,13 +1158,14 @@ function CodingRoomContent() {
                                   </button>
                                 </div>
                               ) : (
-                                <iframe 
-                                  src="https://8wvjnn.csb.app/?standalone" 
-                                  className="w-full h-full border-0"
-                                  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-                                  allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; clipboard-write; clipboard-read"
-                                  title="App Preview"
-                                />
+                                <div className="flex-1 flex flex-col h-full w-full">
+                                  <div className="h-[60%] border-b border-border-dark/50">
+                                    <SandpackPreview showOpenInCodeSandbox={false} style={{ height: '100%' }} />
+                                  </div>
+                                  <div className="h-[40%] bg-black">
+                                    <SandpackConsole style={{ height: '100%' }} />
+                                  </div>
+                                </div>
                               )}
                             </div>
                           </div>

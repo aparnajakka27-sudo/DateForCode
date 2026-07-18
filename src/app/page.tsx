@@ -7,8 +7,9 @@ import Link from 'next/link';
 import Logo from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 import { WhatWeDoSection, PortalsSection, LeaderboardSection, WhySection, TeamSection, FooterSection, TechMarquee } from '../components/LandingSections';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 const TERMINAL_LOG_TEMPLATES = [
   { type: 'info', text: 'SEARCHING_NODES: Compiling compatibility registers...' },
@@ -59,10 +60,32 @@ export default function LandingPage() {
       const customEvent = e as CustomEvent;
       setIsDarkMode(customEvent.detail === 'dark');
     };
+    window.addEventListener('themeChange', handleThemeChange);
 
-    window.addEventListener('themechange', handleThemeChange);
+    // Auth listener
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        try {
+          const docSnap = await getDoc(doc(db, 'users', user.uid));
+          if (docSnap.exists()) {
+            const r = docSnap.data().role;
+            setDashboardLink(r === 'mentor' ? '/mentor/dashboard' : '/student/dashboard');
+          } else {
+            setDashboardLink('/student/dashboard');
+          }
+        } catch (e) {
+          setDashboardLink('/student/dashboard');
+        }
+      } else {
+        setIsLoggedIn(false);
+        setDashboardLink('/login');
+      }
+    });
+
     return () => {
-      window.removeEventListener('themechange', handleThemeChange);
+      window.removeEventListener('themeChange', handleThemeChange);
+      unsub();
     };
   }, []);
 

@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, Sparkles, Check, X, Rocket, Terminal, Code, Cpu,
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
+import { auth } from '@/lib/firebase';
+import { useUser } from '@/context/UserContext';
 
 const fadeUp = (d=0) => ({ 
   initial: { opacity: 0, y: 15 }, 
@@ -14,12 +16,16 @@ const fadeUp = (d=0) => ({
 });
 
 const AVATARS = [
-  { id: 'ninja', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=ninja', ring: '#FF3366', role: 'Kernel Hacker', colorClass: 'text-accent-pink border-accent-pink/30' },
-  { id: 'astro', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=astro', ring: '#3B82F6', role: 'Systems Architect', colorClass: 'text-accent-blue border-accent-blue/30' },
-  { id: 'pixel', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel', ring: '#10B981', role: 'Frontend Architect', colorClass: 'text-accent-green border-accent-green/30' },
-  { id: 'cyber', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=cyber', ring: '#F59E0B', role: 'AI Compiler Engineer', colorClass: 'text-accent-gold border-accent-gold/30' },
-  { id: 'nova', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova', ring: '#8B5CF6', role: 'Quantum Cryptographer', colorClass: 'text-accent-purple border-accent-purple/30' },
-  { id: 'ghost', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=ghost', ring: '#94A3B8', role: 'SecOps Penetration Tester', colorClass: 'text-[var(--text-secondary)] border-gray-400/30' },
+  { id: 'kai', img: '/avatars/kai.png', bg: 'bg-teal-700', name: 'KAI', ring: '#0F766E', role: 'Bold, edgy & energetic vibe', colorClass: 'text-teal-400 border-teal-400/30' },
+  { id: 'leo', img: '/avatars/leo.png', bg: 'bg-[#4D7C0F]', name: 'LEO', ring: '#4D7C0F', role: 'Curls, comfort & casual charm', colorClass: 'text-emerald-400 border-emerald-400/30' },
+  { id: 'maya', img: '/avatars/maya.png', bg: 'bg-[#6D28D9]', name: 'MAYA', ring: '#6D28D9', role: 'Bright, braided & full joy', colorClass: 'text-purple-400 border-purple-400/30' },
+  { id: 'luna', img: '/avatars/luna.png', bg: 'bg-[#BE185D]', name: 'LUNA', ring: '#BE185D', role: 'Dreamy, artistic & pastel flair', colorClass: 'text-pink-400 border-pink-400/30' },
+  { id: 'jax', img: '/avatars/jax.png', bg: 'bg-[#C2410C]', name: 'JAX', ring: '#C2410C', role: 'Cool, competitive & street smart', colorClass: 'text-orange-400 border-orange-400/30' },
+  { id: 'zara', img: '/avatars/zara.png', bg: 'bg-[#CA8A04]', name: 'ZARA', ring: '#CA8A04', role: 'Focused, techy & sharp', colorClass: 'text-yellow-400 border-yellow-400/30' },
+  { id: 'finn', img: '/avatars/finn.png', bg: 'bg-[#0369A1]', name: 'FINN', ring: '#0369A1', role: 'Chill, laid-back & creative', colorClass: 'text-blue-400 border-blue-400/30' },
+  { id: 'nova', img: '/avatars/nova.png', bg: 'bg-[#B91C1C]', name: 'NOVA', ring: '#B91C1C', role: 'Intense, futuristic & bold', colorClass: 'text-red-400 border-red-400/30' },
+  { id: 'remy', img: '/avatars/remy.png', bg: 'bg-[#4338CA]', name: 'REMY', ring: '#4338CA', role: 'Smart, calculated & slick', colorClass: 'text-indigo-400 border-indigo-400/30' },
+  { id: 'cleo', img: '/avatars/cleo.png', bg: 'bg-[#0E7490]', name: 'CLEO', ring: '#0E7490', role: 'Vibrant, melodic & upbeat', colorClass: 'text-cyan-400 border-cyan-400/30' },
 ];
 
 const SKILLS = [
@@ -39,18 +45,15 @@ const SKILLS = [
 
 export default function ProfileSetupPage() {
   const router = useRouter();
+  const { profile, refreshProfile, loading } = useUser();
   const [step, setStep] = useState(0);
   const [username, setUsername] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('ninja');
+  const [selectedAvatar, setSelectedAvatar] = useState('kai');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [bio, setBio] = useState('');
   const [showPreview, setShowPreview] = useState(false);
 
-  useEffect(() => {
-    if (localStorage.getItem('dateforcode_student_setup')) {
-      router.push('/student/dashboard');
-    }
-  }, [router]);
+  // Auth and profile redirection handled by layout
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills(prev => 
@@ -67,9 +70,29 @@ export default function ProfileSetupPage() {
     return true;
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     const profile = { username, avatar: selectedAvatar, skills: selectedSkills, bio };
-    localStorage.setItem('dateforcode_profile', JSON.stringify(profile));
+    
+    if (auth.currentUser) {
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch('/api/user/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(profile)
+        });
+        
+        if (res.ok) {
+          await refreshProfile();
+        }
+      } catch (err) {
+        console.error("Failed to create profile", err);
+      }
+    }
+
     localStorage.setItem('dateforcode_student_setup', 'true');
     setShowPreview(true);
   };
@@ -78,10 +101,20 @@ export default function ProfileSetupPage() {
 
   const steps = [
     { title: "Define Identity", sub: "Initialize your unique developer handle for match routing" },
-    { title: "Select Hacker Class", sub: "Choose your primary developer persona and visual card signature" },
+    { title: "Pick Your Blob Buddy", sub: "Choose your primary developer persona" },
     { title: "Configure Technology Stack", sub: "Select the languages and systems in your primary toolbox (max 8)" },
     { title: "Write Compiler Bio", sub: "A brief log statement to introduce your coding philosophy to partners" },
   ];
+
+  const handleNextAvatar = () => {
+    const idx = AVATARS.findIndex(a => a.id === selectedAvatar);
+    setSelectedAvatar(AVATARS[(idx + 1) % AVATARS.length].id);
+  };
+
+  const handlePrevAvatar = () => {
+    const idx = AVATARS.findIndex(a => a.id === selectedAvatar);
+    setSelectedAvatar(AVATARS[(idx - 1 + AVATARS.length) % AVATARS.length].id);
+  };
 
   return (
     <main className="grid grid-cols-1 lg:grid-cols-12 min-h-screen bg-[var(--ide-header-bg)] text-[var(--foreground)] relative overflow-hidden font-sans select-none">
@@ -150,7 +183,7 @@ export default function ProfileSetupPage() {
                     placeholder="e.g. kernel_hacker" 
                     maxLength={20} 
                     autoFocus
-                    className="w-full pl-10 pr-4 py-3.5 bg-[var(--ide-bg)] border border-border-dark rounded text-md text-white font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-[var(--text-secondary)]"
+                    className="w-full pl-10 pr-4 py-3.5 bg-[var(--ide-bg)] border border-border-dark rounded text-md text-gray-900 font-mono focus:outline-none focus:border-accent-pink transition-colors placeholder:text-[var(--text-secondary)]"
                   />
                 </div>
                 <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
@@ -162,32 +195,20 @@ export default function ProfileSetupPage() {
 
             {/* Step 1: Avatar / Persona Class */}
             {step === 1 && (
-              <div className="ide-panel p-6 bg-[var(--background)] border-border-dark">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {AVATARS.map((av) => (
-                    <button 
-                      key={av.id}
-                      onClick={() => setSelectedAvatar(av.id)}
-                      className={`p-3 rounded border text-left flex flex-col items-center justify-between gap-3 cursor-pointer transition-all duration-200 ${
-                        selectedAvatar === av.id 
-                          ? 'bg-[var(--ide-bg)] border-accent-pink' 
-                          : 'bg-[#0E1015] border-border-dark hover:border-gray-700'
-                      }`}
-                    >
-                      <div className="relative w-16 h-16 rounded bg-[#1a1c23] border border-border-dark flex items-center justify-center">
-                        <img src={av.img} alt={av.role} className="w-14 h-14" />
-                        {selectedAvatar === av.id && (
-                          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent-pink rounded-full flex items-center justify-center">
-                            <Check className="w-2.5 h-2.5 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-center">
-                        <div className="text-[10px] font-mono font-bold text-white uppercase tracking-tight">{av.id}</div>
-                        <div className={`text-[8px] font-mono border px-1 py-0.5 rounded mt-1 bg-[var(--btn-sec-bg)] ${av.colorClass}`}>{av.role}</div>
-                      </div>
+              <div className="bg-white rounded-3xl p-8 shadow-2xl flex flex-col items-center justify-center text-black min-h-[450px]">
+                {/* Center: Carousel Image */}
+                <div className="flex flex-col items-center justify-center">
+                  <div className={`relative w-48 h-80 md:w-64 md:h-96 rounded-[32px] overflow-hidden shadow-inner ${avatarData.bg} transition-colors duration-500`}>
+                    <img src={avatarData.img} alt={avatarData.name} className="w-full h-full object-cover transform scale-110" />
+                  </div>
+                  <div className="flex items-center gap-4 mt-6">
+                    <button onClick={handlePrevAvatar} className="w-8 h-8 rounded-full border border-gray-400 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                      <ArrowLeft className="w-4 h-4 text-gray-600" />
                     </button>
-                  ))}
+                    <button onClick={handleNextAvatar} className="w-8 h-8 rounded-full border border-gray-400 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                      <ArrowRight className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -438,8 +459,8 @@ export default function ProfileSetupPage() {
                 <div className="ide-panel bg-[var(--ide-bg)] border-border-dark p-6 relative overflow-hidden text-left">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-accent-pink/10 rounded-full blur-[40px]" style={{ backgroundColor: avatarData.ring }} />
                   <div className="relative flex items-center gap-4">
-                    <div className="w-16 h-16 rounded bg-[var(--background)] border flex items-center justify-center shrink-0" style={{ borderColor: avatarData.ring }}>
-                      <img src={avatarData.img} alt="avatar" className="w-12 h-12" />
+                    <div className="w-16 h-16 rounded bg-[var(--background)] border flex items-center justify-center shrink-0 overflow-hidden" style={{ borderColor: avatarData.ring }}>
+                      <img src={avatarData.img} alt="avatar" className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold font-mono text-white">@{username}</h3>

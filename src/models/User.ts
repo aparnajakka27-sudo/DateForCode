@@ -1,19 +1,18 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
 const UserSchema = new mongoose.Schema({
   // Authentication
+  firebaseUid: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-  password: { type: String, select: false }, // Hashed
   provider: { type: String, enum: ['email', 'google', 'github', 'linkedin'], default: 'email' },
   providerId: { type: String },
   emailVerified: { type: Boolean, default: false },
   accountStatus: { type: String, enum: ['active', 'suspended', 'banned'], default: 'active' },
 
   // Profile
-  fullName: { type: String, required: true },
+  fullName: { type: String, default: '' },
   username: { type: String, required: true, unique: true },
-  profilePicture: { type: String, default: '' },
+  avatar: { type: String, default: '' },
   bio: { type: String, default: '' },
   gender: { type: String },
   dateOfBirth: { type: Date },
@@ -83,21 +82,8 @@ const UserSchema = new mongoose.Schema({
   timestamps: true // Automatically adds createdAt (Registration Date) and updatedAt
 });
 
-// Pre-save hook to hash password before saving to the database
-UserSchema.pre('save', async function (this: any) {
-  if (!this.isModified('password') || !this.password) {
-    return;
-  }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-// Method to compare entered password with hashed password
-UserSchema.methods.comparePassword = async function (candidatePassword: string) {
-  if (!this.password) return false;
-  return await bcrypt.compare(candidatePassword, this.password);
-};
+// Indexes for performance
+UserSchema.index({ role: 1, xpPoints: -1 });
 
 // Check if the model is already compiled (Next.js hot reload safety)
 const User = mongoose.models.User || mongoose.model('User', UserSchema);

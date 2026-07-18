@@ -24,6 +24,8 @@
 }
 
 :root {
+  --lightning-intensity: 0;
+  --lightning-color: 255, 255, 255;
   /* Light Theme Variables */
   --background: #FFF8FA;
   --foreground: #2D2D2D;
@@ -56,6 +58,7 @@
 }
 
 .dark {
+  --lightning-color: 180, 200, 255;
   /* Dark Theme Variables (Matches the current dark theme design exactly) */
   --background: #030407;
   --foreground: #F3F4F6;
@@ -375,3 +378,28 @@ html {
 }
 
 
+/* Dynamic Dashboard Thunder Effect (JS Controlled) */
+.thunder-ambient-overlay {
+  background: rgba(var(--lightning-color), calc(var(--lightning-intensity) * 0.1));
+  mix-blend-mode: overlay;
+  transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .thunder-ambient-overlay {
+  background: rgba(var(--lightning-color), calc(var(--lightning-intensity) * 0.15));
+}
+
+.ide-panel {
+  box-shadow: 0 0 calc(var(--lightning-intensity) * 20px) rgba(var(--lightning-color), calc(var(--lightning-intensity) * 0.15));
+  border-color: rgba(var(--lightning-color), calc(var(--lightning-intensity) * 0.3));
+  transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+}
+
+.btn-premium {
+  box-shadow: 0 0 calc(var(--lightning-intensity) * 15px) rgba(var(--lightning-color), calc(var(--lightning-intensity) * 0.2));
+}
+
+.ide-panel-header {
+  background-color: rgba(var(--lightning-color), calc(var(--lightning-intensity) * 0.05));
+  transition: background-color 0.2s ease-out;
+}

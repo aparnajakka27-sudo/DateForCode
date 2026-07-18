@@ -10,8 +10,9 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import PortalSidebar from '@/components/PortalSidebar';
+import ThunderEffect from '@/components/ThunderEffect';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import mentorCodingQuestions from '@/data/questions/mentor_coding.json';
 
 const fadeUp = (d=0) => ({ 
@@ -41,25 +42,14 @@ interface Student {
   topSkill: string;
 }
 
-// Higher density live session queue
-const MOCK_LIVE_SESSIONS: LiveSession[] = [
-  { id: 101, students: 'Rahul M. & Aarav M.', stack: 'C++', time: '14m elapsed', status: 'help_requested', avatar1: 'RM', avatar2: 'AM', topic: 'Dynamic Programming: Knapsack Array Overflows' },
-  { id: 102, students: 'Sneha D. & Rohan V.', stack: 'JavaScript', time: '22m elapsed', status: 'coding', avatar1: 'SD', avatar2: 'RV', topic: 'React Thread Rendering Sockets' },
-  { id: 103, students: 'Ananya I. & Priya S.', stack: 'Python', time: '8m elapsed', status: 'reviewing', avatar1: 'AI', avatar2: 'PS', topic: 'Data Pipeline Array Matrix' },
-];
-
-const MOCK_STUDENTS: Student[] = [
-  { id: 'st1', name: 'Rahul Mehta', avatar: 'RM', hp: 580, matches: 12, level: 8, topSkill: 'C++ Kernels' },
-  { id: 'st2', name: 'Sneha Nair', avatar: 'SN', hp: 490, matches: 9, level: 6, topSkill: 'TypeScript Sockets' },
-  { id: 'st3', name: 'Aarav Verma', avatar: 'AV', hp: 610, matches: 15, level: 9, topSkill: 'React Virtual DOM' },
-  { id: 'st4', name: 'Rohan Sharma', avatar: 'RS', hp: 380, matches: 6, level: 5, topSkill: 'Python Automation' },
-];
-
 function MentorDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [profile, setProfile] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('Dashboard');
+  
+  const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
+  const [studentsList, setStudentsList] = useState<Student[]>([]);
   
   // ═══ MENTOR ELIGIBILITY & APPROVAL FLOW STATES ═══
   const [pageMode, setPageMode] = useState<'loading' | 'intro' | 'not_eligible' | 'level1_submit' | 'level2_assessment' | 'congrats' | 'failed_score' | 'dashboard'>('loading');
@@ -203,17 +193,18 @@ function MentorDashboardContent() {
 
     // ═══ NEXT.JS API + MONGO ATLAS REALTIME CONNECTIONS ═══
     const loadStatusData = async () => {
-      const user = auth.currentUser;
-      const uid = user ? user.uid : 'local_dev_user';
+      onAuthStateChanged(auth, async (user) => {
+        const uid = user ? user.uid : 'local_dev_user';
       
       const statusParam = searchParams.get('status');
       const scoreParam = searchParams.get('score');
       
       try {
         const res = await fetch(`/api/mentor?userId=${uid}`);
-        const data = await res.json();
+        const responseData = await res.json();
         
-        if (data && !data.error) {
+        if (responseData && responseData.success) {
+          const data = responseData.data;
           setMentorStatus(data);
           localStorage.setItem('dateforcode_mentor_status', JSON.stringify(data));
           
@@ -263,9 +254,30 @@ function MentorDashboardContent() {
       } else {
         setPageMode('intro');
       }
+      });
     };
 
     loadStatusData();
+
+    // Fetch real time mock-free dashboard data
+    const loadRealtimeData = async () => {
+      try {
+        const studentsRes = await fetch('/api/mentor/students');
+        const studentsData = await studentsRes.json();
+        if (studentsData.success) {
+          setStudentsList(studentsData.data);
+        }
+        
+        const sessionsRes = await fetch('/api/mentor/live-sessions');
+        const sessionsData = await sessionsRes.json();
+        if (sessionsData.success) {
+          setLiveSessions(sessionsData.data);
+        }
+      } catch (err) {
+        console.error("Failed to load realtime dashboard data:", err);
+      }
+    };
+    loadRealtimeData();
 
     // Poll for incoming student stuck triggers
     const interval = setInterval(() => {
@@ -370,6 +382,7 @@ function MentorDashboardContent() {
   return (
     <div className="flex min-h-screen bg-[var(--background)] text-[var(--foreground)] overflow-hidden font-sans relative">
       <div className="fixed inset-0 pointer-events-none z-0 developer-grid" />
+      <ThunderEffect />
       
       <AnimatePresence>
         {pageMode !== 'dashboard' && pageMode !== 'loading' && (
@@ -756,7 +769,7 @@ function MentorDashboardContent() {
             <div className="h-[1px] bg-[var(--ide-border)] my-2 w-full" />
             
             <button 
-              onClick={async () => { await signOut(auth); localStorage.clear(); router.push('/'); }} 
+              onClick={async () => { await fetch('/api/auth/logout', { method: 'POST' }); await signOut(auth); localStorage.clear(); router.push('/login'); }} 
               className={`w-full flex items-center gap-2 py-2.5 px-3 rounded text-xs font-mono font-bold uppercase tracking-wider text-red-400 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 hover:text-red-500 transition-all cursor-pointer group ${isSidebarOpen ? '' : 'justify-center'}`}
             >
               <LogOut className="w-4 h-4 flex-shrink-0 group-hover:-translate-x-1 transition-transform" /> 
@@ -895,7 +908,10 @@ function MentorDashboardContent() {
                     </div>
 
                     <div className="p-4 space-y-3 flex-1 overflow-y-auto max-h-[300px] scrollbar-none font-mono text-xs">
-                      {MOCK_LIVE_SESSIONS.map((session, i) => (
+                      {liveSessions.length === 0 && (
+                        <div className="text-[10px] text-center p-4 opacity-50 uppercase tracking-widest text-[var(--text-muted)]">No active sockets</div>
+                      )}
+                      {liveSessions.map((session, i) => (
                         <div 
                           key={session.id} 
                           className={`p-4 rounded border flex items-center justify-between bg-[var(--background)]/50 ${
@@ -998,12 +1014,17 @@ function MentorDashboardContent() {
                     <p className="text-[10px] text-[var(--text-muted)] uppercase mt-0.5">Audit student compiler screens and inject live voice guidance.</p>
                   </div>
                   <span className="px-3 py-1 rounded bg-[#10B981]/10 border border-[#10B981]/25 text-[#10B981] font-mono text-[9px] font-bold uppercase tracking-widest animate-pulse">
-                    {MOCK_LIVE_SESSIONS.length} Active channels
+                    {liveSessions.length} Active channels
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
-                  {MOCK_LIVE_SESSIONS.map((session, i) => (
+                  {liveSessions.length === 0 && (
+                    <div className="text-center p-12 border border-[var(--ide-border)]/50 rounded bg-[var(--background)]/30 text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-mono">
+                      No live telemetry active right now
+                    </div>
+                  )}
+                  {liveSessions.map((session, i) => (
                     <div 
                       key={session.id} 
                       className={`p-5 rounded border bg-[var(--background)] ${
@@ -1154,7 +1175,12 @@ function MentorDashboardContent() {
                     </tr>
                   </thead>
                   <tbody>
-                    {MOCK_STUDENTS.map(student => (
+                    {studentsList.length === 0 && (
+                      <div className="col-span-2 text-center p-8 text-[10px] uppercase font-mono text-[var(--text-muted)]">
+                        No students found in the cohort
+                      </div>
+                    )}
+                    {studentsList.map(student => (
                       <tr key={student.id} className="border-b border-[var(--ide-border)]/30 hover:bg-[var(--background)]/30 text-[var(--text-secondary)]">
                         <td className="p-4 flex items-center gap-3">
                           <div className="w-7 h-7 rounded border border-[var(--ide-border)] bg-[var(--background)] flex items-center justify-center text-[10px] font-bold text-white">{student.avatar}</div>
@@ -1256,7 +1282,7 @@ function MentorDashboardContent() {
                     <button onClick={() => { setShowProfileModal(false); router.push('/mentor/settings'); }} className="w-full py-2.5 rounded border border-[var(--ide-border)] hover:border-gray-500 bg-[var(--background)] text-[var(--text-muted)] hover:text-[var(--text-primary)] uppercase transition-all">
                       Configure profile parameters
                     </button>
-                    <button onClick={async () => { await signOut(auth); localStorage.clear(); router.push('/'); }} className="w-full py-2.5 rounded bg-red-500/10 hover:bg-red-500/15 border border-red-500/30 text-red-400 hover:text-red-300 uppercase transition-all">
+                    <button onClick={async () => { await fetch('/api/auth/logout', { method: 'POST' }); await signOut(auth); localStorage.clear(); router.push('/login'); }} className="w-full py-2.5 rounded bg-red-500/10 hover:bg-red-500/15 border border-red-500/30 text-red-400 hover:text-red-300 uppercase transition-all">
                       Terminate session links
                     </button>
                   </div>

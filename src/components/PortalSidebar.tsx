@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Lock } from 'lucide-react';
+import Link from 'next/link';
 import Logo from '@/components/Logo';
 
 interface SidebarItem {
@@ -63,24 +64,11 @@ export default function PortalSidebar({
 
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
         {items.map((item) => {
-          const Tag = item.href && !item.locked ? 'a' : 'button';
+          const isLink = item.href && !item.locked;
           const href = item.locked ? '#' : item.href;
           
-          return (
-            <Tag 
-              key={item.label} 
-              {...(Tag === 'a' ? { href } : {})}
-              onClick={(e: any) => {
-                if (item.onClick) item.onClick(e);
-              }}
-              className={`w-full flex items-center gap-3 px-3 py-3 rounded text-[12px] font-bold font-mono transition-all duration-200 group text-left ${isSidebarOpen ? '' : 'justify-center'} ${
-                item.active 
-                  ? 'bg-[#FF3366] text-white shadow-lg shadow-[#FF3366]/20' 
-                  : item.locked 
-                    ? 'text-[var(--text-muted)] cursor-not-allowed border border-transparent opacity-40' 
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--ide-bg)]'
-              }`}
-            >
+          const innerContent = (
+            <>
               {item.locked ? (
                 <Lock className="w-4 h-4 text-[var(--text-secondary)] flex-shrink-0" />
               ) : (
@@ -91,7 +79,28 @@ export default function PortalSidebar({
                 <span className="truncate">{item.label}</span>
                 {item.locked && <Lock className="w-3.5 h-3.5 text-[var(--text-secondary)] ml-auto" />}
               </div>
-            </Tag>
+            </>
+          );
+
+          const commonProps = {
+            onClick: (e: any) => { if (item.onClick) item.onClick(e); },
+            className: `w-full flex items-center gap-3 px-3 py-3 rounded text-[12px] font-bold font-mono transition-all duration-200 group text-left ${isSidebarOpen ? '' : 'justify-center'} ${
+                item.active 
+                  ? 'bg-[#FF3366] text-white shadow-lg shadow-[#FF3366]/20' 
+                  : item.locked 
+                    ? 'text-[var(--text-muted)] cursor-not-allowed border border-transparent opacity-40' 
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--ide-bg)]'
+              }`
+          };
+
+          return isLink ? (
+            <Link key={item.label} href={href!} {...commonProps}>
+              {innerContent}
+            </Link>
+          ) : (
+            <button key={item.label} {...commonProps}>
+              {innerContent}
+            </button>
           );
         })}
       </nav>

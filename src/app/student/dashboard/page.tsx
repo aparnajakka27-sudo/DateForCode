@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
 import PortalSidebar from '@/components/PortalSidebar';
 import ThemeToggle from '@/components/ThemeToggle';
+import ThunderEffect from '@/components/ThunderEffect';
+import { useUser } from '@/context/UserContext';
 import { auth, db } from '@/lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -32,7 +34,7 @@ const SKILLS_COLORS: Record<string,string> = {
 
 export default function StudentDashboard() {
   const router = useRouter();
-  const [profile, setProfile] = useState<{username:string,avatar:string,skills:string[],bio:string}|null>(null);
+  const { user, profile, loading: isAuthLoading } = useUser();
   const [progress, setProgress] = useState({skillDone:false,matchDone:false,codeDone:false,hp:0,streak:0,matches:0,sessions:0,lastDate:''});
   const [showProfile, setShowProfile] = useState(false);
   const [lockModal, setLockModal] = useState<{show:boolean,title:string,msg:string,action?:string,href?:string}>({show:false,title:'',msg:''});
@@ -42,39 +44,33 @@ export default function StudentDashboard() {
 
   // Firestore Real-Time Data Integration
   useEffect(() => {
-    const unsubAuth = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const unsubProf = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
-          if (docSnap.exists()) {
-            setProfile(docSnap.data() as any);
-          }
+    if (!user) return;
+    
+    // Subscribe to progress
+    const unsubProg = onSnapshot(doc(db, 'users', user.uid, 'progress', 'main'), (docSnap) => {
+      if (docSnap.exists()) {
+        const p = docSnap.data() as any;
+        setProgress({
+          skillDone: !!p.skillDone,
+          matchDone: !!p.matchDone,
+          codeDone: !!p.codeDone,
+          hp: p.hp || 0,
+          streak: p.streak || 0,
+          matches: p.matches || 0,
+          sessions: p.sessions || 0,
+          lastDate: p.lastDate || ''
         });
-        
-        const unsubProg = onSnapshot(doc(db, 'users', user.uid, 'progress', 'main'), (docSnap) => {
-          if (docSnap.exists()) {
-            const p = docSnap.data() as any;
-            setProgress({
-              skillDone: !!p.skillDone,
-              matchDone: !!p.matchDone,
-              codeDone: !!p.codeDone,
-              hp: p.hp || 0,
-              streak: p.streak || 0,
-              matches: p.matches || 0,
-              sessions: p.sessions || 0,
-              lastDate: p.lastDate || ''
-            });
-          }
-        });
-
-        try { const n = JSON.parse(localStorage.getItem('dateforcode_notifications')||'[]'); setNotifications(n); } catch(_){}
-
-        return () => { unsubProf(); unsubProg(); };
-      } else {
-        router.push('/');
       }
     });
-    return () => unsubAuth();
-  }, [router]);
+
+    try { const n = JSON.parse(localStorage.getItem('dateforcode_notifications')||'[]'); setNotifications(n); } catch(_){}
+
+    return () => {
+      unsubProg();
+    };
+  }, [user]);
+
+  // Auth state and loading handled by layout
 
   const SIDEBAR_ITEMS = [
     { label:'Dashboard', icon:LayoutDashboard, href:'/student/dashboard', active:true },
@@ -94,12 +90,32 @@ export default function StudentDashboard() {
     { step:3, title:'Coding Room', desc:'Acquire driver/navigator key ownership and initiate collaborative live compilation.', icon:Code, status:progress.codeDone?'done':progress.matchDone?'ready':'locked' as string, color:'#10B981', href:'/student/coding-room' },
   ];
 
-  const avatarImg = profile?.avatar ? `https://api.dicebear.com/7.x/bottts/svg?seed=${profile.avatar}` : 'https://api.dicebear.com/7.x/bottts/svg?seed=default';
+  // Legacy migration map to convert old dicebear avatars to new 3D avatars
+  const LEGACY_AVATAR_MAP: Record<string, string> = {
+    ninja: 'kai', astro: 'leo', pixel: 'maya', cyber: 'luna', nova: 'kai', ghost: 'leo'
+  };
+
+  const AVATAR_MAP: Record<string, string> = {
+    kai: '/avatars/kai.png',
+    leo: '/avatars/leo.png',
+    maya: '/avatars/maya.png',
+    luna: '/avatars/luna.png',
+    jax: '/avatars/jax.png',
+    zara: '/avatars/zara.png',
+    finn: '/avatars/finn.png',
+    nova: '/avatars/nova.png',
+    remy: '/avatars/remy.png',
+    cleo: '/avatars/cleo.png',
+  };
+
+  const currentAvatarId = profile?.avatar ? (LEGACY_AVATAR_MAP[profile.avatar] || profile.avatar) : 'kai';
+  const avatarImg = AVATAR_MAP[currentAvatarId] || AVATAR_MAP['kai'];
 
   return (
     <div className="flex min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans noise-bg">
       {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none z-0 developer-grid" />
+      <ThunderEffect />
 
       <PortalSidebar 
         isSidebarOpen={isSidebarOpen}
@@ -148,9 +164,10 @@ export default function StudentDashboard() {
             
             <button 
               onClick={async () => {
+                await fetch('/api/auth/logout', { method: 'POST' });
                 await signOut(auth);
                 localStorage.clear();
-                router.push('/');
+                router.push('/login');
               }}
               className={`w-full flex items-center gap-3 px-3 py-3 rounded text-[11px] font-mono font-bold text-red-400 hover:text-red-500 bg-red-950/10 hover:bg-red-950/20 border border-red-900/25 transition-all duration-300 group ${isSidebarOpen ? '' : 'justify-center'}`}
             >
@@ -277,7 +294,7 @@ export default function StudentDashboard() {
                 <p className="text-[9px] font-mono text-[#FF3366] font-bold uppercase tracking-widest">LEVEL 01 // CRITICAL</p>
               </div>
               <div className="w-9 h-9 rounded overflow-hidden border border-accent-pink/30 bg-[var(--ide-bg)] p-0.5">
-                <img src={avatarImg} alt="avatar" className="w-full h-full animate-pulse" />
+                <img src={avatarImg} alt="avatar" className="w-full h-full object-cover" />
               </div>
             </button>
           </div>
@@ -643,8 +660,8 @@ export default function StudentDashboard() {
                 {/* Avatar info */}
                 <div className="text-center space-y-4 py-4">
                   <div className="relative w-24 h-24 mx-auto">
-                    <div className="w-full h-full rounded border-2 border-[#FF3366] bg-[var(--ide-bg)] p-1.5">
-                      <img src={avatarImg} alt="avatar" className="w-full h-full" />
+                    <div className="w-full h-full rounded border-2 border-[#FF3366] bg-[var(--ide-bg)] p-1.5 overflow-hidden">
+                      <img src={avatarImg} alt="avatar" className="w-full h-full object-cover" />
                     </div>
                     <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-accent-green border border-black shadow-[0_0_10px_#10B981]" />
                   </div>
@@ -704,7 +721,12 @@ export default function StudentDashboard() {
                     Edit Profile Node
                   </button>
                   <button 
-                    onClick={async () => { await signOut(auth); localStorage.clear(); router.push('/'); }}
+                    onClick={async () => { 
+                      await fetch('/api/auth/logout', { method: 'POST' });
+                      await signOut(auth); 
+                      localStorage.clear(); 
+                      router.push('/login'); 
+                    }}
                     className="w-full py-3 rounded bg-red-950/20 border border-red-900/30 text-xs font-mono font-bold uppercase tracking-widest text-red-400 hover:text-red-500 hover:bg-red-950/40 transition-colors text-center"
                   >
                     DISCONNECT NODE

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
 import AccountTab from './AccountTab';
+import { auth } from '@/lib/firebase';
+import { useUser } from '@/context/UserContext';
 
 const fadeUp = (d=0) => ({ initial:{opacity:0,y:15}, animate:{opacity:1,y:0}, transition:{duration:0.4,delay:d,ease:[0.16,1,0.3,1] as const} });
 
@@ -61,22 +63,16 @@ const SEARCH_ITEMS = [
 ];
 
 const AVATARS = [
-  { id:'ninja', img:'https://api.dicebear.com/7.x/bottts/svg?seed=ninja', ring:'#6C5CE7' },
-  { id:'astro', img:'https://api.dicebear.com/7.x/bottts/svg?seed=astro', ring:'#FF4D6D' },
-  { id:'pixel', img:'https://api.dicebear.com/7.x/bottts/svg?seed=pixel', ring:'#3B82F6' },
-  { id:'cyber', img:'https://api.dicebear.com/7.x/bottts/svg?seed=cyber', ring:'#10B981' },
-  { id:'nova', img:'https://api.dicebear.com/7.x/bottts/svg?seed=nova', ring:'#F97316' },
-  { id:'ghost', img:'https://api.dicebear.com/7.x/bottts/svg?seed=ghost', ring:'#6B7280' },
-  { id:'spark', img:'https://api.dicebear.com/7.x/bottts/svg?seed=spark', ring:'#EC4899' },
-  { id:'zen', img:'https://api.dicebear.com/7.x/bottts/svg?seed=zen', ring:'#A855F7' },
-  { id:'blade', img:'https://api.dicebear.com/7.x/bottts/svg?seed=blade', ring:'#EF4444' },
-  { id:'storm', img:'https://api.dicebear.com/7.x/bottts/svg?seed=storm', ring:'#3B82F6' },
-  { id:'luna', img:'https://api.dicebear.com/7.x/bottts/svg?seed=luna', ring:'#8B5CF6' },
-  { id:'volt', img:'https://api.dicebear.com/7.x/bottts/svg?seed=volt', ring:'#F59E0B' },
-  { id:'frost', img:'https://api.dicebear.com/7.x/bottts/svg?seed=frost', ring:'#06B6D4' },
-  { id:'blaze', img:'https://api.dicebear.com/7.x/bottts/svg?seed=blaze', ring:'#DC2626' },
-  { id:'sage', img:'https://api.dicebear.com/7.x/bottts/svg?seed=sage', ring:'#059669' },
-  { id:'echo', img:'https://api.dicebear.com/7.x/bottts/svg?seed=echo', ring:'#7C3AED' },
+  { id: 'kai', img: '/avatars/kai.png', ring: '#0F766E' },
+  { id: 'leo', img: '/avatars/leo.png', ring: '#4D7C0F' },
+  { id: 'maya', img: '/avatars/maya.png', ring: '#6D28D9' },
+  { id: 'luna', img: '/avatars/luna.png', ring: '#BE185D' },
+  { id: 'jax', img: '/avatars/jax.png', ring: '#C2410C' },
+  { id: 'zara', img: '/avatars/zara.png', ring: '#CA8A04' },
+  { id: 'finn', img: '/avatars/finn.png', ring: '#0369A1' },
+  { id: 'nova', img: '/avatars/nova.png', ring: '#B91C1C' },
+  { id: 'remy', img: '/avatars/remy.png', ring: '#4338CA' },
+  { id: 'cleo', img: '/avatars/cleo.png', ring: '#0E7490' },
 ];
 
 const SKILLS = [
@@ -124,24 +120,49 @@ function Content() {
   const [skills, setSkills] = useState<string[]>([]);
   const [bio, setBio] = useState('');
 
-  useEffect(() => {
-    const s = localStorage.getItem('dateforcode_profile');
-    if (s) {
-      const p = JSON.parse(s);
-      setOriginal(p);
-      setUsername(p.username||'');
-      setAvatar(p.avatar||'');
-      setSkills(p.skills||[]);
-      setBio(p.bio||'');
-    }
-  }, []);
+  const { user, profile, refreshProfile } = useUser();
 
-  const avatarImg = avatar ? `https://api.dicebear.com/7.x/bottts/svg?seed=${avatar}` : 'https://api.dicebear.com/7.x/bottts/svg?seed=default';
-  const avData = AVATARS.find(a=>a.id===avatar);
+  useEffect(() => {
+    if (profile) {
+      setOriginal(profile as any);
+      setUsername(profile.username||'');
+      setAvatar(profile.avatar||'');
+      setSkills(profile.skills||[]);
+      setBio(profile.bio||'');
+    }
+  }, [profile]);
+
+  // Legacy migration map for settings
+  const LEGACY_AVATAR_MAP: Record<string, string> = {
+    ninja: 'kai', astro: 'leo', pixel: 'maya', cyber: 'luna', nova: 'kai', ghost: 'leo',
+    spark: 'maya', zen: 'kai', blade: 'leo', storm: 'luna', volt: 'kai', frost: 'leo',
+    blaze: 'maya', sage: 'luna', echo: 'kai'
+  };
+
+  const currentAvatarId = avatar ? (LEGACY_AVATAR_MAP[avatar] || avatar) : 'kai';
+  const avData = AVATARS.find(a => a.id === currentAvatarId) || AVATARS[0];
+  const avatarImg = avData.img;
   const filteredResults = searchQuery.trim().length > 0 ? SEARCH_ITEMS.filter(i => i.label.toLowerCase().includes(searchQuery.toLowerCase()) || i.desc.toLowerCase().includes(searchQuery.toLowerCase())) : [];
-  const handleSave = () => {
+  const handleSave = async () => {
     const p={username,avatar,skills,bio};
-    localStorage.setItem('dateforcode_profile',JSON.stringify(p));
+    
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        await fetch('/api/user/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(p)
+        });
+        await refreshProfile();
+      } catch (err) {
+        console.error("Failed to sync profile to MongoDB", err);
+      }
+    }
+
     setOriginal(p);
     setSaved(true);
     setTimeout(()=>setSaved(false),2000);
@@ -236,16 +257,23 @@ function Content() {
                   <div className="mb-8">
                     <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-3 block font-mono">AVATAR_PERSONA_SIGNATURE</label>
                     <div className="flex items-center gap-6">
-                      <div className="w-16 h-16 rounded-full overflow-hidden shadow-2xl relative border-2" style={{borderColor:avData?.ring||'#2A2E3D'}}><img src={avatarImg} alt="" className="w-full h-full bg-[var(--background)]" /></div>
+                      <div className="absolute top-0 right-0 w-32 h-32 blur-[50px] opacity-20 pointer-events-none rounded-full" style={{backgroundColor: avData?.ring||'#A855F7'}} />
+                      <div className="relative">
+                        <div className="w-24 h-24 rounded bg-[var(--background)] border-2 flex items-center justify-center relative overflow-hidden" style={{borderColor: avData?.ring||'#A855F7'}}>
+                          <img src={avatarImg} alt="avatar" className="w-full h-full object-cover" />
+                          <button onClick={()=>setShowAvatars(true)} className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <span className="text-[10px] font-mono text-white">CHANGE</span>
+                          </button>
+                        </div>
+                      </div>
                       <button onClick={()=>setShowAvatars(!showAvatars)} className="btn-secondary-dev flex items-center gap-1.5 text-xs py-2.5 px-4"><Camera className="w-3.5 h-3.5"/>Re-roll Persona</button>
                     </div>
                     <AnimatePresence>{showAvatars && (
                       <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}} className="overflow-hidden">
                         <div className="grid grid-cols-8 gap-3 mt-5 p-4 bg-[var(--background)] rounded-xl border border-[var(--ide-border)]">
-                          {AVATARS.map(av=>(
-                            <button key={av.id} onClick={()=>{setAvatar(av.id);setShowAvatars(false);}} className="group relative focus:outline-none">
-                              <div className="w-11 h-11 rounded-full overflow-hidden border transition-all hover:scale-110" style={{borderColor:avatar===av.id?av.ring:'rgba(255,255,255,0.08)',background:'#0D0E12'}}><img src={av.img} alt="" className="w-full h-full"/></div>
-                              {avatar===av.id && <div className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-accent-pink flex items-center justify-center border border-bg-dark-950"><Check className="w-2.5 h-2.5 text-[var(--text-primary)]"/></div>}
+                          {AVATARS.map(a => (
+                            <button key={a.id} onClick={()=>{setAvatar(a.id);setShowAvatars(false);}} className={`w-14 h-14 rounded bg-[var(--background)] border flex items-center justify-center overflow-hidden transition-all ${currentAvatarId===a.id?'border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.2)]':'border-border-dark hover:border-gray-500 hover:scale-105'}`}>
+                              <img src={a.img} alt={a.id} className="w-full h-full object-cover" />
                             </button>
                           ))}
                         </div>

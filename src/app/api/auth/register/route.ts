@@ -11,13 +11,13 @@ export async function POST(request: Request) {
     const { fullName, username, email, password, role } = body;
 
     if (!fullName || !username || !email || !password) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
     }
 
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return NextResponse.json({ error: 'Email or Username already exists' }, { status: 409 });
+      return NextResponse.json({ success: false, error: 'Email or Username already exists' }, { status: 409 });
     }
 
     const newUser = await User.create({
@@ -48,13 +48,13 @@ export async function POST(request: Request) {
     // Don't return the password
     newUser.password = undefined;
 
-    return NextResponse.json({ message: 'Registration successful', user: newUser }, { status: 201 });
+    return NextResponse.json({ success: true, message: 'Registration successful', data: { user: newUser } }, { status: 201 });
   } catch (error: any) {
     console.error('Registration Error:', error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || 'An unexpected error occurred during registration.',
+        error: error.message || 'An unexpected error occurred during registration.',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       { status: 500 }

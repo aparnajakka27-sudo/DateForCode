@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const { email, fullName, provider, providerId, browser, os, ip, role } = body;
 
     if (!email || !provider || !providerId) {
-      return NextResponse.json({ error: 'Missing required social fields' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Missing required social fields' }, { status: 400 });
     }
 
     let user = await User.findOne({ email });
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
     // Check account status
     if (user.accountStatus !== 'active') {
-      return NextResponse.json({ error: `Account is ${user.accountStatus}` }, { status: 403 });
+      return NextResponse.json({ success: false, error: `Account is ${user.accountStatus}` }, { status: 403 });
     }
 
     // Auto Updates
@@ -62,13 +62,13 @@ export async function POST(request: Request) {
       maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
-    return NextResponse.json({ message: 'Social login successful', user }, { status: 200 });
+    return NextResponse.json({ success: true, message: 'Social login successful', data: { user } }, { status: 200 });
   } catch (error: any) {
     console.error('Social Login Error:', error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || 'An unexpected error occurred during social login.',
+        error: error.message || 'An unexpected error occurred during social login.',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       { status: 500 }

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const userId = searchParams.get('userId');
 
     if (!userId) {
-      return NextResponse.json({ error: 'Missing userId parameter' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Missing userId parameter' }, { status: 400 });
     }
 
     await dbConnect();
@@ -27,9 +27,9 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json(mentor);
+    return NextResponse.json({ success: true, data: mentor });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     const { userId } = body;
 
     if (!userId) {
-      return NextResponse.json({ error: 'Missing userId parameter' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Missing userId parameter' }, { status: 400 });
     }
 
     await dbConnect();
@@ -50,8 +50,8 @@ export async function POST(request: Request) {
       { new: true, upsert: true, runValidators: true }
     );
 
-    return NextResponse.json(mentor);
+    return NextResponse.json({ success: true, data: mentor });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

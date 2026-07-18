@@ -71,6 +71,7 @@ export default function AccountTab() {
 
   const handleDeactivate = async () => {
     localStorage.setItem('dateforcode_deactivated', 'true');
+    await fetch('/api/auth/logout', { method: 'POST' });
     await signOut(auth);
     router.push('/');
   };
@@ -99,6 +100,7 @@ export default function AccountTab() {
     } finally {
       // 4. Wipe active local storage sessions and redirect
       localStorage.clear();
+      await fetch('/api/auth/logout', { method: 'POST' });
       await signOut(auth);
       router.push('/');
     }

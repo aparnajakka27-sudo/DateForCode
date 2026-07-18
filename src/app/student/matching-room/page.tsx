@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Code2, Sparkles, Zap, Search, Wifi, Globe, ArrowRight, Shield, Heart, Star, CheckCircle2, Loader2, ArrowLeft, Terminal, Cpu, Clock, Calendar, BarChart3, Database } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Logo from '@/components/Logo';
+import { useUser } from '@/context/UserContext';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, getDoc, onSnapshot, runTransaction, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 
 const SKILL_META: Record<string,{name:string,icon:string,color:string}> = {
   javascript:{name:'JavaScript',icon:'⚡',color:'#FF3366'}, python:{name:'Python',icon:'🐍',color:'#3776AB'},
@@ -28,72 +31,178 @@ const FAKE_USERS = [
   {name:'Diya Patel',avatar:'DP',hp:360,skill:'UI Engineer',loc:'Ahmedabad',speed:'69 WPM',style:'Framer & Motion',overlap:'4.0h overlap'},
 ];
 
-type Phase = 'intro' | 'scanning' | 'matched';
+type Phase = 'intro' | 'scanning' | 'matched' | 'timeout';
 
 function MatchingRoomContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const skillId = searchParams.get('skill') || 'javascript';
   const meta = SKILL_META[skillId] || SKILL_META.javascript;
+  const { user, profile } = useUser();
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [scanProgress, setScanProgress] = useState(0);
-  const [scannedUsers, setScannedUsers] = useState<typeof FAKE_USERS>([]);
-  const [matchedUser, setMatchedUser] = useState<typeof FAKE_USERS[0]|null>(null);
+  const [scannedUsers, setScannedUsers] = useState<any[]>([]);
+  const [matchedUser, setMatchedUser] = useState<any>(null);
   const [onlineCount, setOnlineCount] = useState(67);
   const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
+  const [roomId, setRoomId] = useState<string|null>(null);
+
+  const isScanningRef = useRef(false);
+
+  useEffect(() => {
+    console.log("[MATCH] Component Mounted");
+    return () => console.log("[MATCH] Component Unmounted");
+  }, []);
 
   useEffect(() => {
     setOnlineCount(Math.floor(Math.random() * 80) + 40);
   }, []);
 
-  // Scanning phase simulated logs & progression
   useEffect(() => {
-    if (phase !== 'scanning') return;
-    const shuffled = [...FAKE_USERS].sort(() => Math.random() - 0.5);
-    let idx = 0;
-    let userIdx = 0;
+    if (phase !== 'scanning' || !user) return;
+    
+    // Prevent React Strict Mode double execution
+    if (isScanningRef.current) {
+      console.log("[MATCH] useEffect triggered (Ignored due to Strict Mode)");
+      return;
+    }
+    
+    console.log("[MATCH] useEffect triggered");
+    isScanningRef.current = true;
+    let isMounted = true;
+    let unsub = () => {};
+    let progTimer: NodeJS.Timeout;
+    let timeoutTimer: NodeJS.Timeout;
+    const qRef = doc(db, 'waiting_queue', user.uid);
 
-    const logTemplates = [
-      "INITIALIZING SCIENTIFIC MATCHMAKING CRITERIA...",
-      "SCANNING TELEMETRY NODE PORTS...",
-      "ESTABLISHING TIMEZONE SCHEDULE COMPARATORS...",
-      "AUDITING SKILL REPERTOIRE POPULARITIES...",
-      "EXTRACTING CODER SPEED CAPABILITIES (WPM)...",
-      "EVALUATING COLLABORATIVE PREFERENCE SYNERGIES...",
-      "CALCULATING DRIVER/NAVIGATOR ROLE BALANCE...",
-      "COMPILING COMPATIBILITY CORRELATION MATRIX...",
-      "SEARCHING ACTIVE CLUSTERS FOR OPTIMAL NODES...",
-      "FILTERING BY COMPATIBILITY SYNERGY LEVEL > 85%..."
-    ];
+    const initQueue = async () => {
+      try {
+        console.log("[MATCH] startScanning()");
+        await setDoc(qRef, {
+          userId: user.uid,
+          skill: skillId,
+          status: 'waiting',
+          createdAt: new Date().toISOString(),
+          name: profile?.username || 'user',
+          avatar: profile?.avatar || 'kai',
+          hp: 500
+        });
+        
+        if (!isMounted) return;
+        console.log("[MATCH] waiting_queue created");
+        setConsoleLogs(["[SYS] REALTIME QUEUE ENTERED. SEARCHING..."]);
 
-    const scanTimer = setInterval(() => {
-      idx++;
-      setScanProgress(Math.min((idx / 30) * 100, 100));
+        // Start animation (less aggressive updates to prevent UI lock)
+        let prog = 0;
+        progTimer = setInterval(() => {
+          prog = Math.min(prog + (100 / 600), 100);
+          setScanProgress(prog);
+          if (Math.random() > 0.95) {
+             setScannedUsers(prev => prev.length < 5 ? [...prev, { name: 'Scanning...', avatar: '❓', skill: meta.name, speed: '---', overlap: 'Searching...' }] : prev);
+          }
+        }, 250);
+
+        // Find partner
+        console.log("[MATCH] Searching...");
+        const q = query(collection(db, 'waiting_queue'), where('skill', '==', skillId), where('status', '==', 'waiting'));
+        const qSnap = await getDocs(q);
+        
+        let partnerDoc: any = null;
+        qSnap.forEach(d => {
+          if (d.id !== user.uid) partnerDoc = { id: d.id, ...d.data() };
+        });
+
+        if (partnerDoc && isMounted) {
+          setConsoleLogs(prev => [...prev, `[FOUND] CANDIDATE: ${partnerDoc.name}`]);
+          try {
+            await runTransaction(db, async (t) => {
+              const pRef = doc(db, 'waiting_queue', partnerDoc.id);
+              const mRef = doc(db, 'waiting_queue', user.uid);
+              const pSnap = await t.get(pRef);
+              const mSnap = await t.get(mRef);
+              if (!pSnap.exists() || !mSnap.exists() || pSnap.data().status !== 'waiting' || mSnap.data().status !== 'waiting') {
+                throw new Error("Race condition: Doc changed state");
+              }
+              const newRoomId = `room_${Math.random().toString(36).substring(2,9)}`;
+              t.update(pRef, { status: 'matched', roomId: newRoomId, matchedWith: user.uid });
+              t.update(mRef, { status: 'matched', roomId: newRoomId, matchedWith: partnerDoc.id });
+            });
+            console.log("[MATCH] Partner Found");
+            console.log("[MATCH] Room Created");
+            if (isMounted) setConsoleLogs(prev => [...prev, "[SUCCESS] ATOMIC TRANSACTION SECURED SYNERGY."]);
+          } catch (e) {
+            if (isMounted) setConsoleLogs(prev => [...prev, "[FAIL] MATCH INTERRUPTED. RESUMING QUEUE..."]);
+          }
+        }
+
+        // Listen for match
+        unsub = onSnapshot(qRef, async (docSnap) => {
+          if (!isMounted) return;
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.status === 'matched' && data.roomId) {
+              console.log("[MATCH] Partner Found");
+              setRoomId(data.roomId);
+              if (data.matchedWith) {
+                 const pSnap = await getDoc(doc(db, 'waiting_queue', data.matchedWith));
+                 if (pSnap.exists()) {
+                   const pData = pSnap.data();
+                   setMatchedUser({
+                     name: pData.name, avatar: pData.avatar, hp: pData.hp || 500,
+                     skill: pData.skill, loc: 'Remote', speed: '70 WPM', style: 'Balanced', overlap: 'Active Now'
+                   });
+                 } else {
+                   setMatchedUser({
+                     name: 'Matched Partner', avatar: '👋', hp: 500,
+                     skill: meta.name, loc: 'Remote', speed: '70 WPM', style: 'Balanced', overlap: 'Active Now'
+                   });
+                 }
+              }
+              clearInterval(progTimer);
+              setScanProgress(100);
+              setPhase('matched');
+            }
+          }
+        });
+
+        timeoutTimer = setTimeout(async () => {
+          if (!isMounted) return;
+          const snap = await getDoc(qRef);
+          if (snap.exists() && snap.data().status === 'waiting') {
+            setPhase('timeout');
+          }
+        }, 60000);
+
+      } catch (e) {
+        console.error("Firestore error:", e);
+        console.log("[MATCH] waiting_queue failed");
+      }
+    };
+
+    initQueue();
+
+    return () => {
+      isMounted = false;
+      isScanningRef.current = false;
+      clearInterval(progTimer);
+      clearTimeout(timeoutTimer);
+      unsub();
       
-      if (idx % 3 === 0 && idx / 3 < logTemplates.length) {
-        setConsoleLogs(prev => [...prev, `[SYS] ${logTemplates[Math.floor(idx / 3)]}`]);
-      }
-
-      if (idx % 4 === 0 && userIdx < 8) {
-        const user = shuffled[userIdx % shuffled.length];
-        userIdx++;
-        setScannedUsers(prev => [...prev, user]);
-        setConsoleLogs(prev => [...prev, `[FOUND] Active Candidate: ${user.name} (${user.speed}, ${user.overlap})`]);
-      }
-
-      if (idx >= 30) {
-        clearInterval(scanTimer);
-        const match = shuffled[Math.floor(Math.random() * 4)];
-        setMatchedUser(match);
-        setConsoleLogs(prev => [...prev, `[SUCCESS] MATCH VERIFIED WITH CODER: ${match.name.toUpperCase()}`]);
-        setTimeout(() => setPhase('matched'), 1200);
-      }
-    }, 180);
-    return () => clearInterval(scanTimer);
-  }, [phase]);
+      // Cleanup: only delete if the user was still waiting
+      getDoc(qRef).then(snap => {
+        if (snap.exists() && snap.data().status === 'waiting') {
+          if (!isScanningRef.current) {
+            deleteDoc(qRef).catch(e => console.error(e));
+          }
+        }
+      }).catch(e => console.error(e));
+    };
+  }, [phase]); // Exclude user to avoid continuous restarts from UserContext re-renders
 
   const startScanning = () => {
+    if (!user || phase === 'scanning') return;
+    console.log("[MATCH] Button Clicked");
     setScannedUsers([]);
     setScanProgress(0);
     setConsoleLogs(["[SYS] BOOTING MULTIPLAYER COOPERATION TELEMETRY..."]);
@@ -284,6 +393,16 @@ function MatchingRoomContent() {
                       <span>&gt; compiling compatibility telemetry parameters...</span>
                       <span className="w-1.5 h-3 bg-[#FF3366]" />
                     </div>
+                  </div>
+
+                  {/* Manual Cancel Button */}
+                  <div className="px-4 py-2 bg-[var(--ide-header-bg)]/80 border-t border-[var(--ide-border)]/40 flex justify-end">
+                    <button
+                      onClick={() => setPhase('intro')}
+                      className="px-4 py-1.5 rounded bg-[var(--background)] border border-[var(--ide-border)] hover:border-[#FF3366] text-[#FF3366] text-[9px] font-mono font-bold uppercase tracking-widest transition-colors"
+                    >
+                      Cancel Matchmaking
+                    </button>
                   </div>
 
                   {/* Linear Progress Bar */}
@@ -499,7 +618,7 @@ function MatchingRoomContent() {
                             p.matches = (p.matches || 0) + 1;
                             localStorage.setItem('dateforcode_progress', JSON.stringify(p));
                           } catch (_) {}
-                          router.push(`/student/coding-room?skill=${skillId}&partner=${encodeURIComponent(matchedUser.name)}&avatar=${matchedUser.avatar}`);
+                          router.push(`/student/coding-room?skill=${skillId}&partner=${encodeURIComponent(matchedUser.name)}&avatar=${matchedUser.avatar}&roomId=${roomId || 'default'}`);
                         }}
                         className="btn-premium w-full py-3.5 text-xs flex items-center justify-center gap-2"
                       >
@@ -521,6 +640,65 @@ function MatchingRoomContent() {
             </motion.div>
           )}
 
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {/* ════ PHASE 4: TIMEOUT ════ */}
+          {phase === 'timeout' && (
+            <motion.div
+              key="timeout"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="absolute inset-0 flex items-center justify-center bg-[var(--background)]/90 backdrop-blur-md z-50 p-6"
+            >
+              <div className="max-w-md w-full glass-panel border border-[var(--ide-border)] p-8 text-left space-y-6 bg-[#0a0a0a] rounded-2xl shadow-2xl overflow-hidden relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                
+                <div className="flex items-center gap-3 border-b border-[var(--ide-border)] pb-4">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--ide-bg)] border border-[var(--ide-border)] flex items-center justify-center">
+                    <span className="text-xl">💀</span>
+                  </div>
+                  <h3 className="text-sm font-mono font-bold text-white tracking-wide">
+                    Oops... Looks Like {meta.name} Is Taking a Coffee Break!
+                  </h3>
+                </div>
+                
+                <div className="space-y-4 font-mono text-[13px] text-[#A1A1AA] leading-relaxed">
+                  <p>
+                    <span className="text-[#FF3366]">{`>`}</span> No <span className="text-white font-semibold">{meta.name}</span> coders are online right now.
+                  </p>
+                  <p>
+                    Looks like everyone's busy fixing bugs, arguing about tabs vs spaces, or pretending "it works on my machine".
+                  </p>
+                  <p className="text-[#3B82F6] font-bold mt-2">
+                    ? What do you want to do?
+                  </p>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t border-[var(--ide-border)]/50">
+                  <button
+                    onClick={() => setPhase('scanning')}
+                    className="w-full py-3.5 px-4 rounded-lg bg-[var(--ide-bg)] hover:bg-[#FF3366]/10 border border-[var(--ide-border)] hover:border-[#FF3366]/30 text-white text-xs font-mono font-bold transition-all flex items-center gap-3 group/btn"
+                  >
+                    <span className="group-hover/btn:scale-125 transition-transform">⚡</span> Keep Hunting
+                  </button>
+                  <button
+                    onClick={() => router.push('/student/solo-code')}
+                    className="w-full py-3.5 px-4 rounded-lg bg-[var(--ide-bg)] hover:bg-[#3B82F6]/10 border border-[var(--ide-border)] hover:border-[#3B82F6]/30 text-white text-xs font-mono font-bold transition-all flex items-center gap-3 group/btn"
+                  >
+                    <span className="group-hover/btn:scale-125 transition-transform">🎯</span> Train Solo
+                  </button>
+                  <button
+                    onClick={() => router.push('/student/dashboard')}
+                    className="w-full py-3.5 px-4 rounded-lg bg-[var(--ide-bg)] hover:bg-white/5 border border-[var(--ide-border)] hover:border-white/20 text-[#A1A1AA] hover:text-white text-xs font-mono font-bold transition-all flex items-center gap-3 group/btn"
+                  >
+                    <span className="group-hover/btn:scale-125 transition-transform text-xl">🚪</span> Bail Out
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </main>

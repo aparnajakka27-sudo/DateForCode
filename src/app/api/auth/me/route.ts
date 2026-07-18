@@ -10,12 +10,12 @@ export async function GET() {
     const token = cookieStore.get('session')?.value;
 
     if (!token) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+      return NextResponse.json({ success: false, authenticated: false }, { status: 401 });
     }
 
     const decoded: any = verifyToken(token);
     if (!decoded || !decoded.id) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+      return NextResponse.json({ success: false, authenticated: false }, { status: 401 });
     }
 
     await connectToDatabase();
@@ -28,12 +28,12 @@ export async function GET() {
     );
 
     if (!user) {
-      return NextResponse.json({ authenticated: false }, { status: 404 });
+      return NextResponse.json({ success: false, authenticated: false }, { status: 404 });
     }
 
-    return NextResponse.json({ authenticated: true, user }, { status: 200 });
+    return NextResponse.json({ success: true, authenticated: true, data: { user } }, { status: 200 });
   } catch (error) {
     console.error('Auth check error:', error);
-    return NextResponse.json({ authenticated: false }, { status: 500 });
+    return NextResponse.json({ success: false, authenticated: false }, { status: 500 });
   }
 }
