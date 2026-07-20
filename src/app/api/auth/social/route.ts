@@ -1,37 +1,63 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
-import { signToken } from '@/lib/jwt';
-import { cookies } from 'next/headers';
+import { verifyUserToken } from '@/lib/userAuth';
 
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const body = await request.json();
-    const { email, fullName, provider, providerId, browser, os, ip, role } = body;
+    
+    const authResult = await verifyUserToken(request);
+    if (!authResult.success) {
+      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 });
+    }
+    
+    const firebaseUid = authResult.uid;
+    const email = authResult.email;
 
-    if (!email || !provider || !providerId) {
+    const body = await request.json().catch(() => ({}));
+    const { fullName, provider, providerId, browser, os, ip, role } = body;
+
+    if (!provider || !providerId) {
       return NextResponse.json({ success: false, error: 'Missing required social fields' }, { status: 400 });
     }
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ $or: [{ firebaseUid }, { email }] });
 
     if (!user) {
       // Create new user if they don't exist
-      user = await User.create({
+      console.log("Creating User:", {
+        firebaseUid,
         email,
         fullName: fullName || email.split('@')[0],
         username: email.split('@')[0] + Math.floor(Math.random() * 10000),
         provider,
         providerId,
-        role: role || 'user',
+        role: role || 'student',
         emailVerified: true,
         accountCreationSource: 'social'
       });
+      user = await User.create({
+        firebaseUid,
+        email,
+        fullName: fullName || email.split('@')[0],
+        username: email.split('@')[0] + Math.floor(Math.random() * 10000),
+        provider,
+        providerId,
+        role: role || 'student',
+        emailVerified: true,
+        accountCreationSource: 'social'
+      });
+    } else {
+      // Sync firebaseUid if it was missing
+      if (!user.firebaseUid || user.firebaseUid !== firebaseUid) {
+        user.set('firebaseUid', firebaseUid);
+        user.markModified('firebaseUid');
+      }
     }
 
     // Check account status
-    if (user.accountStatus !== 'active') {
+    if (user.accountStatus && user.accountStatus !== 'active') {
       return NextResponse.json({ success: false, error: `Account is ${user.accountStatus}` }, { status: 403 });
     }
 
@@ -44,23 +70,35 @@ export async function POST(request: Request) {
     if (ip && !user.ipAddressLogs.includes(ip)) {
       user.ipAddressLogs.push(ip);
     }
-    await user.save();
+    try {
+      console.log("========== BEFORE SAVE (SOCIAL) ==========");
+      console.log(user.toObject());
 
-    // Create JWT
-    const token = signToken({ 
-      id: user._id.toString(), 
-      role: user.role, 
-      email: user.email 
-    });
+      await user.validate();
+      console.log("✅ Validation Passed");
 
-    // Set HTTP-only cookie
-    (await cookies()).set('session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
-    });
+      await user.save();
+      console.log("✅ Save Passed");
+
+    } catch (err: any) {
+      console.error("❌ Validation Error (SOCIAL):", err);
+
+      if (err.errors) {
+        for (const key in err.errors) {
+          console.log(
+            "Field:",
+            key,
+            "Message:",
+            err.errors[key].message,
+            "Value:",
+            err.errors[key].value
+          );
+        }
+      }
+
+      throw err;
+    }
+    // Removed custom JWT session cookie creation
 
     return NextResponse.json({ success: true, message: 'Social login successful', data: { user } }, { status: 200 });
   } catch (error: any) {

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
 import { useUser } from '@/context/UserContext';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { auth, db, googleProvider, githubProvider } from '@/lib/firebase';
 import { 
   signInWithEmailAndPassword, 
@@ -101,53 +102,63 @@ function LoginContent() {
         if (password !== confirmPassword) { setError('Passwords do not match'); setLoading(false); return; }
         if (password.length < 6) { setError('Password must be at least 6 characters'); setLoading(false); return; }
         
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fullName, username: email.split('@')[0], email, password, role })
-        });
-        
-        const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.error || 'Registration failed');
-        
-        // Also register in Firebase Auth for client-side state
+        // 1. Firebase First
         let fbUser = null;
         try {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           fbUser = cred.user;
         } catch (fbErr: any) {
-          // If already in use, just sign in
           if (fbErr.code === 'auth/email-already-in-use') {
             const cred = await signInWithEmailAndPassword(auth, email, password);
             fbUser = cred.user;
           } else {
-            console.error('Firebase Auth Error:', fbErr);
+            throw new Error(fbErr.message || 'Firebase Registration Error');
           }
+        }
+        
+        // 2. Register in Backend
+        const res = await fetchWithAuth('/api/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            fullName, 
+            username: email.split('@')[0], 
+            role,
+            provider: 'email',
+            providerId: fbUser.uid,
+            emailVerified: fbUser.emailVerified
+          })
+        });
+        
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          // If backend fails, consider cleaning up firebase user here, or just show error.
+          throw new Error(data.error || 'Backend registration failed');
         }
         
         // Route to dashboard. ProtectedRoute handles incomplete profiles and email verification.
         router.push(`/${role}/dashboard`);
       } else {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            email, 
-            password, 
-            browser: typeof window !== 'undefined' ? window.navigator.userAgent : 'Unknown' 
-          })
-        });
-
-        const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.error || 'Invalid email or password');
-        
-        // Also login to Firebase Auth for client-side state
+        // 1. Firebase First
         let fbUser = null;
         try {
           const cred = await signInWithEmailAndPassword(auth, email, password);
           fbUser = cred.user;
         } catch (fbErr: any) {
-          console.error('Firebase Auth Error:', fbErr);
+          throw new Error('Invalid email or password');
+        }
+        
+        // 2. Login in Backend
+        const res = await fetchWithAuth('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            browser: typeof window !== 'undefined' ? window.navigator.userAgent : 'Unknown' 
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          await signOut(auth); // Sign out of firebase if backend fails
+          throw new Error(data.error || 'Invalid email or password');
         }
         
         if (fbUser && !fbUser.emailVerified) {
@@ -171,11 +182,9 @@ function LoginContent() {
       const authProvider = provider === 'google' ? googleProvider : githubProvider;
       const result = await signInWithPopup(auth, authProvider);
       
-      const res = await fetch('/api/auth/social', {
+      const res = await fetchWithAuth('/api/auth/social', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: result.user.email,
           fullName: result.user.displayName,
           provider,
           providerId: result.user.uid,

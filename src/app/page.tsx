@@ -60,7 +60,7 @@ export default function LandingPage() {
       const customEvent = e as CustomEvent;
       setIsDarkMode(customEvent.detail === 'dark');
     };
-    window.addEventListener('themeChange', handleThemeChange);
+    window.addEventListener('themechange', handleThemeChange);
 
     // Auth listener
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -84,7 +84,7 @@ export default function LandingPage() {
     });
 
     return () => {
-      window.removeEventListener('themeChange', handleThemeChange);
+      window.removeEventListener('themechange', handleThemeChange);
       unsub();
     };
   }, []);

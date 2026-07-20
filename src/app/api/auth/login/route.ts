@@ -1,35 +1,40 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
-import { signToken } from '@/lib/jwt';
-import { cookies } from 'next/headers';
+import { verifyUserToken } from '@/lib/userAuth';
 
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const body = await request.json();
-    const { email, password, browser, os, ip } = body;
+    
+    const authResult = await verifyUserToken(request);
+    if (!authResult.success) {
+      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 });
+    }
+    const firebaseUid = authResult.uid;
+    const email = authResult.email;
 
-    if (!email || !password) {
-      return NextResponse.json({ success: false, error: 'Missing email or password' }, { status: 400 });
+    const body = await request.json().catch(() => ({}));
+    const { browser, os, ip } = body;
+
+    // Find user by firebaseUid (fallback to email if migrating)
+    let user = await User.findOne({ $or: [{ firebaseUid }, { email }] });
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
 
-    // Find user and explicitly select password (since select: false in schema)
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
+    // If migrating existing user who didn't have a firebaseUid yet
+    if (!user.firebaseUid || user.firebaseUid !== firebaseUid) {
+      user.set('firebaseUid', firebaseUid);
+      user.markModified('firebaseUid');
     }
 
     // Check account status
-    if (user.accountStatus !== 'active') {
+    if (user.accountStatus && user.accountStatus !== 'active') {
       return NextResponse.json({ success: false, error: `Account is ${user.accountStatus}` }, { status: 403 });
     }
 
-    // Verify Password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
-    }
+    // No password validation needed since Firebase handled it
 
     // Update Auto Update fields
     user.lastLogin = new Date();
@@ -40,26 +45,38 @@ export async function POST(request: Request) {
     if (ip && !user.ipAddressLogs.includes(ip)) {
       user.ipAddressLogs.push(ip);
     }
-    await user.save();
+    try {
+      console.log("========== BEFORE SAVE ==========");
+      console.log(user.toObject());
 
-    // Create JWT
-    const token = signToken({ 
-      id: user._id.toString(), 
-      role: user.role, 
-      email: user.email 
-    });
+      await user.validate();
+      console.log("✅ Validation Passed");
 
-    // Set HTTP-only cookie
-    (await cookies()).set('session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
-    });
+      await user.save();
+      console.log("✅ Save Passed");
 
-    user.password = undefined;
+    } catch (err: any) {
+      console.error("❌ Validation Error:", err);
 
+      if (err.errors) {
+        for (const key in err.errors) {
+          console.log(
+            "Field:",
+            key,
+            "Message:",
+            err.errors[key].message,
+            "Value:",
+            err.errors[key].value
+          );
+        }
+      }
+
+      throw err;
+    }
+
+    // Removed custom JWT session cookie creation
+
+    // Return success without JWT
     return NextResponse.json({ success: true, message: 'Login successful', data: { user } }, { status: 200 });
   } catch (error: any) {
     console.error('Login Error:', error);

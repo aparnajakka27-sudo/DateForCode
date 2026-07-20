@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 interface UserProfile {
   username: string;
@@ -46,17 +47,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setProfileError(null);
     
     try {
-      const token = await currentUser.getIdToken();
-      
-      const fetchPromise = fetch('/api/user/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const fetchPromise = fetchWithAuth('/api/user/profile');
 
-      // 30-second timeout to allow Next.js API route cold starts to compile
+      // 120-second timeout to allow Next.js API route cold starts to compile
       const timeoutPromise = new Promise<Response>((_, reject) => {
-        setTimeout(() => reject(new Error('Profile fetch timed out (30s)')), 30000);
+        setTimeout(() => reject(new Error('Profile fetch timed out (120s)')), 120000);
       });
 
       const res = await Promise.race([fetchPromise, timeoutPromise]);

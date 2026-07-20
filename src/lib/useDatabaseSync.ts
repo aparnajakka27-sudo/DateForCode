@@ -54,7 +54,7 @@ export function useDatabaseSync() {
               localStorage.removeItem('dateforcode_deactivated');
             }
 
-            if (data.theme) {
+            if (data.theme && !localStorage.getItem('theme')) {
               localStorage.setItem('theme', data.theme);
               if (data.theme === 'dark') {
                 document.documentElement.classList.add('dark');

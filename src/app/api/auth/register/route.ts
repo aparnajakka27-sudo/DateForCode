@@ -1,52 +1,103 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import User from '@/models/User';
-import { signToken } from '@/lib/jwt';
-import { cookies } from 'next/headers';
+import { verifyUserToken } from '@/lib/userAuth';
 
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const body = await request.json();
-    const { fullName, username, email, password, role } = body;
+    
+    const authResult = await verifyUserToken(request);
+    if (!authResult.success) {
+      return NextResponse.json({ success: false, error: authResult.error }, { status: 401 });
+    }
+    
+    const firebaseUid = authResult.uid;
+    const email = authResult.email;
 
-    if (!fullName || !username || !email || !password) {
-      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
+    const body = await request.json().catch(() => ({}));
+    const { fullName, username, role, provider, providerId, emailVerified } = body;
+
+    if (!username) {
+      return NextResponse.json({ success: false, error: 'Missing username' }, { status: 400 });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    let existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    let newUser = null;
+
     if (existingUser) {
-      return NextResponse.json({ success: false, error: 'Email or Username already exists' }, { status: 409 });
+      if (existingUser.firebaseUid && existingUser.firebaseUid !== firebaseUid) {
+        return NextResponse.json({ success: false, error: 'Email or Username already exists' }, { status: 409 });
+      } else if (!existingUser.firebaseUid) {
+        // Legacy user migration during registration
+        existingUser.set('firebaseUid', firebaseUid);
+        existingUser.markModified('firebaseUid');
+        newUser = existingUser; // We will save this below
+      } else {
+        // They somehow have the exact same firebaseUid, just log them in
+        newUser = existingUser;
+      }
     }
 
-    const newUser = await User.create({
-      fullName,
-      username,
-      email,
-      password,
-      role: role || 'user',
-      accountCreationSource: 'web'
-    });
+    if (!newUser) {
+      console.log("Creating User:", {
+        firebaseUid,
+        email,
+        fullName: fullName || '',
+        username,
+        role: role || 'student',
+        provider: provider || 'email',
+        providerId: providerId || firebaseUid,
+        emailVerified: emailVerified || false,
+        accountCreationSource: 'web'
+      });
+      
+      newUser = new User({
+        firebaseUid,
+        email,
+        fullName: fullName || '',
+        username,
+        role: role || 'student',
+        provider: provider || 'email',
+        providerId: providerId || firebaseUid,
+        emailVerified: emailVerified || false,
+        accountCreationSource: 'web'
+      });
+    }
 
-    // Create JWT
-    const token = signToken({ 
-      id: newUser._id.toString(), 
-      role: newUser.role, 
-      email: newUser.email 
-    });
+    try {
+      console.log("========== BEFORE SAVE (REGISTER) ==========");
+      console.log(newUser.toObject());
 
-    // Set HTTP-only cookie
-    (await cookies()).set('session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
-    });
+      await newUser.validate();
+      console.log("✅ Validation Passed");
 
-    // Don't return the password
-    newUser.password = undefined;
+      await newUser.save();
+      console.log("✅ Save Passed");
+
+    } catch (err: any) {
+      console.error("❌ Validation Error (REGISTER):", err);
+
+      if (err.errors) {
+        for (const key in err.errors) {
+          console.log(
+            "Field:",
+            key,
+            "Message:",
+            err.errors[key].message,
+            "Value:",
+            err.errors[key].value
+          );
+        }
+      }
+
+      throw err;
+    }
+
+
+
+    // Removed custom JWT session cookie creation
 
     return NextResponse.json({ success: true, message: 'Registration successful', data: { user: newUser } }, { status: 201 });
   } catch (error: any) {

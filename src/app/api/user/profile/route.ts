@@ -6,7 +6,7 @@ import { verifyUserToken } from '@/lib/userAuth';
 export async function GET(request: Request) {
   const authResult = await verifyUserToken(request);
   if (!authResult.success) {
-    return NextResponse.json({ error: authResult.error }, { status: 403 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   const authResult = await verifyUserToken(request);
   if (!authResult.success) {
-    return NextResponse.json({ error: authResult.error }, { status: 403 });
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
   }
 
   try {
@@ -76,6 +76,10 @@ export async function PUT(request: Request) {
       } else {
         // 8. Create a brand new user
         console.log('[PROFILE] Creating new user');
+        if (!updateData.username && updateData.email) {
+          updateData.username = updateData.email.split('@')[0] + Math.floor(Math.random() * 10000);
+        }
+        console.log("Creating User:", updateData);
         user = await User.create(updateData);
       }
     }
